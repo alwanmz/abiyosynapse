@@ -1,8 +1,8 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "teamboard/ski",
+    "name": "abiyosynapse/erp",
     "type": "project",
-    "description": "Teamboard SKI - Modern Project Management and AI Claims Analysis.",
+    "description": "AbiyoSynapse - Multi-company Accounting/ERP application.",
     "keywords": [
         "laravel",
         "framework"
@@ -10,14 +10,12 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "google-gemini-php/client": "^2.7",
         "inertiajs/inertia-laravel": "^2.0",
         "laravel/fortify": "^1.30",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "laravel/wayfinder": "^0.1.9",
         "maatwebsite/excel": "^3.1",
-        "masbug/flysystem-google-drive-ext": "^2.5",
         "phpoffice/phpword": "^1.4",
         "spatie/laravel-backup": "^10.3"
     },

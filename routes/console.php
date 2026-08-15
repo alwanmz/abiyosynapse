@@ -1,7 +1,5 @@
 <?php
 
-use App\Console\Commands\SendDailyLogReminder;
-use App\Console\Commands\SendMorningReminder;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
@@ -10,25 +8,6 @@ use Illuminate\Support\Facades\Schedule;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
-
-// Hari kerja Senin–Sabtu (tanpa Minggu). 0=Minggu … 6=Sabtu.
-$hariKerja = [1, 2, 3, 4, 5, 6];
-
-// Pengingat pagi: cek tiket aktif & isi catatan harian.
-Schedule::command(SendMorningReminder::class)
-    ->dailyAt('08:00')
-    ->days($hariKerja)
-    ->timezone('Asia/Jakarta')
-    ->withoutOverlapping()
-    ->runInBackground();
-
-// Pengingat sore: user yang belum isi catatan harian.
-Schedule::command(SendDailyLogReminder::class)
-    ->dailyAt('16:00')
-    ->days($hariKerja)
-    ->timezone('Asia/Jakarta')
-    ->withoutOverlapping()
-    ->runInBackground();
 
 // Backup database + lampiran ke Google Drive tiap tengah malam (jam 12 malam).
 Schedule::command('backup:run')

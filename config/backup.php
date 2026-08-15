@@ -165,7 +165,7 @@ return [
              * The disk names on which the backups will be stored.
              */
             'disks' => [
-                'google',
+                'local',
             ],
 
             /*
@@ -302,7 +302,7 @@ return [
     'monitor_backups' => [
         [
             'name' => env('BACKUP_ARCHIVE_NAME', 'pm-sistemkesehatan'),
-            'disks' => ['google'],
+            'disks' => ['local'],
             'health_checks' => [
                 MaximumAgeInDays::class => 1,
                 MaximumStorageInMegabytes::class => 5000,
