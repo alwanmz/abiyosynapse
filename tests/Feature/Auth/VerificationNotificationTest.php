@@ -1,33 +1,32 @@
 <?php
 
+use App\Mail\EmailOtpMail;
 use App\Models\User;
-use Illuminate\Auth\Notifications\VerifyEmail;
-use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Mail;
 
-test('sends verification notification', function () {
-    Notification::fake();
+test('resend sends a new otp code', function () {
+    Mail::fake();
 
-    $user = User::factory()->create([
-        'email_verified_at' => null,
-    ]);
+    $user = User::factory()->unverified()->create();
 
     $this->actingAs($user)
         ->post(route('verification.send'))
-        ->assertRedirect(route('home'));
+        ->assertRedirect();
 
-    Notification::assertSentTo($user, VerifyEmail::class);
+    Mail::assertSent(EmailOtpMail::class);
+    expect($user->fresh()->email_otp_code)->not->toBeNull();
 });
 
-test('does not send verification notification if email is verified', function () {
-    Notification::fake();
+test('resend is rate limited after repeated attempts', function () {
+    Mail::fake();
 
-    $user = User::factory()->create([
-        'email_verified_at' => now(),
-    ]);
+    $user = User::factory()->unverified()->create();
 
-    $this->actingAs($user)
-        ->post(route('verification.send'))
-        ->assertRedirect(config('fortify.home'));
+    for ($i = 0; $i < 3; $i++) {
+        $this->actingAs($user)->post(route('verification.send'));
+    }
 
-    Notification::assertNothingSent();
+    $response = $this->actingAs($user)->post(route('verification.send'));
+
+    $response->assertSessionHasErrors('code');
 });

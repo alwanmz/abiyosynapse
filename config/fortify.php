@@ -149,7 +149,12 @@ return [
         // (lihat App\Actions\Fortify\CreateNewUser).
         Features::registration(),
         Features::resetPasswords(),
-        Features::emailVerification(),
+        // Email verification uses our own OTP-code flow (routes/web.php,
+        // App\Http\Controllers\Auth\EmailOtpController) instead of
+        // Fortify's signed-link click flow, so Fortify's own
+        // verification.* routes stay disabled here. The `verified`
+        // middleware still works unchanged — it just redirects to our
+        // route named `verification.notice` instead of Fortify's.
         Features::twoFactorAuthentication([
             'confirm' => true,
             'confirmPassword' => true,

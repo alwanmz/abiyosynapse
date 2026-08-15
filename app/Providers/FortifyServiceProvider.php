@@ -74,9 +74,10 @@ class FortifyServiceProvider extends ServiceProvider
             'status' => $request->session()->get('status'),
         ]));
 
-        Fortify::verifyEmailView(fn (Request $request) => Inertia::render('auth/verify-email', [
-            'status' => $request->session()->get('status'),
-        ]));
+        // No Fortify::verifyEmailView() here — email verification uses our
+        // own OTP-code flow (routes/web.php, EmailOtpController) instead of
+        // Fortify's signed-link click flow, and Features::emailVerification()
+        // is disabled in config/fortify.php so this view would never be reached.
 
         Fortify::registerView(fn () => Inertia::render('auth/register'));
 

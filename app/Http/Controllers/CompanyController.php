@@ -38,6 +38,7 @@ class CompanyController extends Controller
         ]);
 
         $validated['code'] ??= Str::slug($validated['name']) . '-' . Str::lower(Str::random(4));
+        $validated['trial_ends_at'] = now()->addDays(7);
 
         $user = $request->user();
 

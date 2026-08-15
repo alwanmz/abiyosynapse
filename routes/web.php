@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\Auth\EmailOtpController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CompanySwitchController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\TrialExpiredController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +16,17 @@ Route::get('/', function () {
     }
     return redirect()->route('login');
 })->name('home');
+
+// Own OTP-code email verification flow, replacing Fortify's signed-link
+// click flow (see config/fortify.php — Features::emailVerification() is
+// disabled there). Route names match what the `verified` middleware
+// expects by convention (verification.notice / verification.send), so
+// EnsureEmailIsVerified redirects here unchanged.
+Route::middleware('auth')->group(function () {
+    Route::get('/email/verify', [EmailOtpController::class, 'show'])->name('verification.notice');
+    Route::post('/email/verify', [EmailOtpController::class, 'verify'])->name('verification.verify');
+    Route::post('/email/verify/resend', [EmailOtpController::class, 'resend'])->name('verification.send');
+});
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -28,6 +41,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/companies/{company}', [CompanyController::class, 'update'])->name('companies.update')->middleware('permission:companies.edit,companies.manage');
 
     Route::post('/company/switch', CompanySwitchController::class)->name('company.switch');
+
+    Route::get('/trial-expired', [TrialExpiredController::class, 'show'])->name('trial-expired');
 
     Route::get('/roles', [RoleController::class, 'index'])->name('roles.index')->middleware('permission:roles.view');
     Route::post('/roles', [RoleController::class, 'store'])->name('roles.store')->middleware('permission:roles.create,roles.manage');

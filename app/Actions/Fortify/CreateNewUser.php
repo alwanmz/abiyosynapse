@@ -59,6 +59,7 @@ class CreateNewUser implements CreatesNewUsers
                 'currency' => 'IDR',
                 'fiscal_year_start_month' => 1,
                 'is_active' => true,
+                'trial_ends_at' => now()->addDays(7),
             ]);
 
             $superAdminRoleId = Role::where('name', 'super_admin')->value('id');

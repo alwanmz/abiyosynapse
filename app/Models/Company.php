@@ -21,6 +21,7 @@ class Company extends Model
         'currency',
         'fiscal_year_start_month',
         'is_active',
+        'trial_ends_at',
     ];
 
     protected function casts(): array
@@ -28,7 +29,17 @@ class Company extends Model
         return [
             'is_active' => 'boolean',
             'fiscal_year_start_month' => 'integer',
+            'trial_ends_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Null trial_ends_at means "not on a trial" (never was, or trial
+     * enforcement predates this company) — never expired in that case.
+     */
+    public function isTrialExpired(): bool
+    {
+        return $this->trial_ends_at !== null && $this->trial_ends_at->isPast();
     }
 
     public function users(): BelongsToMany
