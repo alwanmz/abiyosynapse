@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Share dynamic favicon URL with the main Blade layout.
         \Illuminate\Support\Facades\View::composer('app', function ($view) {
-            $view->with('faviconUrl', '/favicon.ico');
+            $view->with('faviconUrl', '/favicon.svg');
         });
     }
 }
