@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nexumi — Sistem Desain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================== TOKENS ============================== */
+:root{
+  --nx-white:#FFFFFF; --nx-ink:#1F2937; --nx-slate:#6B7280;
+  --nx-navy:#0F3D5E; --nx-cyan:#14B8C4; --nx-hanko:#C1121F;
+
+  --nx-navy-50:#EFF5F9; --nx-navy-100:#D6E3EC; --nx-navy-200:#AFC7D8;
+  --nx-navy-300:#7FA8C2; --nx-navy-500:#226F9F; --nx-navy-600:#17557F;
+  --nx-navy-700:#0F3D5E; --nx-navy-800:#0A2C44; --nx-navy-900:#061D2E;
+
+  --nx-cyan-50:#EDFAFB; --nx-cyan-100:#D6F2F5; --nx-cyan-300:#7FD9E0;
+  --nx-cyan-500:#14B8C4; --nx-cyan-600:#109BA5; --nx-cyan-700:#0B7F88;
+
+  --nx-hanko-50:#FDF0F1; --nx-hanko-100:#F7D9DC; --nx-hanko-500:#C1121F; --nx-hanko-700:#8E0D17;
+
+  --nx-n-0:#FFFFFF; --nx-n-25:#FBFCFC; --nx-n-50:#F6F7F8; --nx-n-100:#EEF1F3;
+  --nx-n-200:#E3E7EB; --nx-n-300:#C9D0D7; --nx-n-400:#9BA5AF;
+  --nx-n-500:#6B7280; --nx-n-700:#3D4753; --nx-n-900:#1F2937;
+
+  --nx-andon-run:#157F4F; --nx-andon-run-bg:#E8F4EE;
+  --nx-andon-caution:#B8791A; --nx-andon-caution-bg:#FBF2E3;
+  --nx-andon-stop:#C1121F; --nx-andon-stop-bg:#FDF0F1;
+  --nx-andon-idle:#9BA5AF; --nx-andon-idle-bg:#EEF1F3;
+  --nx-andon-info:#0B7F88; --nx-andon-info-bg:#EDFAFB;
+
+  --nx-font-display:"Manrope","Noto Sans JP",system-ui,sans-serif;
+  --nx-font-body:"Inter","Noto Sans JP",system-ui,sans-serif;
+  --nx-font-jp:"Noto Sans JP","Inter",sans-serif;
+  --nx-font-mono:"IBM Plex Mono",ui-monospace,monospace;
+
+  --nx-space-1:4px; --nx-space-2:8px; --nx-space-3:12px; --nx-space-4:16px;
+  --nx-space-5:20px; --nx-space-6:24px; --nx-space-8:32px; --nx-space-10:40px;
+  --nx-space-12:48px; --nx-space-16:64px; --nx-space-20:80px; --nx-space-28:112px;
+
+  --nx-radius-xs:2px; --nx-radius-sm:4px; --nx-radius-md:6px; --nx-radius-lg:10px; --nx-radius-full:999px;
+
+  --nx-shadow-1:0 1px 2px rgba(15,61,94,.06);
+  --nx-shadow-2:0 4px 12px rgba(15,61,94,.08),0 1px 2px rgba(15,61,94,.04);
+  --nx-shadow-3:0 16px 40px rgba(15,61,94,.12),0 2px 6px rgba(15,61,94,.05);
+  --nx-focus-ring:0 0 0 3px rgba(20,184,196,.35);
+
+  --nx-dur-fast:140ms; --nx-dur-base:200ms; --nx-dur-slow:320ms;
+  --nx-ease:cubic-bezier(.2,0,0,1);
+
+  --nx-row-h:44px; --nx-control-h:36px;
+}
+[data-density="compact"]{ --nx-row-h:32px; --nx-control-h:30px; }
+
+/* ============================== RESET =============================== */
+*,*::before,*::after{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--nx-white); color:var(--nx-ink);
+  font-family:var(--nx-font-body); font-size:14px; line-height:22px;
+  -webkit-font-smoothing:antialiased; font-feature-settings:"cv05","ss01";
+}
+h1,h2,h3,h4,p,figure,ul,ol{margin:0;}
+ul,ol{padding:0;list-style:none;}
+button,input,select,textarea{font:inherit;color:inherit;}
+a{color:inherit;}
+:focus-visible{outline:none;box-shadow:var(--nx-focus-ring);border-radius:var(--nx-radius-sm);}
+code{font-family:var(--nx-font-mono);font-size:.86em;}
+
+/* ============================ APP SHELL ============================= */
+.doc{display:grid;grid-template-columns:236px minmax(0,1fr);max-width:1420px;margin:0 auto;}
+
+/* --- Rail --- */
+.rail{
+  position:sticky;top:0;align-self:start;height:100vh;
+  border-right:1px solid var(--nx-n-200);
+  padding:var(--nx-space-8) var(--nx-space-6) var(--nx-space-8) var(--nx-space-8);
+  display:flex;flex-direction:column;gap:var(--nx-space-8);overflow-y:auto;
+}
+.rail__mark{display:flex;align-items:center;gap:10px;}
+.rail__glyph{
+  width:26px;height:26px;flex:none;border:1.5px solid var(--nx-navy-700);
+  border-radius:var(--nx-radius-xs);position:relative;
+}
+.rail__glyph::before,.rail__glyph::after{
+  content:"";position:absolute;background:var(--nx-navy-700);
+}
+.rail__glyph::before{left:0;right:0;top:50%;height:1.5px;transform:translateY(-50%);}
+.rail__glyph::after{top:0;bottom:0;left:50%;width:1.5px;transform:translateX(-50%);background:var(--nx-cyan-500);}
+.rail__word{font-family:var(--nx-font-display);font-weight:800;font-size:17px;letter-spacing:-.02em;color:var(--nx-navy-700);}
+.rail__ver{font-family:var(--nx-font-mono);font-size:11px;color:var(--nx-n-400);letter-spacing:.04em;}
+
+.rail__nav{display:flex;flex-direction:column;gap:2px;}
+.rail__link{
+  display:grid;grid-template-columns:20px 1fr;align-items:baseline;gap:10px;
+  padding:7px 10px 7px 6px;border-radius:var(--nx-radius-sm);
+  text-decoration:none;color:var(--nx-slate);font-size:13px;
+  transition:color var(--nx-dur-fast) var(--nx-ease),background var(--nx-dur-fast) var(--nx-ease);
+}
+.rail__link:hover{background:var(--nx-n-50);color:var(--nx-ink);}
+.rail__num{font-style:normal;font-family:var(--nx-font-jp);font-size:12px;color:var(--nx-n-300);text-align:center;}
+.rail__link:hover .rail__num{color:var(--nx-cyan-600);}
+.rail__foot{margin-top:auto;font-size:11px;line-height:17px;color:var(--nx-n-400);}
+
+/* --- Main --- */
+.main{padding:var(--nx-space-20) var(--nx-space-16) var(--nx-space-28);min-width:0;}
+
+/* ============================== HERO ================================ */
+.hero{position:relative;padding-bottom:var(--nx-space-16);}
+.hero__grid{
+  position:absolute;inset:auto 0 var(--nx-space-16) 0;top:-40px;
+  background-image:linear-gradient(var(--nx-n-100) 1px,transparent 1px),
+                   linear-gradient(90deg,var(--nx-n-100) 1px,transparent 1px);
+  background-size:48px 48px;
+  -webkit-mask-image:radial-gradient(ellipse 70% 80% at 22% 40%,#000 0%,transparent 72%);
+          mask-image:radial-gradient(ellipse 70% 80% at 22% 40%,#000 0%,transparent 72%);
+  pointer-events:none;
+}
+.hero > *{position:relative;}
+.eyebrow{
+  font-size:11px;line-height:14px;letter-spacing:.08em;text-transform:uppercase;
+  font-weight:600;color:var(--nx-cyan-700);display:flex;align-items:center;gap:10px;
+}
+.eyebrow::after{content:"";height:1px;width:56px;background:var(--nx-n-200);}
+.hero__title{
+  font-family:var(--nx-font-display);font-weight:800;font-size:clamp(38px,5.4vw,58px);
+  line-height:1.06;letter-spacing:-.032em;color:var(--nx-navy-800);
+  margin:var(--nx-space-5) 0 var(--nx-space-5);max-width:14ch;
+}
+.hero__jp{
+  font-family:var(--nx-font-jp);font-weight:400;font-size:13px;letter-spacing:.22em;
+  color:var(--nx-n-400);margin-bottom:var(--nx-space-6);
+}
+.hero__lede{font-size:16px;line-height:27px;color:var(--nx-slate);max-width:56ch;}
+.hero__meta{
+  display:flex;flex-wrap:wrap;gap:var(--nx-space-8);margin-top:var(--nx-space-10);
+  padding-top:var(--nx-space-6);border-top:1px solid var(--nx-n-200);max-width:640px;
+}
+.hero__meta div{min-width:110px;}
+.hero__meta dt{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--nx-n-400);margin-bottom:4px;}
+.hero__meta dd{margin:0;font-size:13px;font-weight:500;color:var(--nx-ink);}
+
+/* --- Hanko seal (elemen tanda tangan) --- */
+.hanko{
+  position:absolute;top:8px;right:8px;width:104px;height:104px;
+  border:2.5px solid var(--nx-hanko-500);border-radius:var(--nx-radius-full);
+  display:grid;place-items:center;transform:rotate(-9deg);
+  color:var(--nx-hanko-500);background:rgba(255,255,255,.6);
+  box-shadow:inset 0 0 0 1px rgba(193,18,31,.22);
+  animation:stamp var(--nx-dur-slow) var(--nx-ease) both;
+}
+.hanko__text{
+  font-family:var(--nx-font-jp);font-weight:700;font-size:26px;line-height:1.05;
+  text-align:center;letter-spacing:.02em;writing-mode:vertical-rl;
+  height:66px;opacity:.92;
+}
+@keyframes stamp{
+  0%{opacity:0;transform:rotate(-9deg) scale(1.5);}
+  60%{opacity:1;transform:rotate(-9deg) scale(.96);}
+  100%{opacity:1;transform:rotate(-9deg) scale(1);}
+}
+
+/* ============================= SECTIONS ============================= */
+.sec{
+  padding-top:var(--nx-space-20);
+  display:grid;grid-template-columns:64px minmax(0,1fr);gap:var(--nx-space-6);
+}
+.sec__tab{position:sticky;top:var(--nx-space-10);align-self:start;height:max-content;}
+.sec__kanji{
+  font-family:var(--nx-font-jp);font-weight:500;font-size:15px;letter-spacing:.34em;
+  writing-mode:vertical-rl;color:var(--nx-navy-300);
+  border-left:1px solid var(--nx-n-200);padding-left:var(--nx-space-3);
+}
+.sec__head{margin-bottom:var(--nx-space-8);}
+.sec__title{
+  font-family:var(--nx-font-display);font-weight:700;font-size:30px;line-height:38px;
+  letter-spacing:-.024em;color:var(--nx-navy-800);margin:var(--nx-space-3) 0 var(--nx-space-3);
+}
+.sec__desc{color:var(--nx-slate);max-width:62ch;font-size:15px;line-height:25px;}
+
+.sub{margin-top:var(--nx-space-12);}
+.sub__title{
+  font-family:var(--nx-font-display);font-weight:600;font-size:15px;letter-spacing:-.008em;
+  color:var(--nx-ink);padding-bottom:var(--nx-space-3);margin-bottom:var(--nx-space-5);
+  border-bottom:1px solid var(--nx-n-200);display:flex;align-items:baseline;gap:10px;
+}
+.sub__title span{font-family:var(--nx-font-jp);font-size:11px;font-weight:400;color:var(--nx-n-400);letter-spacing:.1em;}
+.note{font-size:13px;line-height:21px;color:var(--nx-slate);max-width:64ch;margin-top:var(--nx-space-4);}
+.note strong{color:var(--nx-ink);font-weight:600;}
+
+/* ============================== COLOR =============================== */
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(184px,1fr));gap:var(--nx-space-4);}
+.sw{
+  border:1px solid var(--nx-n-200);border-radius:var(--nx-radius-md);overflow:hidden;
+  background:var(--nx-white);cursor:pointer;text-align:left;padding:0;width:100%;
+  transition:box-shadow var(--nx-dur-fast) var(--nx-ease),transform var(--nx-dur-fast) var(--nx-ease);
+}
+.sw:hover{box-shadow:var(--nx-shadow-2);transform:translateY(-2px);}
+.sw__chip{height:76px;border-bottom:1px solid rgba(15,61,94,.08);}
+.sw__body{padding:10px 12px 12px;}
+.sw__name{font-size:13px;font-weight:600;letter-spacing:-.005em;}
+.sw__hex{font-family:var(--nx-font-mono);font-size:11px;color:var(--nx-slate);margin-top:3px;letter-spacing:.02em;}
+.sw__use{font-size:11px;line-height:15px;color:var(--nx-n-400);margin-top:6px;}
+
+.ramp{display:flex;border-radius:var(--nx-radius-md);overflow:hidden;border:1px solid var(--nx-n-200);}
+.ramp__step{flex:1;height:56px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;
+  font-family:var(--nx-font-mono);font-size:10px;}
+.ramp-label{display:flex;justify-content:space-between;margin-bottom:8px;font-size:12px;color:var(--nx-slate);}
+.ramp-label b{color:var(--nx-ink);font-weight:600;}
+.ramp-wrap + .ramp-wrap{margin-top:var(--nx-space-6);}
+
+/* ============================ TYPOGRAPHY ============================ */
+.type-row{
+  display:grid;grid-template-columns:150px minmax(0,1fr);gap:var(--nx-space-6);
+  padding:var(--nx-space-4) 0;border-bottom:1px solid var(--nx-n-100);align-items:baseline;
+}
+.type-row:last-child{border-bottom:0;}
+.type-meta{font-family:var(--nx-font-mono);font-size:11px;color:var(--nx-slate);line-height:17px;}
+.type-meta b{display:block;font-family:var(--nx-font-body);font-size:12px;font-weight:600;color:var(--nx-ink);letter-spacing:.02em;margin-bottom:2px;}
+.t-display{font-family:var(--nx-font-display);font-size:40px;line-height:46px;font-weight:800;letter-spacing:-.02em;color:var(--nx-navy-800);}
+.t-h1{font-family:var(--nx-font-display);font-size:30px;line-height:38px;font-weight:700;letter-spacing:-.018em;}
+.t-h2{font-family:var(--nx-font-display);font-size:23px;line-height:30px;font-weight:600;letter-spacing:-.014em;}
+.t-h3{font-size:18px;line-height:26px;font-weight:600;letter-spacing:-.01em;}
+.t-h4{font-size:16px;line-height:22px;font-weight:600;}
+.t-body{font-size:14px;line-height:22px;}
+.t-sm{font-size:13px;line-height:18px;color:var(--nx-slate);}
+.t-cap{font-size:12px;line-height:16px;color:var(--nx-slate);}
+.t-micro{font-size:11px;line-height:14px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--nx-n-400);}
+.t-num{font-family:var(--nx-font-body);font-variant-numeric:tabular-nums;font-size:20px;font-weight:600;letter-spacing:-.01em;}
+.t-jp{font-family:var(--nx-font-jp);font-size:18px;line-height:30px;font-weight:400;}
+
+.face-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:var(--nx-space-4);}
+.face{border:1px solid var(--nx-n-200);border-radius:var(--nx-radius-md);padding:var(--nx-space-5);}
+.face__spec{font-size:36px;line-height:1.1;margin-bottom:var(--nx-space-4);color:var(--nx-navy-800);}
+.face__name{font-size:13px;font-weight:600;}
+.face__role{font-size:12px;color:var(--nx-slate);margin-top:4px;line-height:18px;}
+
+/* ============================== SPACE =============================== */
+.space-list{display:flex;flex-direction:column;gap:10px;}
+.space-item{display:grid;grid-template-columns:96px 60px 1fr;align-items:center;gap:var(--nx-space-4);}
+.space-item code{font-size:11px;color:var(--nx-slate);}
+.space-item b{font-family:var(--nx-font-mono);font-size:11px;font-weight:400;color:var(--nx-n-400);}
+.space-bar{height:14px;background:var(--nx-cyan-100);border-left:2px solid var(--nx-cyan-500);border-radius:0 2px 2px 0;}
+
+.ma-demo{display:grid;grid-template-columns:1fr 1fr;gap:var(--nx-space-4);}
+.ma-box{border:1px solid var(--nx-n-200);border-radius:var(--nx-radius-md);overflow:hidden;}
+.ma-box__tag{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:8px 12px;border-bottom:1px solid var(--nx-n-200);}
+.ma-box--no .ma-box__tag{color:var(--nx-hanko-700);background:var(--nx-hanko-50);}
+.ma-box--yes .ma-box__tag{color:var(--nx-andon-run);background:var(--nx-andon-run-bg);}
+.ma-lines{padding:var(--nx-space-4);display:flex;flex-direction:column;}
+.ma-lines--tight{gap:3px;}
+.ma-lines--airy{gap:14px;padding:var(--nx-space-6);}
+.ma-line{height:8px;background:var(--nx-n-100);border-radius:2px;}
+.ma-line--s{width:52%;}
+.ma-line--m{width:78%;}
+.ma-line--head{background:var(--nx-navy-200);width:36%;height:10px;}
+
+/* ============================ COMPONENTS ============================ */
+.demo{
+  border:1px solid var(--nx-n-200);border-radius:var(--nx-radius-md);
+  padding:var(--nx-space-6);background:var(--nx-white);
+}
+.demo--sunken{background:var(--nx-n-50);}
+.row{display:flex;flex-wrap:wrap;gap:var(--nx-space-3);align-items:center;}
+.row + .row{margin-top:var(--nx-space-4);}
+.stack{display:flex;flex-direction:column;gap:var(--nx-space-4);}
+
+/* Buttons */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  height:var(--nx-control-h);padding:0 16px;border-radius:var(--nx-radius-sm);
+  border:1px solid transparent;background:transparent;cursor:pointer;
+  font-size:13px;font-weight:600;letter-spacing:-.004em;white-space:nowrap;
+  transition:background var(--nx-dur-fast) var(--nx-ease),border-color var(--nx-dur-fast) var(--nx-ease),
+             color var(--nx-dur-fast) var(--nx-ease),box-shadow var(--nx-dur-fast) var(--nx-ease);
+}
+.btn:active{transform:translateY(.5px);}
+.btn--primary{background:var(--nx-navy-700);color:#fff;}
+.btn--primary:hover{background:var(--nx-navy-600);}
+.btn--secondary{background:var(--nx-white);color:var(--nx-navy-700);border-color:var(--nx-n-300);}
+.btn--secondary:hover{border-color:var(--nx-navy-300);background:var(--nx-navy-50);}
+.btn--ghost{color:var(--nx-navy-700);}
+.btn--ghost:hover{background:var(--nx-navy-50);}
+.btn--danger{background:var(--nx-hanko-500);color:#fff;}
+.btn--danger:hover{background:var(--nx-hanko-700);}
+.btn--sm{height:28px;padding:0 11px;font-size:12px;}
+.btn[disabled]{opacity:.45;cursor:not-allowed;}
+.btn__dot{font-style:normal;width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.6;}
+
+/* Fields */
+.field{display:flex;flex-direction:column;gap:6px;max-width:300px;}
+.field__label{font-size:12px;font-weight:600;color:var(--nx-ink);letter-spacing:.01em;}
+.field__hint{font-size:11px;color:var(--nx-slate);line-height:16px;}
+.field__err{font-size:11px;color:var(--nx-hanko-700);line-height:16px;}
+.input{
+  height:var(--nx-control-h);padding:0 11px;border:1px solid var(--nx-n-300);
+  border-radius:var(--nx-radius-sm);background:var(--nx-white);font-size:13px;width:100%;
+  transition:border-color var(--nx-dur-fast) var(--nx-ease),box-shadow var(--nx-dur-fast) var(--nx-ease);
+}
+.input::placeholder{color:var(--nx-n-400);}
+.input:hover{border-color:var(--nx-n-400);}
+.input:focus{outline:none;border-color:var(--nx-cyan-500);box-shadow:var(--nx-focus-ring);}
+.input--err{border-color:var(--nx-hanko-500);}
+.input--err:focus{box-shadow:0 0 0 3px rgba(193,18,31,.22);}
+.input--num{font-variant-numeric:tabular-nums;text-align:right;}
+
+/* Andon badges */
+.andon{
+  display:inline-flex;align-items:center;gap:7px;height:22px;padding:0 9px;
+  border-radius:var(--nx-radius-full);font-size:11px;font-weight:600;letter-spacing:.02em;
+}
+.andon__led{font-style:normal;width:6px;height:6px;border-radius:50%;background:currentColor;flex:none;}
+.andon--run{color:var(--nx-andon-run);background:var(--nx-andon-run-bg);}
+.andon--caution{color:var(--nx-andon-caution);background:var(--nx-andon-caution-bg);}
+.andon--stop{color:var(--nx-andon-stop);background:var(--nx-andon-stop-bg);}
+.andon--idle{color:var(--nx-n-500);background:var(--nx-andon-idle-bg);}
+.andon--info{color:var(--nx-andon-info);background:var(--nx-andon-info-bg);}
+.andon--stop .andon__led{animation:pulse 1.8s var(--nx-ease) infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+
+/* Tabs */
+.tabs{display:flex;gap:var(--nx-space-6);border-bottom:1px solid var(--nx-n-200);}
+.tab{
+  background:none;border:0;padding:0 0 11px;cursor:pointer;position:relative;
+  font-size:13px;font-weight:500;color:var(--nx-slate);
+  transition:color var(--nx-dur-fast) var(--nx-ease);
+}
+.tab::after{
+  content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;
+  background:var(--nx-cyan-500);transform:scaleX(0);transform-origin:left;
+  transition:transform var(--nx-dur-base) var(--nx-ease);
+}
+.tab:hover{color:var(--nx-ink);}
+.tab[aria-selected="true"]{color:var(--nx-navy-700);font-weight:600;}
+.tab[aria-selected="true"]::after{transform:scaleX(1);}
+
+/* Table */
+.tbl-wrap{border:1px solid var(--nx-n-200);border-radius:var(--nx-radius-md);overflow:hidden;}
+.tbl-bar{
+  display:flex;align-items:center;justify-content:space-between;gap:var(--nx-space-4);
+  padding:var(--nx-space-3) var(--nx-space-4);border-bottom:1px solid var(--nx-n-200);
+  background:var(--nx-white);flex-wrap:wrap;
+}
+.tbl-bar__title{font-size:13px;font-weight:600;}
+.tbl-bar__sub{font-size:11px;color:var(--nx-slate);margin-top:2px;font-variant-numeric:tabular-nums;}
+.tbl-scroll{overflow-x:auto;}
+table.tbl{width:100%;border-collapse:collapse;font-size:13px;min-width:720px;}
+.tbl th{
+  text-align:left;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--nx-slate);padding:10px var(--nx-space-4);background:var(--nx-n-50);
+  border-bottom:1px solid var(--nx-n-200);white-space:nowrap;
+}
+.tbl td{
+  padding:0 var(--nx-space-4);height:var(--nx-row-h);
+  border-bottom:1px solid var(--nx-n-100);vertical-align:middle;
+  transition:height var(--nx-dur-base) var(--nx-ease);
+}
+.tbl tbody tr:last-child td{border-bottom:0;}
+.tbl tbody tr{transition:background var(--nx-dur-fast) var(--nx-ease);}
+.tbl tbody tr:hover{background:var(--nx-navy-50);}
+.tbl .num{text-align:right;font-variant-numeric:tabular-nums;}
+.tbl .id{font-family:var(--nx-font-mono);font-size:12px;color:var(--nx-navy-700);}
+.tbl .muted{color:var(--nx-slate);}
+.tbl .late{color:var(--nx-hanko-700);font-weight:600;}
+
+/* Kanban card */
+.kanban{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:var(--nx-space-4);}
+.kcard{
+  border:1px solid var(--nx-n-200);border-radius:var(--nx-radius-md);background:var(--nx-white);
+  padding:var(--nx-space-4);position:relative;overflow:hidden;
+  transition:box-shadow var(--nx-dur-fast) var(--nx-ease),border-color var(--nx-dur-fast) var(--nx-ease);
+}
+.kcard:hover{box-shadow:var(--nx-shadow-2);border-color:var(--nx-navy-200);}
+.kcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--nx-n-300);}
+.kcard--run::before{background:var(--nx-andon-run);}
+.kcard--caution::before{background:var(--nx-andon-caution);}
+.kcard--stop::before{background:var(--nx-andon-stop);}
+.kcard__id{font-family:var(--nx-font-mono);font-size:11px;color:var(--nx-slate);letter-spacing:.02em;}
+.kcard__title{font-size:14px;font-weight:600;margin:5px 0 3px;letter-spacing:-.008em;}
+.kcard__meta{font-size:12px;color:var(--nx-slate);}
+.kcard__foot{display:flex;align-items:center;justify-content:space-between;margin-top:var(--nx-space-4);gap:8px;}
+.prog{height:3px;background:var(--nx-n-100);border-radius:2px;overflow:hidden;margin-top:var(--nx-space-3);}
+.prog__fill{height:100%;background:var(--nx-cyan-500);border-radius:2px;}
+
+/* Alert */
+.alert{display:flex;gap:12px;padding:var(--nx-space-4);border-radius:var(--nx-radius-sm);border:1px solid;}
+.alert__mark{width:3px;border-radius:2px;flex:none;}
+.alert__title{font-size:13px;font-weight:600;margin-bottom:3px;}
+.alert__body{font-size:12px;line-height:19px;color:var(--nx-slate);}
+.alert--stop{border-color:var(--nx-hanko-100);background:var(--nx-hanko-50);}
+.alert--stop .alert__mark{background:var(--nx-hanko-500);}
+.alert--stop .alert__title{color:var(--nx-hanko-700);}
+.alert--info{border-color:var(--nx-cyan-100);background:var(--nx-cyan-50);}
+.alert--info .alert__mark{background:var(--nx-cyan-600);}
+.alert--info .alert__title{color:var(--nx-cyan-700);}
+.alert--caution{border-color:#F1E1C4;background:var(--nx-andon-caution-bg);}
+.alert--caution .alert__mark{background:var(--nx-andon-caution);}
+.alert--caution .alert__title{color:var(--nx-andon-caution);}
+
+/* Nav preview */
+.appnav{border:1px solid var(--nx-n-200);border-radius:var(--nx-radius-md);overflow:hidden;}
+.appnav__top{
+  display:flex;align-items:center;gap:var(--nx-space-5);height:48px;padding:0 var(--nx-space-4);
+  background:var(--nx-navy-800);color:#fff;
+}
+.appnav__brand{font-family:var(--nx-font-display);font-weight:800;font-size:14px;letter-spacing:-.01em;}
+.appnav__items{display:flex;gap:var(--nx-space-5);font-size:12.5px;color:rgba(255,255,255,.62);}
+.appnav__items span{padding:2px 0;border-bottom:2px solid transparent;}
+.appnav__items span[data-on]{color:#fff;border-bottom-color:var(--nx-cyan-500);}
+.appnav__plant{margin-left:auto;font-size:11px;color:rgba(255,255,255,.6);font-family:var(--nx-font-mono);}
+.appnav__side{display:grid;grid-template-columns:190px 1fr;min-height:132px;}
+.appnav__list{border-right:1px solid var(--nx-n-200);padding:var(--nx-space-3) 0;background:var(--nx-n-25);}
+.appnav__link{
+  display:flex;align-items:center;gap:9px;padding:7px var(--nx-space-4);font-size:13px;color:var(--nx-slate);
+}
+.appnav__link[data-on]{color:var(--nx-navy-700);font-weight:600;background:var(--nx-navy-50);box-shadow:inset 2px 0 0 var(--nx-navy-700);}
+.appnav__body{padding:var(--nx-space-5);display:flex;flex-direction:column;gap:10px;}
+
+/* Seal component demo */
+.seal-demo{display:flex;align-items:center;gap:var(--nx-space-8);flex-wrap:wrap;}
+.seal{
+  width:76px;height:76px;flex:none;border:2px solid var(--nx-hanko-500);border-radius:50%;
+  display:grid;place-items:center;color:var(--nx-hanko-500);transform:rotate(-7deg);
+  box-shadow:inset 0 0 0 1px rgba(193,18,31,.2);cursor:pointer;background:transparent;
+}
+.seal span{font-family:var(--nx-font-jp);font-weight:700;font-size:19px;writing-mode:vertical-rl;letter-spacing:.02em;height:52px;text-align:center;}
+.seal.is-stamped{animation:stamp var(--nx-dur-slow) var(--nx-ease);}
+.seal--pending{border-color:var(--nx-n-300);color:var(--nx-n-400);box-shadow:none;border-style:dashed;transform:rotate(0);}
+
+/* Motion demo */
+.motion-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:var(--nx-space-4);}
+.motion-card{border:1px solid var(--nx-n-200);border-radius:var(--nx-radius-md);padding:var(--nx-space-4);}
+.motion-card b{font-size:12px;display:block;margin-bottom:3px;}
+.motion-card code{font-size:11px;color:var(--nx-cyan-700);}
+.motion-card p{font-size:12px;color:var(--nx-slate);line-height:18px;margin-top:6px;}
+
+/* Do / Don't */
+.dd{display:grid;grid-template-columns:1fr 1fr;gap:var(--nx-space-4);}
+.dd__col{border:1px solid var(--nx-n-200);border-radius:var(--nx-radius-md);padding:var(--nx-space-5);}
+.dd__h{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:var(--nx-space-3);}
+.dd__col--do .dd__h{color:var(--nx-andon-run);}
+.dd__col--dont .dd__h{color:var(--nx-hanko-700);}
+.dd li{font-size:13px;line-height:21px;color:var(--nx-slate);padding-left:16px;position:relative;}
+.dd li + li{margin-top:8px;}
+.dd li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:1.5px;background:var(--nx-n-300);}
+
+/* Voice table */
+.voice{width:100%;border-collapse:collapse;font-size:13px;}
+.voice th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--nx-slate);padding-bottom:10px;border-bottom:1px solid var(--nx-n-200);font-weight:600;}
+.voice td{padding:12px 16px 12px 0;border-bottom:1px solid var(--nx-n-100);vertical-align:top;line-height:20px;}
+.voice td:first-child{color:var(--nx-slate);width:26%;}
+.voice .yes{color:var(--nx-andon-run);font-weight:500;}
+.voice .no{color:var(--nx-hanko-700);text-decoration:line-through;text-decoration-thickness:1px;opacity:.75;}
+
+/* Density toggle */
+.seg{display:inline-flex;border:1px solid var(--nx-n-300);border-radius:var(--nx-radius-sm);overflow:hidden;}
+.seg button{
+  border:0;background:var(--nx-white);padding:5px 12px;font-size:12px;font-weight:500;
+  color:var(--nx-slate);cursor:pointer;transition:all var(--nx-dur-fast) var(--nx-ease);
+}
+.seg button + button{border-left:1px solid var(--nx-n-200);}
+.seg button[aria-pressed="true"]{background:var(--nx-navy-700);color:#fff;}
+
+/* Token code block */
+.code{
+  background:var(--nx-navy-900);color:#D8E4EC;border-radius:var(--nx-radius-md);
+  padding:var(--nx-space-5);font-family:var(--nx-font-mono);font-size:12px;line-height:20px;
+  overflow-x:auto;white-space:pre;
+}
+.code .k{color:var(--nx-cyan-300);}
+.code .v{color:#F0C7A0;}
+.code .c{color:#67808F;}
+
+/* A11y contrast list */
+.pairs{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:var(--nx-space-3);}
+.pair{border:1px solid var(--nx-n-200);border-radius:var(--nx-radius-sm);padding:var(--nx-space-4);}
+.pair__demo{font-size:14px;font-weight:500;margin-bottom:10px;padding:8px 10px;border-radius:var(--nx-radius-xs);}
+.pair__ratio{font-family:var(--nx-font-mono);font-size:11px;color:var(--nx-slate);display:flex;justify-content:space-between;}
+.pair__ratio b{color:var(--nx-andon-run);font-weight:500;}
+
+/* Footer */
+.foot{
+  margin-top:var(--nx-space-28);padding-top:var(--nx-space-6);border-top:1px solid var(--nx-n-200);
+  display:flex;justify-content:space-between;gap:var(--nx-space-6);flex-wrap:wrap;
+  font-size:12px;color:var(--nx-n-400);
+}
+.foot__jp{font-family:var(--nx-font-jp);letter-spacing:.18em;}
+
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(16px);
+  background:var(--nx-navy-800);color:#fff;padding:9px 16px;border-radius:var(--nx-radius-sm);
+  font-size:12.5px;box-shadow:var(--nx-shadow-3);opacity:0;pointer-events:none;
+  transition:opacity var(--nx-dur-base) var(--nx-ease),transform var(--nx-dur-base) var(--nx-ease);z-index:1000;
+}
+.toast.is-on{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ============================ RESPONSIVE ============================ */
+@media (max-width:1020px){
+  .doc{grid-template-columns:1fr;}
+  .rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--nx-n-200);
+        padding:var(--nx-space-5) var(--nx-space-5);flex-direction:row;align-items:center;gap:var(--nx-space-6);overflow-x:auto;}
+  .rail__nav{flex-direction:row;gap:var(--nx-space-1);}
+  .rail__foot{display:none;}
+  .rail__link{grid-template-columns:1fr;white-space:nowrap;}
+  .rail__num{display:none;}
+  .main{padding:var(--nx-space-10) var(--nx-space-5) var(--nx-space-20);}
+  .sec{grid-template-columns:1fr;gap:0;padding-top:var(--nx-space-16);}
+  .sec__tab{position:static;margin-bottom:var(--nx-space-3);}
+  .sec__kanji{writing-mode:horizontal-tb;border-left:0;border-top:1px solid var(--nx-n-200);
+              padding:var(--nx-space-3) 0 0;letter-spacing:.3em;}
+  .hanko{width:76px;height:76px;top:0;}
+  .hanko__text{font-size:19px;height:50px;}
+  .dd,.ma-demo{grid-template-columns:1fr;}
+}
+@media (max-width:560px){
+  .type-row{grid-template-columns:1fr;gap:8px;}
+  .space-item{grid-template-columns:80px 46px 1fr;}
+  .hanko{display:none;}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important;}
+  html{scroll-behavior:auto;}
+}
+</style>
+</head>
+<body data-density="comfortable">
+
+<div class="doc">
+
+  <!-- ============================ RAIL ============================ -->
+  <aside class="rail">
+    <div class="rail__mark">
+      <div class="rail__glyph" aria-hidden="true"></div>
+      <div>
+        <div class="rail__word">Nexumi</div>
+        <div class="rail__ver">DS 1.0 · 2026</div>
+      </div>
+    </div>
+
+    <nav class="rail__nav" aria-label="Bagian sistem desain">
+      <a class="rail__link" href="#prinsip"><i class="rail__num">一</i><span>Prinsip</span></a>
+      <a class="rail__link" href="#warna"><i class="rail__num">二</i><span>Warna</span></a>
+      <a class="rail__link" href="#tipografi"><i class="rail__num">三</i><span>Tipografi</span></a>
+      <a class="rail__link" href="#ruang"><i class="rail__num">四</i><span>Ruang &amp; grid</span></a>
+      <a class="rail__link" href="#komponen"><i class="rail__num">五</i><span>Komponen</span></a>
+      <a class="rail__link" href="#pola"><i class="rail__num">六</i><span>Pola ERP</span></a>
+      <a class="rail__link" href="#gerak"><i class="rail__num">七</i><span>Gerak</span></a>
+      <a class="rail__link" href="#bahasa"><i class="rail__num">八</i><span>Bahasa &amp; akses</span></a>
+    </nav>
+
+    <p class="rail__foot">
+      Klik swatch warna mana pun untuk menyalin nilai hex.
+    </p>
+  </aside>
+
+  <!-- ============================ MAIN ============================ -->
+  <main class="main">
+
+    <!-- HERO -->
+    <header class="hero">
+      <div class="hero__grid" aria-hidden="true"></div>
+      <div class="hanko" role="img" aria-label="Segel hanko bertuliskan sho-nin, disetujui">
+        <span class="hanko__text">承認</span>
+      </div>
+      <p class="eyebrow">Sistem Desain</p>
+      <h1 class="hero__title">Nexumi</h1>
+      <p class="hero__jp">製造業のための基盤</p>
+      <p class="hero__lede">
+        Bahasa visual untuk ERP manufaktur yang dipakai lintas pabrik, zona waktu, dan bahasa.
+        Padat saat menampilkan data, lapang saat mengambil keputusan, dan konsisten dari lantai
+        produksi sampai ruang direksi.
+      </p>
+      <dl class="hero__meta">
+        <div><dt>Produk</dt><dd>ERP manufaktur</dd></div>
+        <div><dt>Pengguna</dt><dd>Perencana, supervisor, QA, finance</dd></div>
+        <div><dt>Bahasa</dt><dd>EN · JA · ID · ES</dd></div>
+        <div><dt>Basis grid</dt><dd>4 px</dd></div>
+      </dl>
+    </header>
+
+    <!-- 1. PRINSIP -->
+    <section class="sec" id="prinsip">
+      <div class="sec__tab"><div class="sec__kanji">基礎</div></div>
+      <div>
+        <div class="sec__head">
+          <p class="eyebrow">一 · Prinsip</p>
+          <h2 class="sec__title">Empat aturan yang mengikat</h2>
+          <p class="sec__desc">
+            Semua keputusan desain di Nexumi bisa ditelusuri ke salah satu dari empat prinsip ini.
+            Kalau sebuah usulan tidak bisa dijelaskan lewat salah satunya, usulan itu belum siap.
+          </p>
+        </div>
+
+        <div class="kanban" style="gap:var(--nx-space-4)">
+          <article class="kcard">
+            <p class="kcard__id">間 · MA</p>
+            <h3 class="kcard__title">Ruang kosong adalah struktur</h3>
+            <p class="kcard__meta">Pemisah utama antar kelompok adalah jarak, bukan kotak. Garis dan kartu dipakai hanya ketika jarak saja tidak cukup.</p>
+          </article>
+          <article class="kcard">
+            <p class="kcard__id">簡素 · KANSO</p>
+            <h3 class="kcard__title">Satu layar, satu tugas</h3>
+            <p class="kcard__meta">Setiap layar punya satu aksi utama. Aksi lain turun ke tingkat sekunder atau menu, tidak berebut perhatian yang sama.</p>
+          </article>
+          <article class="kcard">
+            <p class="kcard__id">現場 · GENBA</p>
+            <h3 class="kcard__title">Data dulu, hiasan belakangan</h3>
+            <p class="kcard__meta">Angka memakai tabular numerals, rata kanan, dan satuan eksplisit. Tidak ada gradien atau bayangan di atas data.</p>
+          </article>
+          <article class="kcard kcard--stop">
+            <p class="kcard__id">判子 · HANKO</p>
+            <h3 class="kcard__title">Merah harus dibayar</h3>
+            <p class="kcard__meta">Merah Hanko hanya untuk lini berhenti, aksi merusak, dan segel persetujuan. Maksimal satu per layar.</p>
+          </article>
+        </div>
+
+        <p class="note">
+          <strong>Aturan satu-merah.</strong> Kalau dua elemen merah muncul di satu layar, salah satunya salah.
+          Turunkan yang kurang penting ke <em>caution</em> atau netral. Kelangkaan itulah yang membuat merah
+          tetap berarti "berhenti sekarang".
+        </p>
+      </div>
+    </section>
+
+    <!-- 2. WARNA -->
+    <section class="sec" id="warna">
+      <div class="sec__tab"><div class="sec__kanji">色</div></div>
+      <div>
+        <div class="sec__head">
+          <p class="eyebrow">二 · Warna</p>
+          <h2 class="sec__title">Palet inti</h2>
+          <p class="sec__desc">
+            Enam warna dasar. Putih memegang kanvas, navy memimpin aksi, cyan menandai fokus dan data,
+            merah Hanko dijaga tetap langka.
+          </p>
+        </div>
+
+        <div class="swatches">
+          <button class="sw" data-hex="#FFFFFF">
+            <div class="sw__chip" style="background:#FFFFFF;box-shadow:inset 0 0 0 1px #E3E7EB"></div>
+            <div class="sw__body"><div class="sw__name">Washi White</div><div class="sw__hex">#FFFFFF</div>
+            <div class="sw__use">Kanvas aplikasi, permukaan kartu, latar tabel</div></div>
+          </button>
+          <button class="sw" data-hex="#1F2937">
+            <div class="sw__chip" style="background:#1F2937"></div>
+            <div class="sw__body"><div class="sw__name">Sumi Charcoal</div><div class="sw__hex">#1F2937</div>
+            <div class="sw__use">Teks utama, judul, nilai data</div></div>
+          </button>
+          <button class="sw" data-hex="#6B7280">
+            <div class="sw__chip" style="background:#6B7280"></div>
+            <div class="sw__body"><div class="sw__name">Slate Gray</div><div class="sw__hex">#6B7280</div>
+            <div class="sw__use">Teks sekunder, label, keterangan, ikon nonaktif</div></div>
+          </button>
+          <button class="sw" data-hex="#0F3D5E">
+            <div class="sw__chip" style="background:#0F3D5E"></div>
+            <div class="sw__body"><div class="sw__name">Indigo Navy</div><div class="sw__hex">#0F3D5E</div>
+            <div class="sw__use">Primer: tombol utama, header, tautan, baris terpilih</div></div>
+          </button>
+          <button class="sw" data-hex="#14B8C4">
+            <div class="sw__chip" style="background:#14B8C4"></div>
+            <div class="sw__body"><div class="sw__name">Seto Cyan</div><div class="sw__hex">#14B8C4</div>
+            <div class="sw__use">Fokus, progres, seri data, tab aktif</div></div>
+          </button>
+          <button class="sw" data-hex="#C1121F">
+            <div class="sw__chip" style="background:#C1121F"></div>
+            <div class="sw__body"><div class="sw__name">Hanko Red</div><div class="sw__hex">#C1121F</div>
+            <div class="sw__use">Aksen terbatas: stop, hapus, segel persetujuan</div></div>
+          </button>
+        </div>
+
+        <p class="note">
+          Merah Hanko dikunci pada <code>#C1121F</code>. Kalau tim menggunakan nilai lain sebagai merah brand,
+          ganti satu token <code>--nx-hanko-500</code> dan seluruh skala turunannya ikut menyesuaikan.
+        </p>
+
+        <div class="sub">
+          <h3 class="sub__title">Skala turunan <span>階調</span></h3>
+
+          <div class="ramp-wrap">
+            <div class="ramp-label"><b>Navy</b><span>latar terpilih → teks di atas terang</span></div>
+            <div class="ramp">
+              <div class="ramp__step" style="background:#EFF5F9;color:#0F3D5E">50</div>
+              <div class="ramp__step" style="background:#D6E3EC;color:#0F3D5E">100</div>
+              <div class="ramp__step" style="background:#AFC7D8;color:#0F3D5E">200</div>
+              <div class="ramp__step" style="background:#7FA8C2;color:#061D2E">300</div>
+              <div class="ramp__step" style="background:#226F9F;color:#fff">500</div>
+              <div class="ramp__step" style="background:#17557F;color:#fff">600</div>
+              <div class="ramp__step" style="background:#0F3D5E;color:#fff">700</div>
+              <div class="ramp__step" style="background:#0A2C44;color:#fff">800</div>
+              <div class="ramp__step" style="background:#061D2E;color:#fff">900</div>
+            </div>
+          </div>
+
+          <div class="ramp-wrap">
+            <div class="ramp-label"><b>Cyan</b><span>500 untuk garis &amp; grafik; 700 untuk teks di atas terang</span></div>
+            <div class="ramp">
+              <div class="ramp__step" style="background:#EDFAFB;color:#0B7F88">50</div>
+              <div class="ramp__step" style="background:#D6F2F5;color:#0B7F88">100</div>
+              <div class="ramp__step" style="background:#7FD9E0;color:#064146">300</div>
+              <div class="ramp__step" style="background:#14B8C4;color:#04353A">500</div>
+              <div class="ramp__step" style="background:#109BA5;color:#fff">600</div>
+              <div class="ramp__step" style="background:#0B7F88;color:#fff">700</div>
+            </div>
+          </div>
+
+          <div class="ramp-wrap">
+            <div class="ramp-label"><b>Netral</b><span>garis rambut, permukaan cekung, teks nonaktif</span></div>
+            <div class="ramp">
+              <div class="ramp__step" style="background:#FBFCFC;color:#6B7280">25</div>
+              <div class="ramp__step" style="background:#F6F7F8;color:#6B7280">50</div>
+              <div class="ramp__step" style="background:#EEF1F3;color:#6B7280">100</div>
+              <div class="ramp__step" style="background:#E3E7EB;color:#3D4753">200</div>
+              <div class="ramp__step" style="background:#C9D0D7;color:#1F2937">300</div>
+              <div class="ramp__step" style="background:#9BA5AF;color:#1F2937">400</div>
+              <div class="ramp__step" style="background:#6B7280;color:#fff">500</div>
+              <div class="ramp__step" style="background:#3D4753;color:#fff">700</div>
+              <div class="ramp__step" style="background:#1F2937;color:#fff">900</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sub">
+          <h3 class="sub__title">Status Andon <span>行灯</span></h3>
+          <p class="note" style="margin-top:0;margin-bottom:var(--nx-space-5)">
+            Status di Nexumi memakai bahasa lampu andon di lantai produksi, bukan istilah generik
+            "success / warning / error". Satu kosakata dipakai untuk mesin, work order, batch QA, dan integrasi.
+          </p>
+          <div class="demo">
+            <div class="row">
+              <span class="andon andon--run"><i class="andon__led"></i>Running</span>
+              <span class="andon andon--caution"><i class="andon__led"></i>Needs attention</span>
+              <span class="andon andon--stop"><i class="andon__led"></i>Line stopped</span>
+              <span class="andon andon--idle"><i class="andon__led"></i>Not scheduled</span>
+              <span class="andon andon--info"><i class="andon__led"></i>Syncing</span>
+            </div>
+            <p class="note">
+              Hanya status <em>Line stopped</em> yang LED-nya berdenyut. Gerakan itu dipakai sebagai isyarat
+              kedua di samping warna, supaya status tetap terbaca oleh pengguna dengan buta warna.
+            </p>
+          </div>
+        </div>
+
+        <div class="sub">
+          <h3 class="sub__title">Kontras yang sudah diverifikasi <span>可読性</span></h3>
+          <div class="pairs">
+            <div class="pair">
+              <div class="pair__demo" style="background:#FFFFFF;color:#1F2937">Work order WO-88412</div>
+              <div class="pair__ratio"><span>#1F2937 / #FFFFFF</span><b>13.6 : 1 · AAA</b></div>
+            </div>
+            <div class="pair">
+              <div class="pair__demo" style="background:#FFFFFF;color:#6B7280">Terakhir disinkronkan 14:02</div>
+              <div class="pair__ratio"><span>#6B7280 / #FFFFFF</span><b>4.8 : 1 · AA</b></div>
+            </div>
+            <div class="pair">
+              <div class="pair__demo" style="background:#0F3D5E;color:#FFFFFF">Release batch</div>
+              <div class="pair__ratio"><span>#FFFFFF / #0F3D5E</span><b>11.4 : 1 · AAA</b></div>
+            </div>
+            <div class="pair">
+              <div class="pair__demo" style="background:#FDF0F1;color:#8E0D17">Line 3 stopped</div>
+              <div class="pair__ratio"><span>#8E0D17 / #FDF0F1</span><b>8.9 : 1 · AAA</b></div>
+            </div>
+          </div>
+          <p class="note">
+            Cyan <code>#14B8C4</code> tidak pernah dipakai untuk teks di atas putih (2.2 : 1). Untuk teks,
+            gunakan <code>#0B7F88</code>. Cyan murni dipakai pada garis fokus, isian progres, dan seri grafik
+            yang selalu berpasangan dengan label.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. TIPOGRAFI -->
+    <section class="sec" id="tipografi">
+      <div class="sec__tab"><div class="sec__kanji">文字</div></div>
+      <div>
+        <div class="sec__head">
+          <p class="eyebrow">三 · Tipografi</p>
+          <h2 class="sec__title">Tiga huruf, tiga tugas</h2>
+          <p class="sec__desc">
+            Manrope membawa karakter di judul, Inter menangani seluruh antarmuka dan angka,
+            Noto Sans JP menjaga teks Jepang tetap sejajar dengan huruf Latin tanpa terlihat ditempel.
+          </p>
+        </div>
+
+        <div class="face-cards">
+          <div class="face">
+            <div class="face__spec" style="font-family:var(--nx-font-display);font-weight:800">Aa あ</div>
+            <div class="face__name">Manrope</div>
+            <p class="face__role">Display &amp; judul bagian. Berat 600–800, tracking negatif. Tidak pernah di bawah 18 px.</p>
+          </div>
+          <div class="face">
+            <div class="face__spec" style="font-family:var(--nx-font-body);font-weight:500">Aa 0123</div>
+            <div class="face__name">Inter</div>
+            <p class="face__role">Seluruh antarmuka, tabel, formulir, angka. Aktifkan <code>tabular-nums</code> di semua kolom numerik.</p>
+          </div>
+          <div class="face">
+            <div class="face__spec" style="font-family:var(--nx-font-jp);font-weight:500">工程管理</div>
+            <div class="face__name">Noto Sans JP</div>
+            <p class="face__role">Teks Jepang, label kanji, dan segel. Dipakai sebagai aksen — bukan dekorasi acak.</p>
+          </div>
+        </div>
+
+        <div class="sub">
+          <h3 class="sub__title">Skala <span>大きさ</span></h3>
+          <div class="demo">
+            <div class="type-row"><div class="type-meta"><b>Display</b>Manrope 800<br>40 / 46 · −0.02em</div><div class="t-display">Global production</div></div>
+            <div class="type-row"><div class="type-meta"><b>Heading 1</b>Manrope 700<br>30 / 38 · −0.018em</div><div class="t-h1">Work order overview</div></div>
+            <div class="type-row"><div class="type-meta"><b>Heading 2</b>Manrope 600<br>23 / 30 · −0.014em</div><div class="t-h2">Nagoya · Line 3</div></div>
+            <div class="type-row"><div class="type-meta"><b>Heading 3</b>Inter 600<br>18 / 26</div><div class="t-h3">Material requirements</div></div>
+            <div class="type-row"><div class="type-meta"><b>Heading 4</b>Inter 600<br>16 / 22</div><div class="t-h4">Bill of materials</div></div>
+            <div class="type-row"><div class="type-meta"><b>Body</b>Inter 400<br>14 / 22 · default</div><div class="t-body">Setiap work order menampilkan pabrik, lini, dan jam mulai terjadwal dalam zona waktu pabrik.</div></div>
+            <div class="type-row"><div class="type-meta"><b>Small</b>Inter 400<br>13 / 18</div><div class="t-sm">Metadata baris, teks bantuan formulir, isi tabel padat.</div></div>
+            <div class="type-row"><div class="type-meta"><b>Caption</b>Inter 400<br>12 / 16</div><div class="t-cap">Terakhir disinkronkan dari SAP pada 14:02 JST</div></div>
+            <div class="type-row"><div class="type-meta"><b>Micro</b>Inter 600<br>11 / 14 · 0.08em</div><div class="t-micro">Header kolom · label</div></div>
+            <div class="type-row"><div class="type-meta"><b>Numerik</b>Inter 600<br>tabular-nums</div><div class="t-num">1.284.900&nbsp;<span style="font-size:13px;color:var(--nx-slate);font-weight:400">unit</span> &nbsp;·&nbsp; 99,4&nbsp;<span style="font-size:13px;color:var(--nx-slate);font-weight:400">% OEE</span></div></div>
+            <div class="type-row"><div class="type-meta"><b>Jepang</b>Noto Sans JP 400<br>18 / 30</div><div class="t-jp">名古屋工場・第三ライン 稼働中</div></div>
+          </div>
+          <p class="note">
+            <strong>Baris Jepang lebih longgar.</strong> Kanji butuh tinggi baris sekitar 1,7×(Latin cukup 1,5×).
+            Saat merancang tata letak, ukur dengan teks Jepang lebih dulu — kalau muat di sana, versi Latin
+            hampir selalu muat.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. RUANG -->
+    <section class="sec" id="ruang">
+      <div class="sec__tab"><div class="sec__kanji">間</div></div>
+      <div>
+        <div class="sec__head">
+          <p class="eyebrow">四 · Ruang &amp; grid</p>
+          <h2 class="sec__title">Skala 4 piksel</h2>
+          <p class="sec__desc">
+            Semua jarak kelipatan 4. Nilai di luar skala tidak diperbolehkan — kalau sesuatu terlihat butuh
+            18 px, biasanya masalahnya ada di ukuran komponen, bukan di jaraknya.
+          </p>
+        </div>
+
+        <div class="demo">
+          <div class="space-list">
+            <div class="space-item"><code>space-1</code><b>4px</b><div class="space-bar" style="width:4px"></div></div>
+            <div class="space-item"><code>space-2</code><b>8px</b><div class="space-bar" style="width:8px"></div></div>
+            <div class="space-item"><code>space-3</code><b>12px</b><div class="space-bar" style="width:12px"></div></div>
+            <div class="space-item"><code>space-4</code><b>16px</b><div class="space-bar" style="width:16px"></div></div>
+            <div class="space-item"><code>space-6</code><b>24px</b><div class="space-bar" style="width:24px"></div></div>
+            <div class="space-item"><code>space-8</code><b>32px</b><div class="space-bar" style="width:32px"></div></div>
+            <div class="space-item"><code>space-12</code><b>48px</b><div class="space-bar" style="width:48px"></div></div>
+            <div class="space-item"><code>space-16</code><b>64px</b><div class="space-bar" style="width:64px"></div></div>
+            <div class="space-item"><code>space-20</code><b>80px</b><div class="space-bar" style="width:80px"></div></div>
+            <div class="space-item"><code>space-28</code><b>112px</b><div class="space-bar" style="width:112px"></div></div>
+          </div>
+        </div>
+
+        <div class="sub">
+          <h3 class="sub__title">Ma dalam praktik <span>余白</span></h3>
+          <div class="ma-demo">
+            <div class="ma-box ma-box--no">
+              <div class="ma-box__tag">Hindari · kotak di dalam kotak</div>
+              <div class="ma-lines ma-lines--tight">
+                <div class="ma-line ma-line--head"></div>
+                <div class="ma-line ma-line--m"></div>
+                <div class="ma-line ma-line--s"></div>
+                <div class="ma-line ma-line--m"></div>
+                <div class="ma-line ma-line--s"></div>
+              </div>
+            </div>
+            <div class="ma-box ma-box--yes">
+              <div class="ma-box__tag">Lakukan · jarak yang mengelompokkan</div>
+              <div class="ma-lines ma-lines--airy">
+                <div class="ma-line ma-line--head"></div>
+                <div class="ma-line ma-line--m"></div>
+                <div class="ma-line ma-line--s"></div>
+              </div>
+            </div>
+          </div>
+          <p class="note">
+            Urutan pemisah: <strong>jarak → garis rambut → permukaan cekung → kartu berbingkai</strong>.
+            Naik ke tingkat berikutnya hanya kalau tingkat sebelumnya benar-benar gagal.
+            Bayangan adalah pilihan terakhir dan hanya untuk lapisan yang mengambang (dropdown, modal, toast).
+          </p>
+        </div>
+
+        <div class="sub">
+          <h3 class="sub__title">Radius &amp; elevasi <span>角と影</span></h3>
+          <div class="demo">
+            <div class="row" style="gap:var(--nx-space-6)">
+              <div style="text-align:center"><div style="width:76px;height:52px;border:1px solid var(--nx-n-200);border-radius:2px;background:#fff"></div><div class="t-cap" style="margin-top:8px">2px · chip, tag</div></div>
+              <div style="text-align:center"><div style="width:76px;height:52px;border:1px solid var(--nx-n-200);border-radius:4px;background:#fff"></div><div class="t-cap" style="margin-top:8px">4px · kontrol</div></div>
+              <div style="text-align:center"><div style="width:76px;height:52px;border:1px solid var(--nx-n-200);border-radius:6px;background:#fff"></div><div class="t-cap" style="margin-top:8px">6px · kartu, panel</div></div>
+              <div style="text-align:center"><div style="width:76px;height:52px;border:1px solid var(--nx-n-200);border-radius:10px;background:#fff"></div><div class="t-cap" style="margin-top:8px">10px · modal</div></div>
+              <div style="text-align:center"><div style="width:76px;height:52px;border:1px solid var(--nx-n-200);border-radius:999px;background:#fff"></div><div class="t-cap" style="margin-top:8px">penuh · badge</div></div>
+            </div>
+            <div class="row" style="margin-top:var(--nx-space-8);gap:var(--nx-space-6)">
+              <div style="text-align:center"><div style="width:104px;height:56px;border:1px solid var(--nx-n-200);border-radius:6px;background:#fff"></div><div class="t-cap" style="margin-top:8px">0 · datar</div></div>
+              <div style="text-align:center"><div style="width:104px;height:56px;border-radius:6px;background:#fff;box-shadow:var(--nx-shadow-1)"></div><div class="t-cap" style="margin-top:8px">1 · terangkat</div></div>
+              <div style="text-align:center"><div style="width:104px;height:56px;border-radius:6px;background:#fff;box-shadow:var(--nx-shadow-2)"></div><div class="t-cap" style="margin-top:8px">2 · popover</div></div>
+              <div style="text-align:center"><div style="width:104px;height:56px;border-radius:6px;background:#fff;box-shadow:var(--nx-shadow-3)"></div><div class="t-cap" style="margin-top:8px">3 · modal</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. KOMPONEN -->
+    <section class="sec" id="komponen">
+      <div class="sec__tab"><div class="sec__kanji">部品</div></div>
+      <div>
+        <div class="sec__head">
+          <p class="eyebrow">五 · Komponen</p>
+          <h2 class="sec__title">Bagian yang dipakai berulang</h2>
+          <p class="sec__desc">
+            Tinggi kontrol standar 36 px, 30 px pada mode padat. Setiap kontrol interaktif punya status
+            hover, fokus terlihat, aktif, dan nonaktif.
+          </p>
+        </div>
+
+        <div class="sub">
+          <h3 class="sub__title">Tombol <span>操作</span></h3>
+          <div class="demo">
+            <div class="row">
+              <button class="btn btn--primary">Release work order</button>
+              <button class="btn btn--secondary">Save draft</button>
+              <button class="btn btn--ghost">Cancel</button>
+              <button class="btn btn--danger">Stop line</button>
+              <button class="btn btn--secondary" disabled>Approve</button>
+            </div>
+            <div class="row">
+              <button class="btn btn--primary btn--sm">Add operation</button>
+              <button class="btn btn--secondary btn--sm">Export CSV</button>
+              <button class="btn btn--ghost btn--sm"><i class="btn__dot"></i>More</button>
+            </div>
+            <p class="note">
+              Satu tombol primer per layar. <em>Stop line</em> adalah satu-satunya aksi merah di modul produksi
+              dan selalu meminta konfirmasi sebelum dijalankan.
+            </p>
+          </div>
+        </div>
+
+        <div class="sub">
+          <h3 class="sub__title">Isian formulir <span>入力</span></h3>
+          <div class="demo">
+            <div class="row" style="align-items:flex-start;gap:var(--nx-space-6)">
+              <div class="field">
+                <label class="field__label" for="f1">Part number</label>
+                <input class="input" id="f1" value="NX-4820-A" >
+                <span class="field__hint">Format: NX-0000-X</span>
+              </div>
+              <div class="field">
+                <label class="field__label" for="f2">Planned quantity</label>
+                <input class="input input--num" id="f2" value="12,500">
+                <span class="field__hint">Unit sesuai UoM part</span>
+              </div>
+              <div class="field">
+                <label class="field__label" for="f3">Due date</label>
+                <input class="input input--err" id="f3" value="2026-08-02" aria-describedby="f3e">
+                <span class="field__err" id="f3e">Tanggal jatuh tempo sudah lewat. Pilih tanggal mulai hari ini.</span>
+              </div>
+            </div>
+            <p class="note">
+              Pesan galat menjelaskan apa yang terjadi dan langkah berikutnya, dalam satu kalimat.
+              Tidak ada "Oops" dan tidak ada permintaan maaf.
+            </p>
+          </div>
+        </div>
+
+        <div class="sub">
+          <h3 class="sub__title">Tab &amp; navigasi <span>案内</span></h3>
+          <div class="demo" style="padding-bottom:var(--nx-space-4)">
+            <div class="tabs" role="tablist">
+              <button class="tab" role="tab" aria-selected="true">Operations</button>
+              <button class="tab" role="tab" aria-selected="false">Materials</button>
+              <button class="tab" role="tab" aria-selected="false">Quality</button>
+              <button class="tab" role="tab" aria-selected="false">Costing</button>
+            </div>
+          </div>
+
+          <div style="margin-top:var(--nx-space-4)" class="appnav">
+            <div class="appnav__top">
+              <span class="appnav__brand">Nexumi</span>
+              <div class="appnav__items">
+                <span data-on>Production</span><span>Inventory</span><span>Procurement</span><span>Quality</span><span>Finance</span>
+              </div>
+              <span class="appnav__plant">NAGOYA · JST 14:02</span>
+            </div>
+            <div class="appnav__side">
+              <div class="appnav__list">
+                <div class="appnav__link" data-on>Work orders</div>
+                <div class="appnav__link">Scheduling</div>
+                <div class="appnav__link">Machine status</div>
+                <div class="appnav__link">Shift reports</div>
+              </div>
+              <div class="appnav__body">
+                <div class="ma-line ma-line--head"></div>
+                <div class="ma-line ma-line--m"></div>
+                <div class="ma-line ma-line--s"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sub">
+          <h3 class="sub__title">Pemberitahuan <span>通知</span></h3>
+          <div class="stack">
+            <div class="alert alert--stop">
+              <div class="alert__mark"></div>
+              <div>
+                <div class="alert__title">Line 3 berhenti · 06:41</div>
+                <div class="alert__body">Sensor torsi pada stasiun 4 melampaui batas. Produksi ditahan sampai pemeriksaan pemeliharaan selesai.</div>
+              </div>
+            </div>
+            <div class="alert alert--caution">
+              <div class="alert__mark"></div>
+              <div>
+                <div class="alert__title">Stok bahan menipis</div>
+                <div class="alert__body">NX-4820-A cukup untuk 2 shift lagi. Pesanan pembelian PO-31877 dijadwalkan tiba 18 Agustus.</div>
+              </div>
+            </div>
+            <div class="alert alert--info">
+              <div class="alert__mark"></div>
+              <div>
+                <div class="alert__title">Sinkronisasi selesai</div>
+                <div class="alert__body">1.284 work order diperbarui dari 6 pabrik. Terakhir dijalankan 14:02 JST.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. POLA ERP -->
+    <section class="sec" id="pola">
+      <div class="sec__tab"><div class="sec__kanji">現場</div></div>
+      <div>
+        <div class="sec__head">
+          <p class="eyebrow">六 · Pola ERP</p>
+          <h2 class="sec__title">Tempat sistem ini diuji</h2>
+          <p class="sec__desc">
+            Sistem desain ERP berdiri atau jatuh di tabel data. Nexumi memakai garis rambut horizontal saja,
+            tanpa garis vertikal, dan menyediakan dua tingkat kepadatan yang dapat diubah pengguna.
+          </p>
+        </div>
+
+        <div class="sub" style="margin-top:0">
+          <h3 class="sub__title">Grid work order <span>作業指示</span></h3>
+          <div class="tbl-wrap">
+            <div class="tbl-bar">
+              <div>
+                <div class="tbl-bar__title">Open work orders</div>
+                <div class="tbl-bar__sub">6 dari 1.284 · Nagoya, Monterrey, Pune</div>
+              </div>
+              <div class="row" style="gap:var(--nx-space-3)">
+                <div class="seg" role="group" aria-label="Kepadatan baris">
+                  <button type="button" data-density-btn="comfortable" aria-pressed="true">Nyaman</button>
+                  <button type="button" data-density-btn="compact" aria-pressed="false">Padat</button>
+                </div>
+                <button class="btn btn--secondary btn--sm">Export CSV</button>
+              </div>
+            </div>
+            <div class="tbl-scroll">
+              <table class="tbl">
+                <thead>
+                  <tr>
+                    <th>Order</th><th>Part</th><th>Plant / line</th>
+                    <th class="num">Qty</th><th class="num">Selesai</th><th>Jatuh tempo</th><th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td class="id">WO-88412</td><td>Rotor housing NX-4820-A</td><td>Nagoya · L3</td><td class="num">12,500</td><td class="num">78%</td><td class="muted">18 Agu</td><td><span class="andon andon--run"><i class="andon__led"></i>Running</span></td></tr>
+                  <tr><td class="id">WO-88407</td><td>Stator core NX-3311-B</td><td>Nagoya · L1</td><td class="num">4,000</td><td class="num">100%</td><td class="muted">15 Agu</td><td><span class="andon andon--idle"><i class="andon__led"></i>Selesai</span></td></tr>
+                  <tr><td class="id">WO-88395</td><td>Drive shaft NX-1207-C</td><td>Monterrey · L2</td><td class="num">9,250</td><td class="num">41%</td><td class="late">14 Agu · telat</td><td><span class="andon andon--stop"><i class="andon__led"></i>Line stopped</span></td></tr>
+                  <tr><td class="id">WO-88381</td><td>Gearbox cover NX-9902-D</td><td>Pune · L4</td><td class="num">2,750</td><td class="num">63%</td><td class="muted">21 Agu</td><td><span class="andon andon--caution"><i class="andon__led"></i>Bahan menipis</span></td></tr>
+                  <tr><td class="id">WO-88376</td><td>Bearing seat NX-5540-A</td><td>Monterrey · L1</td><td class="num">18,000</td><td class="num">12%</td><td class="muted">27 Agu</td><td><span class="andon andon--run"><i class="andon__led"></i>Running</span></td></tr>
+                  <tr><td class="id">WO-88370</td><td>Coolant manifold NX-7714-E</td><td>Pune · L2</td><td class="num">6,400</td><td class="num">0%</td><td class="muted">29 Agu</td><td><span class="andon andon--idle"><i class="andon__led"></i>Not scheduled</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <p class="note">
+            <strong>Aturan tabel.</strong> ID memakai huruf mono agar mudah dipindai; angka rata kanan dengan
+            <code>tabular-nums</code>; tanggal terlambat adalah satu-satunya teks merah di grid — dan tidak
+            pernah muncul bersamaan dengan tombol merah di layar yang sama.
+          </p>
+        </div>
+
+        <div class="sub">
+          <h3 class="sub__title">Kartu kanban <span>看板</span></h3>
+          <div class="kanban">
+            <article class="kcard kcard--run">
+              <p class="kcard__id">WO-88412 · L3</p>
+              <h4 class="kcard__title">Rotor housing</h4>
+              <p class="kcard__meta">12.500 unit · shift pagi</p>
+              <div class="prog"><div class="prog__fill" style="width:78%"></div></div>
+              <div class="kcard__foot"><span class="andon andon--run"><i class="andon__led"></i>Running</span><span class="t-cap">78%</span></div>
+            </article>
+            <article class="kcard kcard--stop">
+              <p class="kcard__id">WO-88395 · L2</p>
+              <h4 class="kcard__title">Drive shaft</h4>
+              <p class="kcard__meta">9.250 unit · Monterrey</p>
+              <div class="prog"><div class="prog__fill" style="width:41%;background:var(--nx-hanko-500)"></div></div>
+              <div class="kcard__foot"><span class="andon andon--stop"><i class="andon__led"></i>Stopped</span><span class="t-cap">41%</span></div>
+            </article>
+            <article class="kcard kcard--caution">
+              <p class="kcard__id">WO-88381 · L4</p>
+              <h4 class="kcard__title">Gearbox cover</h4>
+              <p class="kcard__meta">2.750 unit · Pune</p>
+              <div class="prog"><div class="prog__fill" style="width:63%"></div></div>
+              <div class="kcard__foot"><span class="andon andon--caution"><i class="andon__led"></i>Bahan</span><span class="t-cap">63%</span></div>
+            </article>
+          </div>
+          <p class="note">
+            Warna status tinggal di pita kiri kartu, bukan di seluruh latar. Latar tetap putih supaya
+            teks dan angka tetap terbaca di layar terminal pabrik dengan pencahayaan buruk.
+          </p>
+        </div>
+
+        <div class="sub">
+          <h3 class="sub__title">Segel persetujuan <span>承認印</span></h3>
+          <div class="demo">
+            <div class="seal-demo">
+              <button class="seal" id="sealBtn" aria-label="Segel persetujuan, klik untuk membubuhkan"><span>承認</span></button>
+              <div class="seal seal--pending" role="img" aria-label="Menunggu persetujuan"><span>未決</span></div>
+              <div style="max-width:40ch">
+                <p class="t-h4" style="margin-bottom:6px">Elemen tanda tangan Nexumi</p>
+                <p class="t-sm">
+                  Dokumen yang sudah dilepas — batch QA, purchase order, perubahan rekayasa — dibubuhi
+                  segel hanko. Lingkaran putus-putus abu berarti menunggu, lingkaran merah berarti
+                  sudah disetujui. Ini satu-satunya tempat merek Nexumi tampil dekoratif.
+                </p>
+              </div>
+            </div>
+            <p class="note">
+              Segel hanya tampil pada rekaman yang benar-benar disetujui, ditampilkan sekali per dokumen,
+              dan disertai nama penyetuju serta stempel waktu dalam teks — bukan hanya gambar.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. GERAK -->
+    <section class="sec" id="gerak">
+      <div class="sec__tab"><div class="sec__kanji">動き</div></div>
+      <div>
+        <div class="sec__head">
+          <p class="eyebrow">七 · Gerak</p>
+          <h2 class="sec__title">Cepat, pendek, jarang</h2>
+          <p class="sec__desc">
+            Pengguna Nexumi memindai ratusan baris per shift. Animasi hanya dipakai untuk menjelaskan
+            perubahan keadaan, tidak pernah untuk menghibur.
+          </p>
+        </div>
+
+        <div class="motion-grid">
+          <div class="motion-card"><b>Instan · 90ms</b><code>--nx-dur-instant</code><p>Hover, tekan tombol, tampil tooltip.</p></div>
+          <div class="motion-card"><b>Cepat · 140ms</b><code>--nx-dur-fast</code><p>Fokus, ubah warna, sorot baris.</p></div>
+          <div class="motion-card"><b>Dasar · 200ms</b><code>--nx-dur-base</code><p>Buka dropdown, geser tab, ubah kepadatan.</p></div>
+          <div class="motion-card"><b>Lambat · 320ms</b><code>--nx-dur-slow</code><p>Modal, panel geser, stempel hanko.</p></div>
+        </div>
+
+        <p class="note">
+          Kurva standar <code>cubic-bezier(.2, 0, 0, 1)</code>: berangkat tegas, mendarat halus.
+          Tidak ada <em>bounce</em>, tidak ada <em>overshoot</em>. Seluruh gerak dinonaktifkan otomatis di
+          bawah <code>prefers-reduced-motion</code>, kecuali denyut LED status yang diganti menjadi
+          ikon statis.
+        </p>
+      </div>
+    </section>
+
+    <!-- 8. BAHASA -->
+    <section class="sec" id="bahasa">
+      <div class="sec__tab"><div class="sec__kanji">言語</div></div>
+      <div>
+        <div class="sec__head">
+          <p class="eyebrow">八 · Bahasa &amp; akses</p>
+          <h2 class="sec__title">Kata adalah bagian dari desain</h2>
+          <p class="sec__desc">
+            Nexumi dipakai dalam empat bahasa. Kalimat pendek dan kata kerja aktif bertahan paling baik saat
+            diterjemahkan; frasa pintar tidak.
+          </p>
+        </div>
+
+        <div class="demo">
+          <table class="voice">
+            <thead><tr><th>Situasi</th><th>Tulis begini</th><th>Bukan begini</th></tr></thead>
+            <tbody>
+              <tr><td>Tombol simpan</td><td class="yes">Release work order</td><td class="no">Submit</td></tr>
+              <tr><td>Konfirmasi berhasil</td><td class="yes">Work order released</td><td class="no">Success!</td></tr>
+              <tr><td>Galat</td><td class="yes">Qty melebihi stok tersedia. Kurangi jadi 8.400 atau pesan tambahan.</td><td class="no">Terjadi kesalahan. Coba lagi.</td></tr>
+              <tr><td>Layar kosong</td><td class="yes">Belum ada work order untuk shift ini. Buat satu untuk mulai.</td><td class="no">Tidak ada data.</td></tr>
+              <tr><td>Label teknis</td><td class="yes">Jadwal pengiriman</td><td class="no">Delivery schedule sync payload</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="sub">
+          <h3 class="sub__title">Standar minimum <span>基準</span></h3>
+          <div class="dd">
+            <div class="dd__col dd__col--do">
+              <p class="dd__h">Lakukan</p>
+              <ul>
+                <li>Sediakan 30% ruang ekstra pada label — bahasa Jerman dan Spanyol memuai, Jepang menyusut.</li>
+                <li>Tampilkan zona waktu di setiap stempel waktu lintas pabrik.</li>
+                <li>Cincin fokus cyan 3 px terlihat pada semua kontrol yang dapat dijangkau keyboard.</li>
+                <li>Target sentuh minimum 44 × 44 px pada terminal lantai produksi.</li>
+                <li>Pasangkan setiap warna status dengan teks atau bentuk.</li>
+              </ul>
+            </div>
+            <div class="dd__col dd__col--dont">
+              <p class="dd__h">Hindari</p>
+              <ul>
+                <li>Menyusun kalimat dari potongan string terpisah — urutan kata berubah antarbahasa.</li>
+                <li>Memakai merah untuk sesuatu yang sekadar penting.</li>
+                <li>Menaruh teks di atas cyan murni.</li>
+                <li>Menyembunyikan aksi utama di balik menu titik tiga.</li>
+                <li>Menambahkan kanji sebagai hiasan tanpa arti bagi penggunanya.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="sub">
+          <h3 class="sub__title">Token siap pakai <span>実装</span></h3>
+          <div class="code"><span class="c">/* Salin ke :root — semua komponen menurunkan nilainya dari sini */</span>
+<span class="k">--nx-white</span>: <span class="v">#FFFFFF</span>;   <span class="c">/* kanvas       */</span>
+<span class="k">--nx-ink</span>: <span class="v">#1F2937</span>;     <span class="c">/* teks utama   */</span>
+<span class="k">--nx-slate</span>: <span class="v">#6B7280</span>;   <span class="c">/* teks sekunder*/</span>
+<span class="k">--nx-navy</span>: <span class="v">#0F3D5E</span>;    <span class="c">/* primer       */</span>
+<span class="k">--nx-cyan</span>: <span class="v">#14B8C4</span>;    <span class="c">/* sekunder     */</span>
+<span class="k">--nx-hanko</span>: <span class="v">#C1121F</span>;   <span class="c">/* aksen        */</span>
+
+<span class="k">--nx-font-display</span>: <span class="v">"Manrope"</span>, sans-serif;
+<span class="k">--nx-font-body</span>: <span class="v">"Inter"</span>, sans-serif;
+<span class="k">--nx-font-jp</span>: <span class="v">"Noto Sans JP"</span>, sans-serif;
+
+<span class="k">--nx-space-4</span>: <span class="v">16px</span>;      <span class="c">/* basis grid 4px */</span>
+<span class="k">--nx-radius-sm</span>: <span class="v">4px</span>;
+<span class="k">--nx-ease</span>: <span class="v">cubic-bezier(.2, 0, 0, 1)</span>;</div>
+          <p class="note">Daftar token lengkap tersedia di berkas <code>nexumi-tokens.css</code> yang menyertai dokumen ini.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <span>Nexumi Design System · Versi 1.0 · Agustus 2026</span>
+      <span class="foot__jp">簡素 · 間 · 現場</span>
+    </footer>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  var toast = document.getElementById('toast');
+  var toastTimer;
+  function say(msg) {
+    toast.textContent = msg;
+    toast.classList.add('is-on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toast.classList.remove('is-on'); }, 1600);
+  }
+
+  // Salin hex
+  document.querySelectorAll('.sw').forEach(function (sw) {
+    sw.addEventListener('click', function () {
+      var hex = sw.getAttribute('data-hex');
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(hex).then(function () { say(hex + ' disalin'); },
+                                                function () { say(hex); });
+      } else { say(hex); }
+    });
+  });
+
+  // Tab
+  var tabs = document.querySelectorAll('.tab');
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () {
+      tabs.forEach(function (o) { o.setAttribute('aria-selected', 'false'); });
+      t.setAttribute('aria-selected', 'true');
+    });
+  });
+
+  // Kepadatan baris
+  var segBtns = document.querySelectorAll('[data-density-btn]');
+  segBtns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var mode = b.getAttribute('data-density-btn');
+      document.body.setAttribute('data-density', mode);
+      segBtns.forEach(function (o) { o.setAttribute('aria-pressed', String(o === b)); });
+      say(mode === 'compact' ? 'Baris padat · 32 px' : 'Baris nyaman · 44 px');
+    });
+  });
+
+  // Stempel hanko
+  var seal = document.getElementById('sealBtn');
+  if (seal) {
+    seal.addEventListener('click', function () {
+      seal.classList.remove('is-stamped');
+      void seal.offsetWidth;
+      seal.classList.add('is-stamped');
+      say('承認 · Disetujui oleh K. Tanaka, 14:02 JST');
+    });
+  }
+})();
+</script>
+</body>
+</html>
