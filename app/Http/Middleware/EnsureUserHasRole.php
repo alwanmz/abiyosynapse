@@ -21,9 +21,9 @@ class EnsureUserHasRole
             return redirect()->route('login');
         }
 
-        $user = $request->user()->load('role');
+        $currentRole = $request->user()->currentCompanyMembership()?->role;
 
-        if (!$user->role || $user->role->name !== $role) {
+        if (!$currentRole || $currentRole->name !== $role) {
             return Inertia::render('errors/403')
                 ->toResponse($request)
                 ->setStatusCode(403);

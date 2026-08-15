@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Company;
+use App\Models\CompanyUser;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -9,51 +11,30 @@ use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $roles = Role::pluck('id', 'name');
+        $superAdminId = Role::where('name', 'super_admin')->value('id');
+        $company = Company::where('code', 'default')->first();
 
-        $users = [
+        $user = User::updateOrCreate(
+            ['email' => 'admin@abiyosynapse.local'],
             [
-                'name' => 'Administrator SKI',
+                'name' => 'Administrator',
                 'username' => 'admin',
-                'email' => 'admin@teamboard.ski',
-                'role' => 'super_admin',
-            ],
-            [
-                'name' => 'Rina Pratiwi',
-                'username' => 'rina_pm',
-                'email' => 'rina@teamboard.ski',
-                'role' => 'project_manager',
-            ],
-            [
-                'name' => 'Dedi Implementator',
-                'username' => 'dedi_impl',
-                'email' => 'dedi@teamboard.ski',
-                'role' => 'implementator',
-            ],
-            [
-                'name' => 'Siti Programmer',
-                'username' => 'siti_dev',
-                'email' => 'siti@teamboard.ski',
-                'role' => 'programmer',
-            ],
-        ];
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ]
+        );
 
-        foreach ($users as $userData) {
-            User::updateOrCreate(
-                ['email' => $userData['email']],
-                [
-                    'name' => $userData['name'],
-                    'username' => $userData['username'],
-                    'password' => Hash::make('password'),
-                    'role_id' => $roles[$userData['role']] ?? null,
-                    'email_verified_at' => now(),
-                ]
+        if ($company) {
+            CompanyUser::updateOrCreate(
+                ['company_id' => $company->id, 'user_id' => $user->id],
+                ['role_id' => $superAdminId, 'is_default' => true, 'joined_at' => now()]
             );
+
+            if (! $user->current_company_id) {
+                $user->forceFill(['current_company_id' => $company->id])->save();
+            }
         }
     }
 }

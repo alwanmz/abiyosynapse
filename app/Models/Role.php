@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -9,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Role extends Model
 {
+    use HasFactory;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -20,9 +23,9 @@ class Role extends Model
         'description',
     ];
 
-    public function users(): HasMany
+    public function companyMemberships(): HasMany
     {
-        return $this->hasMany(User::class);
+        return $this->hasMany(CompanyUser::class);
     }
 
     public function permissions(): BelongsToMany

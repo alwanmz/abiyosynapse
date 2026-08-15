@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CompanyUser;
 use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Http\Request;
@@ -95,8 +96,9 @@ class RoleController extends Controller
             return redirect()->route('roles.index')->with('error', 'Role "' . $role->display_name . '" tidak dapat dihapus.');
         }
 
-        if ($role->users()->exists()) {
-            return redirect()->route('roles.index')->with('error', 'Role tidak dapat dihapus karena masih digunakan oleh ' . $role->users()->count() . ' user.');
+        $membershipCount = CompanyUser::where('role_id', $role->id)->count();
+        if ($membershipCount > 0) {
+            return redirect()->route('roles.index')->with('error', 'Role tidak dapat dihapus karena masih digunakan di ' . $membershipCount . ' keanggotaan perusahaan.');
         }
 
         $role->permissions()->detach();

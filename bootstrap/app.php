@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureCompanyContext;
 use App\Http\Middleware\EnsureUserHasPermission;
 use App\Http\Middleware\EnsureUserHasRole;
 use App\Http\Middleware\HandleAppearance;
@@ -22,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->web(append: [
             HandleAppearance::class,
+            EnsureCompanyContext::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);
@@ -45,19 +47,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 return null;
             }
 
-            $route = $request->is('portal', 'portal/*') ? 'portal.login' : 'login';
-
-            return redirect()->route($route)
+            return redirect()->route('login')
                 ->with('status', 'Sesi Anda telah berakhir karena tidak ada aktivitas. Silakan masuk kembali.');
-        });
-
-        // Unauthenticated requests on the client guard belong on the portal
-        // login page, not the staff login page.
-        $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, \Illuminate\Http\Request $request) {
-            if (in_array('client', $e->guards(), true) && ! $request->expectsJson()) {
-                return redirect()->guest(route('portal.login'));
-            }
-
-            return null;
         });
     })->create();

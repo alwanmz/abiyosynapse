@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CompanyUser;
 use App\Models\Role;
 use App\Models\User;
+use App\Services\CurrentCompany;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -16,17 +18,29 @@ use Inertia\Response;
 class UserController extends Controller
 {
     /**
-     * Display a listing of users.
+     * Display a listing of users belonging to the current company, with
+     * each user's role scoped to their membership in that company.
      */
     public function index(Request $request): Response
     {
         $perPage = $request->get('per_page', 10);
+        $companyId = app(CurrentCompany::class)->id();
 
-        $users = User::with('role')
-            ->select('id', 'name', 'username', 'email', 'avatar_path', 'email_verified_at', 'role_id', 'created_at')
-            ->latest()
+        $userIds = CompanyUser::where('company_id', $companyId)->pluck('user_id');
+
+        $memberships = CompanyUser::where('company_id', $companyId)
+            ->with('role')
+            ->get()
+            ->keyBy('user_id');
+
+        $users = User::query()
+            ->select('users.id', 'users.name', 'users.username', 'users.email', 'users.avatar_path', 'users.email_verified_at', 'users.created_at')
+            ->whereIn('users.id', $userIds)
+            ->latest('users.created_at')
             ->paginate($perPage)
-            ->through(function ($user) {
+            ->through(function ($user) use ($memberships) {
+                $role = $memberships->get($user->id)?->role;
+
                 return [
                     'id' => $user->id,
                     'name' => $user->name,
@@ -34,10 +48,10 @@ class UserController extends Controller
                     'email' => $user->email,
                     'email_verified_at' => $user->email_verified_at,
                     'avatar_url' => $user->avatar_url,
-                    'role' => $user->role ? [
-                        'id' => $user->role->id,
-                        'name' => $user->role->name,
-                        'display_name' => $user->getRoleDisplayName(),
+                    'role' => $role ? [
+                        'id' => $role->id,
+                        'name' => $role->name,
+                        'display_name' => $role->display_name,
                     ] : null,
                     'created_at' => $user->created_at->format('d M Y'),
                 ];
@@ -77,15 +91,26 @@ class UserController extends Controller
             $avatarPath = $request->file('avatar')->store('avatars', 'public');
         }
 
-        User::create([
+        $companyId = app(CurrentCompany::class)->id();
+
+        $user = User::create([
             'name' => $validated['name'],
             'username' => strtolower($validated['username']),
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'role_id' => $validated['role_id'],
             'avatar_path' => $avatarPath,
             'email_verified_at' => now(),
         ]);
+
+        CompanyUser::create([
+            'company_id' => $companyId,
+            'user_id' => $user->id,
+            'role_id' => $validated['role_id'],
+            'is_default' => true,
+            'joined_at' => now(),
+        ]);
+
+        $user->forceFill(['current_company_id' => $companyId])->save();
 
         $this->forgetUserCaches();
 
@@ -135,15 +160,23 @@ class UserController extends Controller
             'role_id' => 'required|exists:roles,id'
         ]);
 
-        $oldRole = $user->role?->display_name ?? 'No Role';
+        $companyId = app(CurrentCompany::class)->id();
 
-        $user->update([
-            'role_id' => $validated['role_id']
-        ]);
+        $membership = CompanyUser::where('company_id', $companyId)
+            ->where('user_id', $user->id)
+            ->with('role')
+            ->first();
+
+        if (! $membership) {
+            return redirect()->back()->with('error', 'Pengguna tersebut bukan anggota perusahaan ini.');
+        }
+
+        $oldRole = $membership->role?->display_name ?? 'No Role';
+
+        $membership->update(['role_id' => $validated['role_id']]);
         $this->forgetUserCaches();
 
-        $user->load('role');
-        $newRole = $user->role->display_name;
+        $newRole = Role::find($validated['role_id'])->display_name;
 
         $user->notify(new \App\Notifications\RoleAssignedNotification(
             $oldRole,
@@ -155,28 +188,42 @@ class UserController extends Controller
     }
 
     /**
-     * Delete the user.
+     * Remove the user's membership from the current company. The user's
+     * account itself (and any membership in other companies) is left
+     * untouched — only their access to this company is revoked.
      */
     public function destroy(Request $request, User $user): RedirectResponse
     {
         if ($request->user()->id === $user->id) {
-            return redirect()->back()->with('error', 'You cannot delete your own account.');
+            return redirect()->back()->with('error', 'You cannot remove your own account.');
         }
 
-        // Guard against deleting the last super_admin (formerly 'admin').
+        $companyId = app(CurrentCompany::class)->id();
+
+        $membership = CompanyUser::where('company_id', $companyId)
+            ->where('user_id', $user->id)
+            ->with('role')
+            ->first();
+
+        if (! $membership) {
+            return redirect()->back()->with('error', 'Pengguna tersebut bukan anggota perusahaan ini.');
+        }
+
+        // Guard against removing the last super_admin of this company.
         $superAdminRole = Role::whereIn('name', ['super_admin', 'admin'])->first();
-        if ($superAdminRole && $user->role_id === $superAdminRole->id) {
-            $count = User::where('role_id', $superAdminRole->id)->count();
+        if ($superAdminRole && $membership->role_id === $superAdminRole->id) {
+            $count = CompanyUser::where('company_id', $companyId)
+                ->where('role_id', $superAdminRole->id)
+                ->count();
             if ($count <= 1) {
-                return redirect()->back()->with('error', 'Cannot delete the last admin account.');
+                return redirect()->back()->with('error', 'Cannot remove the last admin of this company.');
             }
         }
 
-        $this->safelyDeleteAvatar($user->avatar_path);
-        $user->delete();
+        $membership->delete();
         $this->forgetUserCaches();
 
-        return redirect()->back()->with('success', 'User deleted successfully.');
+        return redirect()->back()->with('success', 'User removed from company successfully.');
     }
 
     protected function forgetUserCaches(): void

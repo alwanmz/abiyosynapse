@@ -2,6 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Company;
+use App\Models\CompanyUser;
+use App\Models\Role;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -45,6 +48,55 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    /**
+     * Every factory-made user gets a company membership by default (as a
+     * real signup would) so EnsureCompanyContext doesn't redirect them to
+     * the onboarding page in tests. Pass `withoutCompany()` to opt out.
+     */
+    public function configure(): static
+    {
+        return $this->afterCreating(function (\App\Models\User $user) {
+            $this->attachDefaultCompany($user);
+        });
+    }
+
+    protected function attachDefaultCompany(\App\Models\User $user): void
+    {
+        if ($user->companies()->exists()) {
+            return;
+        }
+
+        $company = Company::factory()->create();
+        $role = Role::factory()->superAdmin()->create();
+
+        CompanyUser::create([
+            'company_id' => $company->id,
+            'user_id' => $user->id,
+            'role_id' => $role->id,
+            'is_default' => true,
+            'joined_at' => now(),
+        ]);
+
+        $user->forceFill(['current_company_id' => $company->id])->save();
+    }
+
+    /**
+     * Skip the automatic company/membership creation — for tests that
+     * specifically exercise the "no company" onboarding path.
+     */
+    public function withoutCompany(): static
+    {
+        return $this->afterCreating(function (\App\Models\User $user) {
+            // Undo whatever configure()'s afterCreating already attached —
+            // Factory callbacks stack rather than override, so this runs
+            // after the default one and removes its effect.
+            $user->companies()->newPivotStatement()
+                ->where('user_id', $user->id)
+                ->delete();
+            $user->forceFill(['current_company_id' => null])->save();
+        });
     }
 
     /**

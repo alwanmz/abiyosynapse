@@ -1,7 +1,7 @@
 import { type Auth } from '@/types';
 
 export function userHasPermission(auth: Auth | undefined, permission: string): boolean {
-    const role = auth?.user?.role;
+    const role = auth?.role;
     const roleName = role?.name ?? '';
 
     if (roleName === 'super_admin' || roleName === 'admin') {

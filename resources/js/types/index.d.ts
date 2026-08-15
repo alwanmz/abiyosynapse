@@ -9,17 +9,20 @@ export interface Role {
     permissions?: { id: number; name: string }[];
 }
 
-export interface Auth {
-    user: User;
-    client?: ClientPortalAuth | null;
+export interface Company {
+    id: number;
+    name: string;
+    code: string;
+    logo_path?: string | null;
+    pivot?: {
+        role_id: number;
+        is_default: boolean;
+    };
 }
 
-export interface ClientPortalAuth {
-    id: number;
-    kode: string;
-    nama: string;
-    username: string | null;
-    email: string | null;
+export interface Auth {
+    user: User;
+    role?: Role | null;
 }
 
 export interface BreadcrumbItem {
@@ -44,19 +47,12 @@ export interface SharedData {
     name: string;
     quote: { message: string; author: string };
     auth: Auth;
-    company: {
-        nama_perusahaan: string | null;
-        logo_path: string | null;
-    };
     ai: {
         enabled: boolean;
     };
-    portalAi?: {
-        enabled: boolean;
-        limit: number;
-        remaining: number;
-    } | null;
     sidebarOpen: boolean;
+    currentCompany: Company | null;
+    companies: Company[];
     [key: string]: unknown;
 }
 
@@ -69,27 +65,7 @@ export interface User {
     avatar_path?: string | null;
     email_verified_at: string | null;
     two_factor_enabled?: boolean;
-    role?: Role;
     created_at: string;
     updated_at: string;
     [key: string]: unknown;
-}
-export interface DailyLog {
-    id: number;
-    user_id: number;
-    ticket_id?: number;
-    log_date: string;
-    category?: string | null;
-    description: string;
-    is_automated: boolean;
-    created_at: string;
-    ticket?: {
-        id: number;
-        title: string;
-        ticket_number: string;
-    };
-    minute?: {
-        id: number;
-        title: string;
-    } | null;
 }

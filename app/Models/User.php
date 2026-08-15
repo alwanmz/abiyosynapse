@@ -9,8 +9,6 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Cache;
 
 class User extends Authenticatable
 {
@@ -27,7 +25,6 @@ class User extends Authenticatable
         'username',
         'email',
         'password',
-        'role_id',
         'avatar_path',
     ];
 
@@ -65,24 +62,45 @@ class User extends Authenticatable
         ];
     }
 
-    public function role(): BelongsTo
+    private ?CompanyUser $membershipCache = null;
+
+    private bool $membershipCacheLoaded = false;
+
+    public function companies(): BelongsToMany
     {
-        return $this->belongsTo(Role::class);
+        return $this->belongsToMany(Company::class, 'company_user')
+            ->using(CompanyUser::class)
+            ->withPivot(['role_id', 'is_default', 'joined_at'])
+            ->withTimestamps();
     }
 
-    public function teams(): BelongsToMany
+    public function currentCompany(): BelongsTo
     {
-        return $this->belongsToMany(Team::class)->withTimestamps();
+        return $this->belongsTo(Company::class, 'current_company_id');
     }
 
-    public function assignedTickets(): HasMany
+    /**
+     * Membership row (with role) for the company currently active on this
+     * user. Memoized per-instance since `hasPermissionTo()`/`isAdmin()` can
+     * be called several times in a single request.
+     */
+    public function currentCompanyMembership(): ?CompanyUser
     {
-        return $this->hasMany(Ticket::class, 'assigned_to');
-    }
+        if ($this->membershipCacheLoaded) {
+            return $this->membershipCache;
+        }
 
-    public function getRoleDisplayName(): ?string
-    {
-        return $this->role?->display_name;
+        $this->membershipCacheLoaded = true;
+
+        if (! $this->current_company_id) {
+            return $this->membershipCache = null;
+        }
+
+        return $this->membershipCache = CompanyUser::query()
+            ->where('user_id', $this->id)
+            ->where('company_id', $this->current_company_id)
+            ->with('role.permissions')
+            ->first();
     }
 
     /**
@@ -101,23 +119,13 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if this user has the admin role.
+     * Check if this user has the admin role in the currently active company.
      */
     public function isAdmin(): bool
     {
-        return in_array($this->role?->name, ['super_admin', 'admin'], true);
-    }
+        $role = $this->currentCompanyMembership()?->role;
 
-    /**
-     * Check if this user is a member of the given team.
-     */
-    public function isInTeam(Team $team): bool
-    {
-        return Cache::remember(
-            "user_{$this->id}_in_team_{$team->id}",
-            300,
-            fn() => $this->teams()->where('teams.id', $team->id)->exists()
-        );
+        return in_array($role?->name, ['super_admin', 'admin'], true);
     }
 
     public function hasPermissionTo(string $permissionName): bool
@@ -126,16 +134,16 @@ class User extends Authenticatable
             return true;
         }
 
-        if (!$this->role) {
+        $role = $this->currentCompanyMembership()?->role;
+
+        if (! $role) {
             return false;
         }
 
-        // We should eagerly load permissions or rely on caching if possible
-        // For now, load if missing
-        if (!$this->role->relationLoaded('permissions')) {
-            $this->role->load('permissions');
+        if (! $role->relationLoaded('permissions')) {
+            $role->load('permissions');
         }
 
-        return $this->role->hasPermissionTo($permissionName);
+        return $role->hasPermissionTo($permissionName);
     }
 }
