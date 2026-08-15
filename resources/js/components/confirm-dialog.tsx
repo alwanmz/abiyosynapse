@@ -28,10 +28,14 @@ interface ConfirmDialogProps {
 
 /**
  * App-themed confirmation dialog. Replaces the browser-native `confirm()`
- * popup so destructive/important actions follow the blue/neon design system.
+ * popup. Follows the Nexumi "Hanko" principle (see
+ * docs/design/nexumi-design-system.html §prinsip): red is reserved for the
+ * confirm button itself on destructive actions — the header stays flat and
+ * neutral so there's never more than one red element on screen.
  *
- * Defaults to a destructive (red) confirm button. Pass variant="default" for
- * non-destructive confirmations (e.g. "Lanjutkan publish?").
+ * Defaults to a destructive (Hanko red) confirm button. Pass
+ * variant="default" for non-destructive confirmations (e.g. "Lanjutkan
+ * publish?").
  */
 export function ConfirmDialog({
     open,
@@ -48,39 +52,24 @@ export function ConfirmDialog({
 
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
-            <AlertDialogContent className="overflow-hidden p-0 sm:rounded-xl">
-                {/* Themed neon header */}
-                <div
-                    className={cn(
-                        'relative flex items-center gap-3 overflow-hidden border-b px-6 py-4 text-white',
-                        isDestructive
-                            ? 'border-rose-400/40 shadow-[0_8px_24px_-12px_rgba(244,63,94,0.55)]'
-                            : 'border-teal-400/40 shadow-[0_8px_24px_-12px_rgba(20,184,166,0.55)]',
-                    )}
-                    style={{
-                        backgroundImage: isDestructive
-                            ? 'linear-gradient(110deg, #881337 0%, #e11d48 50%, #fb7185 100%)'
-                            : 'linear-gradient(110deg, #115e59 0%, #0d9488 45%, #10b981 100%)',
-                    }}
-                >
-                    <span
-                        aria-hidden
-                        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/40"
-                    />
-                    <span
-                        aria-hidden
-                        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.18),transparent_55%)]"
-                    />
-
-                    <div className="relative flex h-9 w-9 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/30 backdrop-blur-sm">
+            <AlertDialogContent className="overflow-hidden p-0 sm:rounded-lg">
+                <div className="flex items-center gap-3 border-b border-border px-6 py-4">
+                    <div
+                        className={cn(
+                            'flex h-9 w-9 shrink-0 items-center justify-center rounded-full',
+                            isDestructive
+                                ? 'bg-nx-hanko-50 text-nx-hanko-500 dark:bg-nx-hanko-50'
+                                : 'bg-nx-cyan-50 text-nx-cyan-700',
+                        )}
+                    >
                         {isDestructive ? (
                             <IconTrash className="h-5 w-5" />
                         ) : (
                             <IconAlertTriangle className="h-5 w-5" />
                         )}
                     </div>
-                    <AlertDialogHeader className="relative space-y-0 text-left">
-                        <AlertDialogTitle className="text-base font-semibold tracking-tight text-white">
+                    <AlertDialogHeader className="space-y-0 text-left">
+                        <AlertDialogTitle className="text-base font-semibold tracking-tight">
                             {title}
                         </AlertDialogTitle>
                     </AlertDialogHeader>
@@ -105,7 +94,7 @@ export function ConfirmDialog({
                             disabled={loading}
                             className={cn(
                                 isDestructive &&
-                                    'bg-rose-600 text-white hover:bg-rose-700 focus-visible:ring-rose-500',
+                                    'bg-destructive text-white hover:bg-nx-hanko-700 focus-visible:ring-destructive/40',
                             )}
                         >
                             {loading ? 'Memproses...' : confirmLabel}

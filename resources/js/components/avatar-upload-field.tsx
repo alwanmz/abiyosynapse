@@ -93,7 +93,7 @@ export function AvatarUploadField({
         <div className="space-y-2">
             <Label>{label}</Label>
             <div className="flex items-start gap-4">
-                <Avatar className={`${sizeClass} ring-2 ring-teal-100 dark:ring-teal-900`}>
+                <Avatar className={`${sizeClass} ring-2 ring-nx-navy-100 dark:ring-nx-navy-100`}>
                     {previewUrl ? (
                         <AvatarImage src={previewUrl} alt={name} />
                     ) : null}

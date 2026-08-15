@@ -16,7 +16,7 @@ export default function VerifyEmail({ status }: { status?: string }) {
             <Head title="Verifikasi Email" />
 
             {status === 'verification-link-sent' && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600">
+                <div className="mb-4 text-center text-sm font-medium text-nx-andon-run">
                     Tautan verifikasi baru telah dikirim ke alamat email yang Anda daftarkan.
                 </div>
             )}

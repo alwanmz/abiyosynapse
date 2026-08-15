@@ -7,11 +7,14 @@
  * so every new role shows up with its own consistent color instead of a blank
  * badge.
  */
+// Red/Hanko is deliberately excluded from every role badge, known or
+// fallback — Nexumi reserves red for stop/destructive/approval-seal
+// contexts only ("one red element per screen"), never a decorative role tag.
 export const ROLE_COLORS: Record<string, { bg: string; text: string }> = {
-    super_admin: { bg: 'bg-red-100', text: 'text-red-700' },
-    project_manager: { bg: 'bg-purple-100', text: 'text-purple-700' },
+    super_admin: { bg: 'bg-nx-navy-100', text: 'text-nx-navy-700' },
+    project_manager: { bg: 'bg-violet-100', text: 'text-violet-700' },
     implementator: { bg: 'bg-amber-100', text: 'text-amber-700' },
-    programmer: { bg: 'bg-emerald-100', text: 'text-emerald-700' },
+    programmer: { bg: 'bg-nx-andon-run-bg', text: 'text-nx-andon-run' },
 };
 
 /**
@@ -25,12 +28,10 @@ const FALLBACK_PALETTE: { bg: string; text: string }[] = [
     { bg: 'bg-violet-100', text: 'text-violet-700' },
     { bg: 'bg-fuchsia-100', text: 'text-fuchsia-700' },
     { bg: 'bg-pink-100', text: 'text-pink-700' },
-    { bg: 'bg-rose-100', text: 'text-rose-700' },
     { bg: 'bg-orange-100', text: 'text-orange-700' },
-    { bg: 'bg-teal-100', text: 'text-teal-700' },
-    { bg: 'bg-cyan-100', text: 'text-cyan-700' },
+    { bg: 'bg-nx-cyan-100', text: 'text-nx-cyan-700' },
     { bg: 'bg-lime-100', text: 'text-lime-700' },
-    { bg: 'bg-green-100', text: 'text-green-700' },
+    { bg: 'bg-nx-andon-run-bg', text: 'text-nx-andon-run' },
 ];
 
 /** Stable 32-bit hash so a given role name always maps to the same color. */

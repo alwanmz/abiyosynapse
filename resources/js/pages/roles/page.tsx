@@ -286,7 +286,7 @@ export default function RolesPage({
                                                 }
                                             />
                                             {errors.name && (
-                                                <p className="text-sm text-red-500">
+                                                <p className="text-sm text-destructive">
                                                     {errors.name}
                                                 </p>
                                             )}
@@ -304,7 +304,7 @@ export default function RolesPage({
                                             }
                                         />
                                         {errors.display_name && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.display_name}
                                             </p>
                                         )}
@@ -323,7 +323,7 @@ export default function RolesPage({
                                             }
                                         />
                                         {errors.description && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.description}
                                             </p>
                                         )}
@@ -502,7 +502,7 @@ export default function RolesPage({
                                         <TableCell>
                                             <div className="flex flex-wrap gap-1">
                                                 {locked ? (
-                                                    <Badge className="bg-indigo-500/10 text-indigo-500 hover:bg-indigo-500/20">
+                                                    <Badge className="bg-nx-navy-50 text-nx-navy-700 hover:bg-nx-navy-100 dark:bg-nx-navy-50 dark:text-nx-navy-700">
                                                         Semua Izin (Admin)
                                                     </Badge>
                                                 ) : modernPerms.length === 0 ? (

@@ -23,60 +23,60 @@ export function UserStatsCards({ stats }: UserStatsCardsProps) {
 
     return (
         <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <Card className="border-blue-200 bg-blue-50/50 dark:border-blue-900/50 dark:bg-blue-950/20">
+            <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
                         Total Pengguna
                     </CardTitle>
-                    <Users className="h-4 w-4 text-blue-500" />
+                    <Users className="h-4 w-4 text-nx-navy-500" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.total}</div>
+                    <div className="text-2xl font-bold tabular-nums">{stats.total}</div>
                     <p className="text-xs text-muted-foreground">
                         Anggota terdaftar
                     </p>
                 </CardContent>
             </Card>
 
-            <Card className="border-red-200 bg-red-50/50 dark:border-red-900/50 dark:bg-red-950/20">
+            <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
                         Administrator
                     </CardTitle>
-                    <Shield className="h-4 w-4 text-red-500" />
+                    <Shield className="h-4 w-4 text-nx-cyan-700" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.admins}</div>
+                    <div className="text-2xl font-bold tabular-nums">{stats.admins}</div>
                     <p className="text-xs text-muted-foreground">
                         Akses admin
                     </p>
                 </CardContent>
             </Card>
 
-            <Card className="border-violet-200 bg-violet-50/50 dark:border-violet-900/50 dark:bg-violet-950/20">
+            <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
                         Total Peran
                     </CardTitle>
-                    <CheckCircle2 className="h-4 w-4 text-violet-500" />
+                    <CheckCircle2 className="h-4 w-4 text-nx-navy-500" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold text-violet-600 dark:text-violet-400">{stats.roles}</div>
+                    <div className="text-2xl font-bold tabular-nums">{stats.roles}</div>
                     <p className="text-xs text-muted-foreground">
                         Peran berbeda
                     </p>
                 </CardContent>
             </Card>
 
-            <Card className="border-emerald-200 bg-emerald-50/50 dark:border-emerald-900/50 dark:bg-emerald-950/20">
+            <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
                         Terverifikasi
                     </CardTitle>
-                    <BadgeCheck className="h-4 w-4 text-emerald-500" />
+                    <BadgeCheck className="h-4 w-4 text-nx-andon-run" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{stats.verified}</div>
+                    <div className="text-2xl font-bold tabular-nums">{stats.verified}</div>
                     <p className="text-xs text-muted-foreground">
                         {stats.total > 0
                             ? `${verifiedRatio}% akun aktif`

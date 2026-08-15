@@ -25,8 +25,8 @@ export default function DeleteUser() {
                 title="Hapus Akun"
                 description="Hapus akun Anda dan semua sumber dayanya"
             />
-            <div className="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10">
-                <div className="relative space-y-0.5 text-red-600 dark:text-red-100">
+            <div className="space-y-4 rounded-lg border border-nx-hanko-100 bg-nx-hanko-50 p-4 dark:border-nx-hanko-100/20 dark:bg-nx-hanko-50/10">
+                <div className="relative space-y-0.5 text-nx-hanko-700">
                     <p className="font-medium">Peringatan</p>
                     <p className="text-sm">
                         Harap berhati-hati, tindakan ini tidak dapat dibatalkan.

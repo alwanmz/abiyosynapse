@@ -12,9 +12,14 @@
 
 @theme {
     --font-sans:
-        'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'Inter', 'Noto Sans JP', ui-sans-serif, system-ui, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
         'Noto Color Emoji';
+    --font-display:
+        'Manrope', 'Noto Sans JP', ui-sans-serif, system-ui, sans-serif;
+    --font-ja: 'Noto Sans JP', 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-mono:
+        'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
@@ -62,79 +67,242 @@
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
+
+    /* Nexumi brand tokens — direct hex from the design system mockup
+       (docs/design/nexumi-design-system.html), kept alongside the shadcn
+       semantic tokens above rather than replacing them, since Andon status
+       and the Hanko seal need the raw scale (e.g. --nx-navy-100) that the
+       semantic --color-* aliases don't expose. */
+    --color-nx-navy-50: var(--nx-navy-50);
+    --color-nx-navy-100: var(--nx-navy-100);
+    --color-nx-navy-200: var(--nx-navy-200);
+    --color-nx-navy-300: var(--nx-navy-300);
+    --color-nx-navy-500: var(--nx-navy-500);
+    --color-nx-navy-600: var(--nx-navy-600);
+    --color-nx-navy-700: var(--nx-navy-700);
+    --color-nx-navy-800: var(--nx-navy-800);
+    --color-nx-navy-900: var(--nx-navy-900);
+    --color-nx-cyan-50: var(--nx-cyan-50);
+    --color-nx-cyan-100: var(--nx-cyan-100);
+    --color-nx-cyan-300: var(--nx-cyan-300);
+    --color-nx-cyan-500: var(--nx-cyan-500);
+    --color-nx-cyan-600: var(--nx-cyan-600);
+    --color-nx-cyan-700: var(--nx-cyan-700);
+    --color-nx-hanko-50: var(--nx-hanko-50);
+    --color-nx-hanko-100: var(--nx-hanko-100);
+    --color-nx-hanko-500: var(--nx-hanko-500);
+    --color-nx-hanko-700: var(--nx-hanko-700);
+    --color-nx-andon-run: var(--nx-andon-run);
+    --color-nx-andon-run-bg: var(--nx-andon-run-bg);
+    --color-nx-andon-caution: var(--nx-andon-caution);
+    --color-nx-andon-caution-bg: var(--nx-andon-caution-bg);
+    --color-nx-andon-stop: var(--nx-andon-stop);
+    --color-nx-andon-stop-bg: var(--nx-andon-stop-bg);
+    --color-nx-andon-idle: var(--nx-andon-idle);
+    --color-nx-andon-idle-bg: var(--nx-andon-idle-bg);
+    --color-nx-andon-info: var(--nx-andon-info);
+    --color-nx-andon-info-bg: var(--nx-andon-info-bg);
 }
 
 :root {
-  --radius: 0.65rem;
-  /* Almost-white with a faint teal tint */
-  --background: oklch(0.994 0.006 157);
-  --foreground: oklch(0.21 0.03 169);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.21 0.03 169);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.21 0.03 169);
-  /* Primary = AbiyoSynapse teal */
-  --primary: oklch(0.58 0.16 165);
-  --primary-foreground: oklch(0.985 0.01 157);
-  --secondary: oklch(0.96 0.018 157);
-  --secondary-foreground: oklch(0.3 0.04 167);
-  --muted: oklch(0.965 0.013 157);
-  --muted-foreground: oklch(0.55 0.03 163);
-  --accent: oklch(0.94 0.03 155);
-  --accent-foreground: oklch(0.3 0.05 167);
-  /* Destructive stays red so delete/danger remains obvious */
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.9 0.018 157);
-  --input: oklch(0.9 0.018 157);
-  --ring: oklch(0.65 0.15 165);
-  /* Teal/green chart ramp */
-  --chart-1: oklch(0.74 0.13 143);
-  --chart-2: oklch(0.66 0.15 157);
-  --chart-3: oklch(0.58 0.16 165);
-  --chart-4: oklch(0.5 0.15 173);
-  --chart-5: oklch(0.43 0.13 179);
-  --sidebar: oklch(0.975 0.012 157);
-  --sidebar-foreground: oklch(0.21 0.03 169);
-  --sidebar-primary: oklch(0.58 0.16 165);
-  --sidebar-primary-foreground: oklch(0.985 0.01 157);
-  --sidebar-accent: oklch(0.93 0.03 155);
-  --sidebar-accent-foreground: oklch(0.3 0.05 167);
-  --sidebar-border: oklch(0.9 0.018 157);
-  --sidebar-ring: oklch(0.65 0.15 165);
+  --radius: 0.5rem;
+
+  /* Nexumi raw palette — from docs/design/nexumi-design-system.html.
+     Kept as the source of truth; the semantic tokens below (--primary,
+     --sidebar, etc.) are derived from these, not the other way around. */
+  --nx-navy-50: #EFF5F9;
+  --nx-navy-100: #D6E3EC;
+  --nx-navy-200: #AFC7D8;
+  --nx-navy-300: #7FA8C2;
+  --nx-navy-500: #226F9F;
+  --nx-navy-600: #17557F;
+  --nx-navy-700: #0F3D5E;
+  --nx-navy-800: #0A2C44;
+  --nx-navy-900: #061D2E;
+
+  --nx-cyan-50: #EDFAFB;
+  --nx-cyan-100: #D6F2F5;
+  --nx-cyan-300: #7FD9E0;
+  --nx-cyan-500: #14B8C4;
+  --nx-cyan-600: #109BA5;
+  --nx-cyan-700: #0B7F88;
+
+  --nx-hanko-50: #FDF0F1;
+  --nx-hanko-100: #F7D9DC;
+  --nx-hanko-500: #C1121F;
+  --nx-hanko-700: #8E0D17;
+
+  --nx-n-0: #FFFFFF;
+  --nx-n-25: #FBFCFC;
+  --nx-n-50: #F6F7F8;
+  --nx-n-100: #EEF1F3;
+  --nx-n-200: #E3E7EB;
+  --nx-n-300: #C9D0D7;
+  --nx-n-400: #9BA5AF;
+  --nx-n-500: #6B7280;
+  --nx-n-700: #3D4753;
+  --nx-n-900: #1F2937;
+
+  /* Andon status vocabulary — Running / Caution / Stopped / Idle / Info,
+     replaces generic success/warning/error/info naming everywhere this
+     app talks about process or equipment state (see andon-badge.tsx). */
+  --nx-andon-run: #157F4F;
+  --nx-andon-run-bg: #E8F4EE;
+  --nx-andon-caution: #B8791A;
+  --nx-andon-caution-bg: #FBF2E3;
+  --nx-andon-stop: #C1121F;
+  --nx-andon-stop-bg: #FDF0F1;
+  --nx-andon-idle: #9BA5AF;
+  --nx-andon-idle-bg: #EEF1F3;
+  --nx-andon-info: #0B7F88;
+  --nx-andon-info-bg: #EDFAFB;
+
+  /* Motion — cheap to declare now even though most components don't
+     consume these yet; new components should reach for these instead of
+     ad-hoc duration/easing values. */
+  --nx-dur-instant: 90ms;
+  --nx-dur-fast: 140ms;
+  --nx-dur-base: 200ms;
+  --nx-dur-slow: 320ms;
+  --nx-ease: cubic-bezier(.2, 0, 0, 1);
+
+  /* Radius scale from the mockup (chip/tag -> control -> card -> modal -> pill) */
+  --nx-radius-xs: 2px;
+  --nx-radius-sm: 4px;
+  --nx-radius-md: 6px;
+  --nx-radius-lg: 10px;
+  --nx-radius-full: 999px;
+
+  /* Elevation — shadow is the last resort per the Ma principle, only for
+     floating layers (dropdown/modal/toast), never for grouping content. */
+  --nx-shadow-1: 0 1px 2px rgba(15, 61, 94, .06);
+  --nx-shadow-2: 0 4px 12px rgba(15, 61, 94, .08), 0 1px 2px rgba(15, 61, 94, .04);
+  --nx-shadow-3: 0 16px 40px rgba(15, 61, 94, .12), 0 2px 6px rgba(15, 61, 94, .05);
+
+  /* Row/control height — comfortable by default, tighter in [data-density=compact] */
+  --nx-row-h: 44px;
+  --nx-control-h: 36px;
+
+  /* shadcn semantic tokens, derived from the Nexumi palette above */
+  --background: var(--nx-n-0);
+  --foreground: var(--nx-n-900);
+  --card: var(--nx-n-0);
+  --card-foreground: var(--nx-n-900);
+  --popover: var(--nx-n-0);
+  --popover-foreground: var(--nx-n-900);
+  /* Primary = Nexumi navy */
+  --primary: var(--nx-navy-700);
+  --primary-foreground: var(--nx-n-0);
+  --secondary: var(--nx-n-50);
+  --secondary-foreground: var(--nx-navy-700);
+  --muted: var(--nx-n-50);
+  --muted-foreground: var(--nx-n-500);
+  --accent: var(--nx-cyan-50);
+  --accent-foreground: var(--nx-cyan-700);
+  /* Destructive = Hanko red — kept scarce per the "one red per screen" rule */
+  --destructive: var(--nx-hanko-500);
+  --destructive-foreground: var(--nx-n-0);
+  --border: var(--nx-n-200);
+  --input: var(--nx-n-300);
+  --ring: var(--nx-cyan-500);
+  /* Chart ramp — navy through cyan, matches the mockup's data-viz intent */
+  --chart-1: var(--nx-navy-300);
+  --chart-2: var(--nx-navy-500);
+  --chart-3: var(--nx-navy-700);
+  --chart-4: var(--nx-cyan-500);
+  --chart-5: var(--nx-cyan-700);
+  --sidebar: var(--nx-n-25);
+  --sidebar-foreground: var(--nx-n-900);
+  --sidebar-primary: var(--nx-navy-700);
+  --sidebar-primary-foreground: var(--nx-n-0);
+  --sidebar-accent: var(--nx-navy-50);
+  --sidebar-accent-foreground: var(--nx-navy-700);
+  --sidebar-border: var(--nx-n-200);
+  --sidebar-ring: var(--nx-cyan-500);
+}
+
+[data-density="compact"] {
+  --nx-row-h: 32px;
+  --nx-control-h: 30px;
 }
 
 .dark {
-  --background: oklch(0.19 0.025 169);
-  --foreground: oklch(0.97 0.01 157);
-  --card: oklch(0.24 0.028 169);
-  --card-foreground: oklch(0.97 0.01 157);
-  --popover: oklch(0.24 0.028 169);
-  --popover-foreground: oklch(0.97 0.01 157);
-  --primary: oklch(0.66 0.16 163);
-  --primary-foreground: oklch(0.15 0.03 169);
-  --secondary: oklch(0.3 0.03 167);
-  --secondary-foreground: oklch(0.97 0.01 157);
-  --muted: oklch(0.3 0.03 167);
-  --muted-foreground: oklch(0.72 0.03 161);
-  --accent: oklch(0.34 0.045 165);
-  --accent-foreground: oklch(0.97 0.01 157);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.55 0.14 165);
-  --chart-1: oklch(0.78 0.13 143);
-  --chart-2: oklch(0.7 0.15 157);
-  --chart-3: oklch(0.62 0.16 165);
-  --chart-4: oklch(0.54 0.15 173);
-  --chart-5: oklch(0.47 0.13 179);
-  --sidebar: oklch(0.22 0.026 169);
-  --sidebar-foreground: oklch(0.97 0.01 157);
-  --sidebar-primary: oklch(0.66 0.16 163);
-  --sidebar-primary-foreground: oklch(0.15 0.03 169);
-  --sidebar-accent: oklch(0.34 0.045 165);
-  --sidebar-accent-foreground: oklch(0.97 0.01 157);
-  --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-ring: oklch(0.55 0.14 165);
+  --nx-navy-50: #0A2C44;
+  --nx-navy-100: #0F3D5E;
+  --nx-navy-200: #17557F;
+  --nx-navy-300: #226F9F;
+  --nx-navy-500: #7FA8C2;
+  --nx-navy-600: #AFC7D8;
+  --nx-navy-700: #D6E3EC;
+  --nx-navy-800: #EFF5F9;
+  --nx-navy-900: #FFFFFF;
+
+  --nx-cyan-50: #093237;
+  --nx-cyan-100: #0B7F88;
+  --nx-cyan-300: #109BA5;
+  --nx-cyan-500: #14B8C4;
+  --nx-cyan-600: #7FD9E0;
+  --nx-cyan-700: #D6F2F5;
+
+  --nx-hanko-50: #3A0509;
+  --nx-hanko-100: #5C0A11;
+  --nx-hanko-500: #E23B47;
+  --nx-hanko-700: #F7A8AE;
+
+  --nx-n-0: #0D1420;
+  --nx-n-25: #101826;
+  --nx-n-50: #16202E;
+  --nx-n-100: #1C2836;
+  --nx-n-200: #2A3644;
+  --nx-n-300: #3D4753;
+  --nx-n-400: #6B7280;
+  --nx-n-500: #9BA5AF;
+  --nx-n-700: #C9D0D7;
+  --nx-n-900: #F6F7F8;
+
+  --nx-andon-run: #3FCE8F;
+  --nx-andon-run-bg: #123324;
+  --nx-andon-caution: #E3A63F;
+  --nx-andon-caution-bg: #3A2A0E;
+  --nx-andon-stop: #E23B47;
+  --nx-andon-stop-bg: #3A0509;
+  --nx-andon-idle: #6B7280;
+  --nx-andon-idle-bg: #1C2836;
+  --nx-andon-info: #4FD8E3;
+  --nx-andon-info-bg: #093237;
+
+  --background: var(--nx-n-0);
+  --foreground: var(--nx-n-900);
+  --card: var(--nx-n-25);
+  --card-foreground: var(--nx-n-900);
+  --popover: var(--nx-n-25);
+  --popover-foreground: var(--nx-n-900);
+  --primary: var(--nx-navy-500);
+  --primary-foreground: var(--nx-n-0);
+  --secondary: var(--nx-n-100);
+  --secondary-foreground: var(--nx-n-900);
+  --muted: var(--nx-n-100);
+  --muted-foreground: var(--nx-n-500);
+  --accent: var(--nx-cyan-50);
+  --accent-foreground: var(--nx-cyan-600);
+  --destructive: var(--nx-hanko-500);
+  --destructive-foreground: var(--nx-n-0);
+  --border: rgba(255, 255, 255, .12);
+  --input: rgba(255, 255, 255, .16);
+  --ring: var(--nx-cyan-500);
+  --chart-1: var(--nx-navy-300);
+  --chart-2: var(--nx-navy-500);
+  --chart-3: var(--nx-cyan-500);
+  --chart-4: var(--nx-cyan-600);
+  --chart-5: var(--nx-cyan-700);
+  --sidebar: var(--nx-n-25);
+  --sidebar-foreground: var(--nx-n-900);
+  --sidebar-primary: var(--nx-navy-500);
+  --sidebar-primary-foreground: var(--nx-n-0);
+  --sidebar-accent: var(--nx-n-100);
+  --sidebar-accent-foreground: var(--nx-n-900);
+  --sidebar-border: rgba(255, 255, 255, .12);
+  --sidebar-ring: var(--nx-cyan-500);
 }
 
 @layer base {

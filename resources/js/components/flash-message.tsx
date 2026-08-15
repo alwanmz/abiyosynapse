@@ -31,8 +31,8 @@ export function FlashMessage() {
         <div
             className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-lg border px-4 py-3 shadow-lg transition-all duration-300 ${
                 isSuccess
-                    ? 'border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-200'
-                    : 'border-red-200 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200'
+                    ? 'border-nx-andon-run/30 bg-nx-andon-run-bg text-nx-andon-run'
+                    : 'border-nx-andon-stop/30 bg-nx-andon-stop-bg text-nx-andon-stop'
             }`}
         >
             {isSuccess ? (

@@ -142,7 +142,7 @@ export default function Profile({
                                     </p>
 
                                     {status === 'verification-link-sent' && (
-                                        <div className="mt-2 text-sm font-medium text-green-600">
+                                        <div className="mt-2 text-sm font-medium text-nx-andon-run">
                                             Tautan verifikasi baru telah dikirim ke alamat email Anda.
                                         </div>
                                     )}

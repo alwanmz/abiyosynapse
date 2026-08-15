@@ -12,8 +12,8 @@ export function NotificationStats({ total, unread, read }: NotificationStatsProp
         <div className="mb-6 grid gap-4 md:grid-cols-3">
             <Card className="p-4">
                 <div className="flex items-center gap-3">
-                    <div className="rounded-lg bg-teal-100 p-3 dark:bg-teal-900/20">
-                        <IconBell className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+                    <div className="rounded-lg bg-nx-andon-info-bg p-3">
+                        <IconBell className="h-5 w-5 text-nx-andon-info" />
                     </div>
                     <div>
                         <p className="text-sm text-muted-foreground">Total</p>
@@ -23,8 +23,8 @@ export function NotificationStats({ total, unread, read }: NotificationStatsProp
             </Card>
             <Card className="p-4">
                 <div className="flex items-center gap-3">
-                    <div className="rounded-lg bg-orange-100 p-3 dark:bg-orange-900/20">
-                        <IconBell className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                    <div className="rounded-lg bg-nx-andon-caution-bg p-3">
+                        <IconBell className="h-5 w-5 text-nx-andon-caution" />
                     </div>
                     <div>
                         <p className="text-sm text-muted-foreground">Belum Dibaca</p>
@@ -34,8 +34,8 @@ export function NotificationStats({ total, unread, read }: NotificationStatsProp
             </Card>
             <Card className="p-4">
                 <div className="flex items-center gap-3">
-                    <div className="rounded-lg bg-green-100 p-3 dark:bg-green-900/20">
-                        <IconChecks className="h-5 w-5 text-green-600 dark:text-green-400" />
+                    <div className="rounded-lg bg-nx-andon-run-bg p-3">
+                        <IconChecks className="h-5 w-5 text-nx-andon-run" />
                     </div>
                     <div>
                         <p className="text-sm text-muted-foreground">Sudah Dibaca</p>

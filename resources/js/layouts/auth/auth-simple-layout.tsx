@@ -1,7 +1,8 @@
+import AppLogoIcon from '@/components/app-logo-icon';
 import { type SharedData } from '@/types';
 import { home } from '@/routes';
 import { Link, usePage } from '@inertiajs/react';
-import { LayoutDashboard, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { type PropsWithChildren } from 'react';
 
 interface AuthLayoutProps {
@@ -17,10 +18,10 @@ export default function AuthSimpleLayout({
 }: PropsWithChildren<AuthLayoutProps>) {
     const { name } = usePage<SharedData>().props;
 
-    const brandName = name || 'AbiyoSynapse';
+    const brandName = name || 'Nexumi ERP';
 
     return (
-        <div className="flex min-h-svh bg-teal-50/60 dark:bg-[#081a16]">
+        <div className="flex min-h-svh bg-nx-navy-50 dark:bg-background">
             {/* Left Side: Form */}
             <div className="flex flex-1 flex-col items-center justify-center p-6 md:p-10">
                 <div className="w-full max-w-sm">
@@ -30,19 +31,19 @@ export default function AuthSimpleLayout({
                                 href={home()}
                                 className="flex flex-col items-center gap-2 font-medium"
                             >
-                                <div className="mb-2 flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl bg-teal-600 text-white shadow-lg shadow-teal-600/30 ring-1 ring-teal-700/20 dark:bg-white dark:text-teal-700">
-                                    <LayoutDashboard size={26} strokeWidth={2.25} />
+                                <div className="mb-2 flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl border border-nx-navy-200 bg-card p-3 shadow-sm">
+                                    <AppLogoIcon className="size-full" />
                                 </div>
-                                <span className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+                                <span className="font-display text-xl font-extrabold tracking-tight text-nx-navy-800 dark:text-foreground">
                                     {brandName}
                                 </span>
                             </Link>
 
                             <div className="space-y-1 text-center">
-                                <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
+                                <h1 className="font-display text-2xl font-bold tracking-tight text-nx-navy-800 dark:text-foreground">
                                     {title}
                                 </h1>
-                                <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                                <p className="text-sm text-muted-foreground">
                                     {description}
                                 </p>
                             </div>
@@ -54,21 +55,21 @@ export default function AuthSimpleLayout({
 
             {/* Right Side: Visual (Only visible on large screens) */}
             <div className="relative hidden w-0 flex-1 lg:block">
-                <div className="absolute inset-0 h-full w-full overflow-hidden bg-gradient-to-br from-teal-600 via-teal-700 to-teal-950">
+                <div className="absolute inset-0 h-full w-full overflow-hidden bg-gradient-to-br from-nx-navy-600 via-nx-navy-700 to-nx-navy-900">
                     {/* Subtle pattern overlay */}
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.12),transparent_55%)]" />
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(45,212,191,0.18),transparent_50%)]" />
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(20,184,196,0.18),transparent_50%)]" />
 
                     <div className="absolute inset-0 flex flex-col items-center justify-center p-12 text-white">
                         <div className="max-w-md text-center">
                             <div className="mb-6 inline-flex items-center rounded-full bg-white/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider backdrop-blur-sm ring-1 ring-white/20">
-                                <Sparkles className="mr-2 inline-block h-3 w-3 text-amber-300" />
+                                <Sparkles className="mr-2 inline-block h-3 w-3 text-nx-cyan-300" />
                                 Didukung Kecerdasan Buatan
                             </div>
-                            <h2 className="mb-4 text-4xl font-bold tracking-tight">
+                            <h2 className="mb-4 font-display text-4xl font-bold tracking-tight">
                                 Kelola Akuntansi & Bisnis Anda Lebih Cepat.
                             </h2>
-                            <p className="text-lg text-teal-100/90">
+                            <p className="text-lg text-nx-cyan-100/90">
                                 Bergabung dengan {brandName} untuk mengelola pembukuan, inventori,
                                 dan laporan keuangan perusahaan Anda dengan mudah & akurat.
                             </p>
@@ -76,8 +77,8 @@ export default function AuthSimpleLayout({
                     </div>
 
                     {/* Abstract Shapes */}
-                    <div className="absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-emerald-400/25 blur-[110px]" />
-                    <div className="absolute -top-24 -right-24 h-80 w-80 rounded-full bg-teal-300/20 blur-[110px]" />
+                    <div className="absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-nx-cyan-500/20 blur-[110px]" />
+                    <div className="absolute -top-24 -right-24 h-80 w-80 rounded-full bg-nx-navy-300/25 blur-[110px]" />
                 </div>
             </div>
         </div>
