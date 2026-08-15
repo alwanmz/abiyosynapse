@@ -2,7 +2,7 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "abiyosynapse/erp",
     "type": "project",
-    "description": "AbiyoSynapse - Multi-company Accounting/ERP application.",
+    "description": "Nexumi ERP - Multi-company Accounting/ERP application.",
     "keywords": [
         "laravel",
         "framework"

@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'AbiyoSynapse'),
+    'name' => env('APP_NAME', 'Nexumi ERP'),
 
     /*
     |--------------------------------------------------------------------------

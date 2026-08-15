@@ -1,4 +1,4 @@
-# Status — AbiyoSynapse / Nexumi ERP
+# Status — Nexumi ERP (dulu "AbiyoSynapse")
 
 > Dokumen ini sudah dipensiunkan sebagai sumber status. Roadmap dan status terkini ada di:
 > `C:\Users\LENOVO\.claude\plans\baca-fase0-status-md-dan-c-users-lenovo-synchronous-lemon.md`
