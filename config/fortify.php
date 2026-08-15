@@ -73,7 +73,7 @@ return [
     |
     */
 
-    'home' => '/analytics',
+    'home' => '/dashboard',
 
     /*
     |--------------------------------------------------------------------------
@@ -144,9 +144,10 @@ return [
     */
 
     'features' => [
-        // Registrasi publik dimatikan: user dibuat oleh admin lewat menu Team.
-        // Halaman auth/register.tsx sudah dihapus, jadi rute /register hanya
-        // menghasilkan error Vite manifest kalau fitur ini dibiarkan aktif.
+        // Registrasi publik untuk trial akun 7 hari — setiap pendaftar baru
+        // otomatis jadi super_admin di perusahaan baru miliknya sendiri
+        // (lihat App\Actions\Fortify\CreateNewUser).
+        Features::registration(),
         Features::resetPasswords(),
         Features::emailVerification(),
         Features::twoFactorAuthentication([
