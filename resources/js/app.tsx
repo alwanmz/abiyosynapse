@@ -5,6 +5,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { initializeTheme } from './hooks/use-appearance';
+import i18n, { type SupportedLocale, SUPPORTED_LOCALES } from './i18n';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -39,6 +40,19 @@ createInertiaApp({
         ).catch(reloadOnStaleChunk),
     setup({ el, App, props }) {
         sessionStorage.removeItem(RELOAD_GUARD_KEY);
+
+        // Backend (SetLocale middleware + `locale` cookie) is the source of
+        // truth for which language is active — keep i18next in sync with it
+        // on every fresh page load instead of trusting browser detection.
+        const backendLocale = (props.initialPage.props as { locale?: string })
+            .locale;
+        if (
+            backendLocale &&
+            SUPPORTED_LOCALES.includes(backendLocale as SupportedLocale) &&
+            i18n.language !== backendLocale
+        ) {
+            i18n.changeLanguage(backendLocale);
+        }
 
         const root = createRoot(el);
 

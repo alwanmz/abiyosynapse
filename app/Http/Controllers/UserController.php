@@ -114,7 +114,7 @@ class UserController extends Controller
 
         $this->forgetUserCaches();
 
-        return redirect()->back()->with('success', 'User created successfully.');
+        return redirect()->back()->with('success', __('messages.user.created'));
     }
 
     /**
@@ -148,7 +148,7 @@ class UserController extends Controller
         $user->update($payload);
         $this->forgetUserCaches();
 
-        return redirect()->back()->with('success', 'User updated successfully.');
+        return redirect()->back()->with('success', __('messages.user.updated'));
     }
 
     /**
@@ -168,7 +168,7 @@ class UserController extends Controller
             ->first();
 
         if (! $membership) {
-            return redirect()->back()->with('error', 'Pengguna tersebut bukan anggota perusahaan ini.');
+            return redirect()->back()->with('error', __('messages.user.not_member'));
         }
 
         $oldRole = $membership->role?->display_name ?? 'No Role';
@@ -184,7 +184,7 @@ class UserController extends Controller
             $request->user()->name
         ));
 
-        return redirect()->back()->with('success', 'User role updated successfully.');
+        return redirect()->back()->with('success', __('messages.user.role_updated'));
     }
 
     /**
@@ -195,7 +195,7 @@ class UserController extends Controller
     public function destroy(Request $request, User $user): RedirectResponse
     {
         if ($request->user()->id === $user->id) {
-            return redirect()->back()->with('error', 'You cannot remove your own account.');
+            return redirect()->back()->with('error', __('messages.user.cannot_remove_self'));
         }
 
         $companyId = app(CurrentCompany::class)->id();
@@ -206,7 +206,7 @@ class UserController extends Controller
             ->first();
 
         if (! $membership) {
-            return redirect()->back()->with('error', 'Pengguna tersebut bukan anggota perusahaan ini.');
+            return redirect()->back()->with('error', __('messages.user.not_member'));
         }
 
         // Guard against removing the last super_admin of this company.
@@ -216,14 +216,14 @@ class UserController extends Controller
                 ->where('role_id', $superAdminRole->id)
                 ->count();
             if ($count <= 1) {
-                return redirect()->back()->with('error', 'Cannot remove the last admin of this company.');
+                return redirect()->back()->with('error', __('messages.user.cannot_remove_last_admin'));
             }
         }
 
         $membership->delete();
         $this->forgetUserCaches();
 
-        return redirect()->back()->with('success', 'User removed from company successfully.');
+        return redirect()->back()->with('success', __('messages.user.removed'));
     }
 
     protected function forgetUserCaches(): void

@@ -67,7 +67,7 @@ class RoleController extends Controller
         $this->syncPermissions($role, $validated['permissions'] ?? []);
         $this->forgetRoleCaches();
 
-        return redirect()->route('roles.index')->with('success', 'Role berhasil ditambahkan.');
+        return redirect()->route('roles.index')->with('success', __('messages.role.created'));
     }
 
     public function update(Request $request, Role $role)
@@ -87,25 +87,25 @@ class RoleController extends Controller
         $this->syncPermissions($role, $validated['permissions'] ?? []);
         $this->forgetRoleCaches();
 
-        return redirect()->route('roles.index')->with('success', 'Role berhasil diperbarui.');
+        return redirect()->route('roles.index')->with('success', __('messages.role.updated'));
     }
 
     public function destroy(Role $role)
     {
         if (in_array($role->name, ['admin', 'super_admin'])) {
-            return redirect()->route('roles.index')->with('error', 'Role "' . $role->display_name . '" tidak dapat dihapus.');
+            return redirect()->route('roles.index')->with('error', __('messages.role.cannot_delete_locked', ['name' => $role->display_name]));
         }
 
         $membershipCount = CompanyUser::where('role_id', $role->id)->count();
         if ($membershipCount > 0) {
-            return redirect()->route('roles.index')->with('error', 'Role tidak dapat dihapus karena masih digunakan di ' . $membershipCount . ' keanggotaan perusahaan.');
+            return redirect()->route('roles.index')->with('error', __('messages.role.cannot_delete_in_use', ['count' => $membershipCount]));
         }
 
         $role->permissions()->detach();
         $role->delete();
         $this->forgetRoleCaches();
 
-        return redirect()->route('roles.index')->with('success', 'Role berhasil dihapus.');
+        return redirect()->route('roles.index')->with('success', __('messages.role.deleted'));
     }
 
     /**

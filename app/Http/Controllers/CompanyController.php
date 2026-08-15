@@ -57,7 +57,7 @@ class CompanyController extends Controller
             $user->forceFill(['current_company_id' => $company->id])->save();
         }
 
-        return redirect()->route('dashboard')->with('success', 'Perusahaan berhasil dibuat.');
+        return redirect()->route('dashboard')->with('success', __('messages.company.created'));
     }
 
     public function edit(Company $company)
@@ -79,6 +79,6 @@ class CompanyController extends Controller
 
         $company->update($validated);
 
-        return redirect()->route('companies.index')->with('success', 'Perusahaan berhasil diperbarui.');
+        return redirect()->route('companies.index')->with('success', __('messages.company.updated'));
     }
 }

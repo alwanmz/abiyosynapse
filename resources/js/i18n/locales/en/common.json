@@ -1,0 +1,35 @@
+{
+    "nav": {
+        "dashboard": "Dashboard",
+        "users": "Users",
+        "roles": "Roles & Permissions",
+        "companies": "Companies",
+        "group_overview": "Overview",
+        "group_master": "Master Data"
+    },
+    "action": {
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "edit": "Edit",
+        "create": "Add",
+        "back": "Back",
+        "search": "Search",
+        "confirm": "Confirm",
+        "close": "Close"
+    },
+    "status": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "loading": "Loading...",
+        "saving": "Saving..."
+    },
+    "language": {
+        "id": "Bahasa Indonesia",
+        "en": "English",
+        "zh": "中文",
+        "ja": "日本語",
+        "ko": "한국어",
+        "switcher": "Language"
+    }
+}

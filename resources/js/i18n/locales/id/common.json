@@ -1,0 +1,35 @@
+{
+    "nav": {
+        "dashboard": "Dasbor",
+        "users": "Pengguna",
+        "roles": "Hak Akses",
+        "companies": "Perusahaan",
+        "group_overview": "Ringkasan",
+        "group_master": "Data Master"
+    },
+    "action": {
+        "save": "Simpan",
+        "cancel": "Batal",
+        "delete": "Hapus",
+        "edit": "Ubah",
+        "create": "Tambah",
+        "back": "Kembali",
+        "search": "Cari",
+        "confirm": "Konfirmasi",
+        "close": "Tutup"
+    },
+    "status": {
+        "active": "Aktif",
+        "inactive": "Nonaktif",
+        "loading": "Memuat...",
+        "saving": "Menyimpan..."
+    },
+    "language": {
+        "id": "Bahasa Indonesia",
+        "en": "English",
+        "zh": "中文",
+        "ja": "日本語",
+        "ko": "한국어",
+        "switcher": "Bahasa"
+    }
+}

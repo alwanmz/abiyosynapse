@@ -20,12 +20,12 @@ class CompanySwitchController extends Controller
             ->exists();
 
         if (! $isMember) {
-            return back()->with('error', 'Anda bukan anggota perusahaan tersebut.');
+            return back()->with('error', __('messages.company.not_member'));
         }
 
         $request->session()->put('current_company_id', $validated['company_id']);
         $user->forceFill(['current_company_id' => $validated['company_id']])->save();
 
-        return redirect()->route('dashboard')->with('success', 'Perusahaan berhasil diganti.');
+        return redirect()->route('dashboard')->with('success', __('messages.company.switched'));
     }
 }

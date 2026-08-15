@@ -1,0 +1,35 @@
+{
+    "nav": {
+        "dashboard": "대시보드",
+        "users": "사용자",
+        "roles": "역할 및 권한",
+        "companies": "회사",
+        "group_overview": "개요",
+        "group_master": "마스터 데이터"
+    },
+    "action": {
+        "save": "저장",
+        "cancel": "취소",
+        "delete": "삭제",
+        "edit": "수정",
+        "create": "추가",
+        "back": "뒤로",
+        "search": "검색",
+        "confirm": "확인",
+        "close": "닫기"
+    },
+    "status": {
+        "active": "활성",
+        "inactive": "비활성",
+        "loading": "불러오는 중...",
+        "saving": "저장 중..."
+    },
+    "language": {
+        "id": "Bahasa Indonesia",
+        "en": "English",
+        "zh": "中文",
+        "ja": "日本語",
+        "ko": "한국어",
+        "switcher": "언어"
+    }
+}

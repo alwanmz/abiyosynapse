@@ -1,0 +1,35 @@
+{
+    "nav": {
+        "dashboard": "仪表盘",
+        "users": "用户",
+        "roles": "角色与权限",
+        "companies": "公司",
+        "group_overview": "概览",
+        "group_master": "主数据"
+    },
+    "action": {
+        "save": "保存",
+        "cancel": "取消",
+        "delete": "删除",
+        "edit": "编辑",
+        "create": "新增",
+        "back": "返回",
+        "search": "搜索",
+        "confirm": "确认",
+        "close": "关闭"
+    },
+    "status": {
+        "active": "启用",
+        "inactive": "停用",
+        "loading": "加载中...",
+        "saving": "保存中..."
+    },
+    "language": {
+        "id": "Bahasa Indonesia",
+        "en": "English",
+        "zh": "中文",
+        "ja": "日本語",
+        "ko": "한국어",
+        "switcher": "语言"
+    }
+}
