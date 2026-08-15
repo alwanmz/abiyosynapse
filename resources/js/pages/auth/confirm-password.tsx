@@ -15,7 +15,7 @@ export default function ConfirmPassword() {
         >
             <Head title="Konfirmasi Kata Sandi" />
 
-            <Form {...store.form()} resetOnSuccess={['password']}>
+            <Form {...store()} resetOnSuccess={['password']}>
                 {({ processing, errors }) => (
                     <div className="space-y-6">
                         <div className="grid gap-2">

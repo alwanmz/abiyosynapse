@@ -55,12 +55,12 @@ export function ConfirmDialog({
                         'relative flex items-center gap-3 overflow-hidden border-b px-6 py-4 text-white',
                         isDestructive
                             ? 'border-rose-400/40 shadow-[0_8px_24px_-12px_rgba(244,63,94,0.55)]'
-                            : 'border-blue-400/40 shadow-[0_8px_24px_-12px_rgba(59,130,246,0.55)]',
+                            : 'border-teal-400/40 shadow-[0_8px_24px_-12px_rgba(20,184,166,0.55)]',
                     )}
                     style={{
                         backgroundImage: isDestructive
                             ? 'linear-gradient(110deg, #881337 0%, #e11d48 50%, #fb7185 100%)'
-                            : 'linear-gradient(110deg, #1e3a8a 0%, #2563eb 45%, #0ea5e9 100%)',
+                            : 'linear-gradient(110deg, #115e59 0%, #0d9488 45%, #10b981 100%)',
                     }}
                 >
                     <span

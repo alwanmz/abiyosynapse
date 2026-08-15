@@ -9,22 +9,22 @@ interface ListHeaderProps {
 }
 
 /**
- * Shared neon-blue gradient header bar used at the top of every list/table card
+ * Shared neon-teal gradient header bar used at the top of every list/table card
  * so all master & list pages look consistent.
  *
  * The "neon" feel comes from:
- *  - a multi-stop gradient (deep blue -> bright blue -> cyan accent),
+ *  - a multi-stop gradient (deep teal -> bright teal -> emerald accent),
  *  - a subtle inner highlight at the top (white/15),
- *  - a soft outer glow ring underneath (blue-500/30 shadow),
+ *  - a soft outer glow ring underneath (teal-500/30 shadow),
  *  - a faint diagonal sheen overlay.
  */
 export function ListHeader({ title, action, description }: ListHeaderProps) {
     return (
         <div
-            className="relative flex items-center justify-between gap-4 overflow-hidden rounded-t-xl border-b border-blue-400/40 px-5 py-4 text-white shadow-[0_8px_24px_-12px_rgba(59,130,246,0.55)]"
+            className="relative flex items-center justify-between gap-4 overflow-hidden rounded-t-xl border-b border-teal-400/40 px-5 py-4 text-white shadow-[0_8px_24px_-12px_rgba(20,184,166,0.55)]"
             style={{
                 backgroundImage:
-                    'linear-gradient(110deg, #1e3a8a 0%, #2563eb 45%, #0ea5e9 100%)',
+                    'linear-gradient(110deg, #115e59 0%, #0d9488 45%, #10b981 100%)',
             }}
         >
             {/* Top inner highlight for the "neon" sheen */}
@@ -43,7 +43,7 @@ export function ListHeader({ title, action, description }: ListHeaderProps) {
                     {title}
                 </h2>
                 {description && (
-                    <p className="text-xs text-blue-100/90">{description}</p>
+                    <p className="text-xs text-teal-100/90">{description}</p>
                 )}
             </div>
             {action && (

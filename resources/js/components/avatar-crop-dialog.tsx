@@ -219,7 +219,7 @@ export function AvatarCropDialog({
                             ref={canvasRef}
                             width={size}
                             height={size}
-                            className="aspect-square w-full max-w-[280px] cursor-grab touch-none rounded-full border-2 border-blue-200 bg-muted shadow-inner active:cursor-grabbing"
+                            className="aspect-square w-full max-w-[280px] cursor-grab touch-none rounded-full border-2 border-teal-200 bg-muted shadow-inner active:cursor-grabbing"
                             onPointerDown={handlePointerDown}
                             onPointerMove={handlePointerMove}
                             onPointerUp={handlePointerUp}
@@ -249,7 +249,7 @@ export function AvatarCropDialog({
                             value={zoom}
                             disabled={!loaded}
                             onChange={(e) => handleZoomChange(parseFloat(e.target.value))}
-                            className="h-2 w-full cursor-pointer appearance-none rounded-full bg-muted accent-blue-600"
+                            className="h-2 w-full cursor-pointer appearance-none rounded-full bg-muted accent-teal-600"
                         />
                     </div>
                 </div>

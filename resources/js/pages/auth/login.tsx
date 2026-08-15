@@ -6,18 +6,20 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
+import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
 import { Form, Head } from '@inertiajs/react';
-import { Eye, EyeOff, Users } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 
 interface LoginProps {
     status?: string;
     canResetPassword: boolean;
+    canRegister: boolean;
 }
 
-export default function Login({ status, canResetPassword }: LoginProps) {
+export default function Login({ status, canResetPassword, canRegister }: LoginProps) {
     const [showPassword, setShowPassword] = useState(false);
 
     return (
@@ -28,7 +30,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
             <Head title="Masuk" />
 
             <Form
-                {...store.form()}
+                {...store()}
                 resetOnSuccess={['password']}
                 className="flex flex-col gap-6"
             >
@@ -121,34 +123,20 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                         </div>
 
                         <div className="text-center text-sm text-muted-foreground">
-                            Belum punya akun? Hubungi COO Anda.
+                            {canRegister ? (
+                                <>
+                                    Belum punya akun?{' '}
+                                    <TextLink href={register()} tabIndex={6}>
+                                        Coba gratis 7 hari
+                                    </TextLink>
+                                </>
+                            ) : (
+                                'Belum punya akun? Hubungi admin Anda.'
+                            )}
                         </div>
                     </>
                 )}
             </Form>
-
-            {/* Cross-portal link lives OUTSIDE the <Form> so form/autofill never
-                intercepts the navigation; a full-page <a> guarantees the switch. */}
-            <div className="flex flex-col gap-6">
-                <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                        <span className="w-full border-t" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-blue-50/60 px-2 text-muted-foreground dark:bg-[#0a1326]">
-                            atau
-                        </span>
-                    </div>
-                </div>
-
-                <a
-                    href="/portal/login"
-                    className="flex w-full items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-                >
-                    <Users className="h-4 w-4" />
-                    Login sebagai Klien
-                </a>
-            </div>
 
             {status && (
                 <div className="mb-4 text-center text-sm font-medium text-green-600">

@@ -22,7 +22,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
             <Head title="Reset Kata Sandi" />
 
             <Form
-                {...update.form()}
+                {...update()}
                 transform={(data) => ({ ...data, token, email })}
                 resetOnSuccess={['password', 'password_confirmation']}
             >
