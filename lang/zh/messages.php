@@ -6,6 +6,9 @@ return [
         'updated' => '公司信息更新成功。',
         'switched' => '公司切换成功。',
         'not_member' => '您不是该公司的成员。',
+        'deleted' => '公司删除成功。',
+        'has_dependent_data' => '该公司仍有关联的业务数据，无法删除。',
+        'cannot_delete_only_company' => '您无法删除您唯一的公司。',
     ],
 
     'role' => [
@@ -18,6 +21,7 @@ return [
 
     'user' => [
         'created' => '用户创建成功。',
+        'invited' => '用户已成功加入本公司。',
         'updated' => '用户更新成功。',
         'role_updated' => '用户角色更新成功。',
         'removed' => '用户已从公司移除。',

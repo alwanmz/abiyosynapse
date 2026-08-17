@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Company;
 use App\Models\CompanyUser;
 use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -81,5 +82,54 @@ class CompanyController extends Controller
         $company->update($validated);
 
         return redirect()->route('companies.index')->with('success', __('messages.company.updated'));
+    }
+
+    /**
+     * Delete a company. Guarded against removing a user's only company
+     * (they'd be left without any company context) and against dependent
+     * business data — no transactional modules exist yet, so
+     * hasDependentData() always returns false today, but the check stays
+     * in place so future modules (Inventory, GL, etc.) only need to
+     * extend that one method to be protected here.
+     */
+    public function destroy(Request $request, Company $company)
+    {
+        if ($this->hasDependentData($company)) {
+            return redirect()->route('companies.index')->with('error', __('messages.company.has_dependent_data'));
+        }
+
+        $memberUserIds = CompanyUser::where('company_id', $company->id)->pluck('user_id');
+
+        $usersWithNoOtherCompany = User::whereIn('id', $memberUserIds)
+            ->whereDoesntHave('companies', fn ($query) => $query->where('companies.id', '!=', $company->id))
+            ->pluck('id');
+
+        if ($usersWithNoOtherCompany->contains($request->user()->id)) {
+            return redirect()->route('companies.index')->with('error', __('messages.company.cannot_delete_only_company'));
+        }
+
+        CompanyUser::where('company_id', $company->id)->delete();
+
+        User::whereIn('id', $memberUserIds)
+            ->where('current_company_id', $company->id)
+            ->each(function (User $user) use ($company) {
+                $fallback = $user->companies()->where('companies.id', '!=', $company->id)->first();
+                $user->forceFill(['current_company_id' => $fallback?->id])->save();
+            });
+
+        $company->delete();
+
+        return redirect()->route('companies.index')->with('success', __('messages.company.deleted'));
+    }
+
+    /**
+     * Whether this company has business data that would be lost if it
+     * were deleted. Always false today — no transactional modules exist
+     * yet — but kept as a single extension point for when they do
+     * (Inventory movements, GL entries, Purchase/Sales documents, etc.).
+     */
+    protected function hasDependentData(Company $company): bool
+    {
+        return false;
     }
 }

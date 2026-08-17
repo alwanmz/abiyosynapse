@@ -118,6 +118,49 @@ class UserController extends Controller
     }
 
     /**
+     * Add an existing user (identified by email) as a member of the
+     * current company. Unlike store(), this never creates a new User
+     * account — the email must already belong to a registered user, and
+     * that user must not already be a member of this company.
+     */
+    public function invite(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'email' => ['required', 'string', 'email', 'exists:users,email'],
+            'role_id' => ['required', 'exists:roles,id'],
+        ]);
+
+        $companyId = app(CurrentCompany::class)->id();
+        $user = User::where('email', $validated['email'])->firstOrFail();
+
+        $alreadyMember = CompanyUser::where('company_id', $companyId)
+            ->where('user_id', $user->id)
+            ->exists();
+
+        if ($alreadyMember) {
+            return redirect()->back()->withErrors([
+                'email' => 'Pengguna ini sudah menjadi anggota perusahaan ini.',
+            ]);
+        }
+
+        CompanyUser::create([
+            'company_id' => $companyId,
+            'user_id' => $user->id,
+            'role_id' => $validated['role_id'],
+            'is_default' => ! $user->current_company_id,
+            'joined_at' => now(),
+        ]);
+
+        if (! $user->current_company_id) {
+            $user->forceFill(['current_company_id' => $companyId])->save();
+        }
+
+        $this->forgetUserCaches();
+
+        return redirect()->back()->with('success', __('messages.user.invited'));
+    }
+
+    /**
      * Update the user.
      */
     public function update(Request $request, User $user): RedirectResponse

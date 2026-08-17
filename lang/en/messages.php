@@ -6,6 +6,9 @@ return [
         'updated' => 'Company updated successfully.',
         'switched' => 'Company switched successfully.',
         'not_member' => 'You are not a member of that company.',
+        'deleted' => 'Company deleted successfully.',
+        'has_dependent_data' => 'This company cannot be deleted because it still has related business data.',
+        'cannot_delete_only_company' => 'You cannot delete your only company.',
     ],
 
     'role' => [
@@ -18,6 +21,7 @@ return [
 
     'user' => [
         'created' => 'User created successfully.',
+        'invited' => 'User added to this company successfully.',
         'updated' => 'User updated successfully.',
         'role_updated' => 'User role updated successfully.',
         'removed' => 'User removed from company successfully.',

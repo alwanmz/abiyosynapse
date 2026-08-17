@@ -39,6 +39,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index')->middleware('permission:companies.view');
     Route::get('/companies/{company}/edit', [CompanyController::class, 'edit'])->name('companies.edit')->middleware('permission:companies.edit,companies.manage');
     Route::put('/companies/{company}', [CompanyController::class, 'update'])->name('companies.update')->middleware('permission:companies.edit,companies.manage');
+    Route::delete('/companies/{company}', [CompanyController::class, 'destroy'])->name('companies.destroy')->middleware('permission:companies.delete,companies.manage');
 
     Route::post('/company/switch', CompanySwitchController::class)->name('company.switch');
 
@@ -51,6 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('manage-users', [UserController::class, 'index'])->name('manage-users')->middleware('permission:users.view');
     Route::post('manage-users', [UserController::class, 'store'])->name('manage-users.store')->middleware('permission:users.create,users.manage');
+    Route::post('manage-users/invite', [UserController::class, 'invite'])->name('manage-users.invite')->middleware('permission:users.create,users.manage');
     Route::put('manage-users/{user}', [UserController::class, 'update'])->name('manage-users.update')->middleware('permission:users.edit,users.manage');
     Route::put('manage-users/{user}/role', [UserController::class, 'updateRole'])->name('manage-users.update-role')->middleware('permission:users.edit,users.manage');
     Route::delete('manage-users/{user}', [UserController::class, 'destroy'])->name('manage-users.destroy')->middleware('permission:users.delete,users.manage');

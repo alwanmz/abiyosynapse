@@ -6,6 +6,9 @@ return [
         'updated' => '会社情報を更新しました。',
         'switched' => '会社を切り替えました。',
         'not_member' => 'その会社のメンバーではありません。',
+        'deleted' => '会社を削除しました。',
+        'has_dependent_data' => 'この会社には関連する業務データが残っているため削除できません。',
+        'cannot_delete_only_company' => '唯一の会社は削除できません。',
     ],
 
     'role' => [
@@ -18,6 +21,7 @@ return [
 
     'user' => [
         'created' => 'ユーザーを作成しました。',
+        'invited' => 'ユーザーをこの会社に追加しました。',
         'updated' => 'ユーザー情報を更新しました。',
         'role_updated' => 'ユーザーのロールを更新しました。',
         'removed' => 'ユーザーを会社から削除しました。',

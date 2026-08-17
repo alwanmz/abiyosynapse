@@ -14,7 +14,9 @@ import AppLayout from '@/layouts/app-layout';
 import companiesRoutes from '@/routes/companies';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { Pencil } from 'lucide-react';
+import { Pencil, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { DeleteCompanyDialog } from './components/delete-company-dialog';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -41,6 +43,8 @@ interface CompaniesPageProps {
 }
 
 export default function CompaniesPage({ companies }: CompaniesPageProps) {
+    const [companyToDelete, setCompanyToDelete] = useState<Company | null>(null);
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Perusahaan" />
@@ -106,6 +110,14 @@ export default function CompaniesPage({ companies }: CompaniesPageProps) {
                                                         <Pencil className="h-4 w-4" />
                                                     </Link>
                                                 </Button>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="text-destructive hover:text-destructive"
+                                                    onClick={() => setCompanyToDelete(company)}
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
                                             </TableCell>
                                         </TableRow>
                                     ))
@@ -114,6 +126,14 @@ export default function CompaniesPage({ companies }: CompaniesPageProps) {
                         </Table>
                     </CardContent>
                 </Card>
+
+                <DeleteCompanyDialog
+                    company={companyToDelete}
+                    open={companyToDelete !== null}
+                    onOpenChange={(open) => {
+                        if (!open) setCompanyToDelete(null);
+                    }}
+                />
             </div>
         </AppLayout>
     );

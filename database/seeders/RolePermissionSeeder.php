@@ -28,6 +28,7 @@ class RolePermissionSeeder extends Seeder
         'companies.view'   => 'Melihat data perusahaan',
         'companies.create' => 'Membuat perusahaan baru',
         'companies.edit'   => 'Mengubah data perusahaan',
+        'companies.delete' => 'Menghapus perusahaan',
         'companies.manage' => 'Mengelola perusahaan (gabungan)',
     ];
 

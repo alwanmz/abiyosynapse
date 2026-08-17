@@ -6,6 +6,9 @@ return [
         'updated' => '회사 정보가 수정되었습니다.',
         'switched' => '회사가 전환되었습니다.',
         'not_member' => '해당 회사의 구성원이 아닙니다.',
+        'deleted' => '회사가 삭제되었습니다.',
+        'has_dependent_data' => '관련된 업무 데이터가 남아 있어 이 회사를 삭제할 수 없습니다.',
+        'cannot_delete_only_company' => '유일한 회사는 삭제할 수 없습니다.',
     ],
 
     'role' => [
@@ -18,6 +21,7 @@ return [
 
     'user' => [
         'created' => '사용자가 추가되었습니다.',
+        'invited' => '사용자가 이 회사에 추가되었습니다.',
         'updated' => '사용자 정보가 수정되었습니다.',
         'role_updated' => '사용자 역할이 수정되었습니다.',
         'removed' => '사용자가 회사에서 제거되었습니다.',
