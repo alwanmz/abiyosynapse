@@ -24,17 +24,11 @@ import {
 } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import { useBreadcrumbs } from '@/hooks/use-breadcrumbs';
 import { Head, router, useForm } from '@inertiajs/react';
 import { ShieldCheck, Trash2 } from 'lucide-react';
-import { FormEventHandler, useMemo, useState } from 'react';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Hak Akses',
-        href: '/roles',
-    },
-];
+import { FormEventHandler, type ReactElement, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface Permission {
     id: number;
@@ -51,28 +45,7 @@ interface Role {
     permissions: Pick<Permission, 'id' | 'name'>[];
 }
 
-/**
- * Human-readable label for each module slug used as a permission prefix.
- * Permissions whose slug doesn't match any prefix below fall back to
- * the "Lainnya" group so we never silently drop one.
- */
-const MODULE_LABELS: Record<string, string> = {
-    companies: 'Perusahaan',
-    clients: 'Klien',
-    'task-types': 'Jenis Tugas',
-    users: 'Pengguna',
-    roles: 'Hak Akses',
-    teams: 'Tim',
-    projects: 'Proyek',
-    timelines: 'Linimasa',
-    tickets: 'Tiket',
-    'daily-logs': 'Catatan Harian',
-    minutes: 'Notulensi',
-    analytics: 'Analitik',
-    reports: 'Laporan',
-};
-
-/** Visual order — must include every key in MODULE_LABELS. */
+/** Visual order — must include every key in the `roles:modules` namespace. */
 const MODULE_ORDER = [
     'companies',
     'clients',
@@ -96,7 +69,11 @@ const MODULE_ORDER = [
  * existing route middleware — they get synced automatically when an
  * admin saves a role.
  */
-function groupPermissions(permissions: Permission[]) {
+function groupPermissions(
+    permissions: Permission[],
+    moduleLabels: Record<string, string>,
+    otherLabel: string,
+) {
     const grouped: Record<string, Permission[]> = {};
     const others: Permission[] = [];
 
@@ -105,7 +82,7 @@ function groupPermissions(permissions: Permission[]) {
         // contain a hyphen but no dot.
         if (!p.name.includes('.')) continue;
         const [module] = p.name.split('.');
-        if (MODULE_LABELS[module]) {
+        if (moduleLabels[module]) {
             (grouped[module] ||= []).push(p);
         } else {
             others.push(p);
@@ -116,31 +93,48 @@ function groupPermissions(permissions: Permission[]) {
         .filter((m) => grouped[m]?.length)
         .map((m) => ({
             slug: m,
-            label: MODULE_LABELS[m],
+            label: moduleLabels[m],
             permissions: grouped[m].sort((a, b) =>
                 a.display_name.localeCompare(b.display_name),
             ),
         }));
 
     if (others.length) {
-        ordered.push({ slug: 'other', label: 'Lainnya', permissions: others });
+        ordered.push({ slug: 'other', label: otherLabel, permissions: others });
     }
 
     return ordered;
 }
 
-export default function RolesPage({
+function RolesPage({
     roles,
     permissions,
 }: {
     roles: Role[];
     permissions: Permission[];
 }) {
+    const { t } = useTranslation('roles');
+
+    useBreadcrumbs([
+        {
+            title: t('breadcrumb'),
+            href: '/roles',
+        },
+    ]);
+
+    const moduleLabels: Record<string, string> = MODULE_ORDER.reduce(
+        (acc, slug) => ({ ...acc, [slug]: t(`modules.${slug}`) }),
+        {},
+    );
+
     const [openDialog, setOpenDialog] = useState(false);
     const [editingRole, setEditingRole] = useState<Role | null>(null);
     const [deletingRole, setDeletingRole] = useState<Role | null>(null);
 
-    const groups = useMemo(() => groupPermissions(permissions), [permissions]);
+    const groups = useMemo(
+        () => groupPermissions(permissions, moduleLabels, t('modules.other')),
+        [permissions, moduleLabels, t],
+    );
     const allModernPermissions = useMemo(
         () => permissions.filter((p) => p.name.includes('.')),
         [permissions],
@@ -233,17 +227,17 @@ export default function RolesPage({
         slug === 'super_admin' || slug === 'admin';
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Hak Akses" />
+        <>
+            <Head title={t('head_title')} />
 
             <div className="flex h-full flex-col p-6">
                 <div className="mb-6 flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-semibold tracking-tight">
-                            Hak Akses
+                            {t('page_title')}
                         </h1>
                         <p className="text-sm text-muted-foreground">
-                            Kelola role dan izin akses sesuai modul yang aktif saat ini.
+                            {t('page_description')}
                         </p>
                     </div>
 
@@ -251,18 +245,18 @@ export default function RolesPage({
                         <DialogTrigger asChild>
                             <Button onClick={() => handleOpenDialog()}>
                                 <ShieldCheck className="mr-2 h-4 w-4" />
-                                Tambah Role
+                                {t('add_role')}
                             </Button>
                         </DialogTrigger>
                         <DialogContent className="flex max-h-[90vh] max-w-3xl flex-col overflow-hidden">
                             <DialogHeader>
                                 <DialogTitle>
-                                    {editingRole ? 'Edit Role' : 'Tambah Role Baru'}
+                                    {editingRole ? t('dialog.edit_title') : t('dialog.create_title')}
                                 </DialogTitle>
                                 <DialogDescription>
                                     {editingRole
-                                        ? 'Perbarui detail role dan izinnya.'
-                                        : 'Buat role baru lalu tentukan modul mana yang boleh diakses.'}
+                                        ? t('dialog.edit_description')
+                                        : t('dialog.create_description')}
                                 </DialogDescription>
                             </DialogHeader>
 
@@ -275,11 +269,11 @@ export default function RolesPage({
                                     {!editingRole && (
                                         <div className="space-y-2">
                                             <Label htmlFor="name">
-                                                Nama Sistem (unik, tanpa spasi)
+                                                {t('dialog.system_name')}
                                             </Label>
                                             <Input
                                                 id="name"
-                                                placeholder="mis. support_staff"
+                                                placeholder={t('dialog.system_name_placeholder')}
                                                 value={data.name}
                                                 onChange={(e) =>
                                                     setData('name', e.target.value)
@@ -294,10 +288,10 @@ export default function RolesPage({
                                     )}
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="display_name">Nama Tampilan</Label>
+                                        <Label htmlFor="display_name">{t('dialog.display_name')}</Label>
                                         <Input
                                             id="display_name"
-                                            placeholder="mis. Support Staff"
+                                            placeholder={t('dialog.display_name_placeholder')}
                                             value={data.display_name}
                                             onChange={(e) =>
                                                 setData('display_name', e.target.value)
@@ -312,11 +306,11 @@ export default function RolesPage({
 
                                     <div className="space-y-2">
                                         <Label htmlFor="description">
-                                            Deskripsi (opsional)
+                                            {t('dialog.description')}
                                         </Label>
                                         <Textarea
                                             id="description"
-                                            placeholder="Deskripsi singkat fungsi role ini..."
+                                            placeholder={t('dialog.description_placeholder')}
                                             value={data.description}
                                             onChange={(e) =>
                                                 setData('description', e.target.value)
@@ -334,10 +328,10 @@ export default function RolesPage({
                                     <div className="flex items-center justify-between">
                                         <div>
                                             <Label className="text-base">
-                                                Izin Akses
+                                                {t('dialog.permissions')}
                                             </Label>
                                             <p className="text-xs text-muted-foreground">
-                                                Centang izin yang ingin diberikan ke role ini.
+                                                {t('dialog.permissions_hint')}
                                             </p>
                                         </div>
                                         <div className="text-xs text-muted-foreground">
@@ -346,7 +340,7 @@ export default function RolesPage({
                                                     (p) => p.id === id,
                                                 ),
                                             ).length}{' '}
-                                            / {allModernPermissions.length} dipilih
+                                            / {allModernPermissions.length} {t('dialog.permissions_selected')}
                                         </div>
                                     </div>
 
@@ -446,14 +440,14 @@ export default function RolesPage({
                                     type="button"
                                     onClick={() => setOpenDialog(false)}
                                 >
-                                    Batal
+                                    {t('dialog.cancel')}
                                 </Button>
                                 <Button
                                     type="submit"
                                     form="role-form"
                                     disabled={processing}
                                 >
-                                    Simpan Role
+                                    {t('dialog.submit')}
                                 </Button>
                             </DialogFooter>
                         </DialogContent>
@@ -461,15 +455,15 @@ export default function RolesPage({
                 </div>
 
                 <div className="overflow-hidden rounded-xl border bg-card">
-                    <ListHeader title="Daftar Role" />
+                    <ListHeader title={t('list_title')} />
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Peran</TableHead>
-                                <TableHead>Pengidentifikasi Sistem</TableHead>
-                                <TableHead>Izin</TableHead>
+                                <TableHead>{t('table.role')}</TableHead>
+                                <TableHead>{t('table.system_identifier')}</TableHead>
+                                <TableHead>{t('table.permissions')}</TableHead>
                                 <TableHead className="w-[120px] text-right">
-                                    Aksi
+                                    {t('table.actions')}
                                 </TableHead>
                             </TableRow>
                         </TableHeader>
@@ -503,11 +497,11 @@ export default function RolesPage({
                                             <div className="flex flex-wrap gap-1">
                                                 {locked ? (
                                                     <Badge className="bg-nx-navy-50 text-nx-navy-700 hover:bg-nx-navy-100 dark:bg-nx-navy-50 dark:text-nx-navy-700">
-                                                        Semua Izin (Admin)
+                                                        {t('table.all_permissions_admin')}
                                                     </Badge>
                                                 ) : modernPerms.length === 0 ? (
                                                     <span className="text-xs italic text-muted-foreground">
-                                                        Tidak ada izin
+                                                        {t('table.no_permissions')}
                                                     </span>
                                                 ) : (
                                                     <>
@@ -528,7 +522,7 @@ export default function RolesPage({
                                                                 className="text-xs"
                                                             >
                                                                 +
-                                                                {modernPerms.length - 4} lainnya
+                                                                {modernPerms.length - 4} {t('table.more_others')}
                                                             </Badge>
                                                         )}
                                                     </>
@@ -542,7 +536,7 @@ export default function RolesPage({
                                                     size="sm"
                                                     onClick={() => handleOpenDialog(role)}
                                                 >
-                                                    Kelola
+                                                    {t('table.manage')}
                                                 </Button>
                                                 {!locked && (
                                                     <Button
@@ -567,7 +561,7 @@ export default function RolesPage({
                                         colSpan={4}
                                         className="h-24 text-center"
                                     >
-                                        Belum ada role.
+                                        {t('table.empty')}
                                     </TableCell>
                                 </TableRow>
                             )}
@@ -579,20 +573,23 @@ export default function RolesPage({
             <ConfirmDialog
                 open={!!deletingRole}
                 onOpenChange={(o) => !o && setDeletingRole(null)}
-                title="Hapus role?"
+                title={t('delete.title')}
                 description={
                     <>
-                        Role{' '}
+                        {t('delete.description_prefix')}{' '}
                         <strong className="text-foreground">
                             "{deletingRole?.display_name}"
                         </strong>{' '}
-                        akan dihapus permanen. Role hanya bisa dihapus jika belum
-                        digunakan oleh user manapun.
+                        {t('delete.description_suffix')}
                     </>
                 }
-                confirmLabel="Ya, Hapus Role"
+                confirmLabel={t('delete.confirm')}
                 onConfirm={handleDelete}
             />
-        </AppLayout>
+        </>
     );
 }
+
+RolesPage.layout = (page: ReactElement) => <AppLayout>{page}</AppLayout>;
+
+export default RolesPage;

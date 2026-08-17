@@ -37,7 +37,7 @@ export function CompanySwitcher() {
                     <DropdownMenuTrigger asChild>
                         <SidebarMenuButton size="lg">
                             <Building2 className="size-4 shrink-0" />
-                            <span className="truncate font-medium">{currentCompany.name}</span>
+                            <span className="truncate font-medium" title={currentCompany.name}>{currentCompany.name}</span>
                             <ChevronsUpDown className="ml-auto size-4 shrink-0" />
                         </SidebarMenuButton>
                     </DropdownMenuTrigger>

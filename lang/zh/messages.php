@@ -29,4 +29,155 @@ return [
         'cannot_remove_self' => '您不能移除自己的账户。',
         'cannot_remove_last_admin' => '无法移除本公司的最后一位管理员。',
     ],
+
+    'uom' => [
+        'created' => '计量单位创建成功。',
+        'updated' => '计量单位更新成功。',
+        'deleted' => '计量单位删除成功。',
+        'cannot_delete_in_use' => '该计量单位仍被产品使用，无法删除。',
+    ],
+
+    'warehouse' => [
+        'created' => '仓库创建成功。',
+        'updated' => '仓库更新成功。',
+        'deleted' => '仓库删除成功。',
+        'cannot_delete_in_use' => '该仓库仍被产品使用，无法删除。',
+    ],
+
+    'tax_code' => [
+        'created' => '税码创建成功。',
+        'updated' => '税码更新成功。',
+        'deleted' => '税码删除成功。',
+    ],
+
+    'supplier' => [
+        'created' => '供应商创建成功。',
+        'updated' => '供应商更新成功。',
+        'deleted' => '供应商删除成功。',
+    ],
+
+    'customer' => [
+        'created' => '客户创建成功。',
+        'updated' => '客户更新成功。',
+        'deleted' => '客户删除成功。',
+    ],
+
+    'product_category' => [
+        'created' => '产品类别创建成功。',
+        'updated' => '产品类别更新成功。',
+        'deleted' => '产品类别删除成功。',
+        'cannot_delete_in_use' => '该类别仍被产品使用，无法删除。',
+    ],
+
+    'product' => [
+        'created' => '产品创建成功。',
+        'updated' => '产品更新成功。',
+        'deleted' => '产品删除成功。',
+    ],
+
+    'account' => [
+        'created' => '科目创建成功。',
+        'updated' => '科目更新成功。',
+        'deleted' => '科目删除成功。',
+        'cannot_be_own_parent' => '科目不能将自己设为上级科目。',
+        'cannot_delete_has_children' => '该科目仍有下级科目，无法删除。',
+        'cannot_delete_in_use' => '该科目已有分录记录，无法删除。',
+    ],
+
+    'stock_opname' => [
+        'created' => '库存盘点单创建成功。',
+        'lines_saved' => '盘点结果保存成功。',
+        'completed' => '库存盘点已完成，库存已调整。',
+        'not_draft' => '该盘点单已完成，无法再修改。',
+        'no_counted_lines' => '尚未填写任何盘点数量。',
+        'adjustment_note' => '来自库存盘点 :number 的调整',
+    ],
+
+    'work_center' => [
+        'created' => '工作中心创建成功。',
+        'updated' => '工作中心更新成功。',
+        'deleted' => '工作中心删除成功。',
+        'cannot_delete_in_use' => '该工作中心仍在工艺路线中使用，无法删除。',
+    ],
+
+    'bom' => [
+        'created' => '物料清单创建成功。',
+        'updated' => '物料清单更新成功。',
+        'deleted' => '物料清单删除成功。',
+        'cannot_delete_in_use' => '该物料清单正被产品使用中，无法删除。',
+    ],
+
+    'routing' => [
+        'created' => '工艺路线创建成功。',
+        'updated' => '工艺路线更新成功。',
+        'deleted' => '工艺路线删除成功。',
+        'cannot_delete_in_use' => '该工艺路线正被产品使用中，无法删除。',
+    ],
+
+    'production_order' => [
+        'created' => '生产工单创建成功。',
+        'missing_bom_routing' => '该产品尚未配置有效的物料清单和工艺路线。',
+        'released' => '生产工单已下达。',
+        'materials_issued' => '物料已成功发放用于生产。',
+        'operation_started' => '工序已开始。',
+        'operation_completed' => '工序已完成。',
+        'completed' => '生产工单已完成，成品已入库。',
+        'submitted_for_qc' => '生产工单已提交质检。',
+    ],
+
+    'quality' => [
+        'order_not_pending_qc' => '该生产工单尚未处于待质检状态。',
+        'passed_exceeds_inspected' => '合格数量不能超过检验数量。',
+        'final_inspection_recorded' => '终检记录成功，成品已根据质检结果处理。',
+    ],
+
+    'ncr' => [
+        'disposition_recorded' => '不合格处置意见记录成功。',
+        'corrective_action_recorded' => '纠正措施记录成功。',
+        'closed' => '不合格报告已关闭。',
+    ],
+
+    'purchase_request' => [
+        'created' => '请购单创建成功。',
+        'submitted' => '请购单已提交审批。',
+        'approved' => '请购单审批通过。',
+        'rejected' => '请购单已被拒绝。',
+    ],
+
+    'purchase_order' => [
+        'created' => '已根据请购单创建采购订单。',
+        'submitted_for_approval' => '采购订单已提交审批。',
+        'approved' => '采购订单审批通过。',
+        'sent' => '采购订单已发送给供应商。',
+        'closed' => '采购订单已关闭。',
+    ],
+
+    'goods_receipt' => [
+        'created' => '收货记录成功，等待质量检验。',
+        'put_away' => '质量检验完成，合格物料已入库。',
+    ],
+
+    'supplier_invoice' => [
+        'created' => '供应商发票记录成功。',
+    ],
+
+    'sales_order' => [
+        'created' => '销售订单创建成功。',
+        'submitted_for_approval' => '销售订单已提交审批。',
+        'approved' => '销售订单审批通过。',
+        'closed' => '销售订单已关闭。',
+    ],
+
+    'delivery_order' => [
+        'created' => '发货单创建成功。',
+        'shipped' => '发货成功，库存与成本分录已过账。',
+    ],
+
+    'sales_invoice' => [
+        'created' => '销售发票创建并过账成功。',
+    ],
+
+    'sales_return' => [
+        'created' => '销售退货记录成功，库存与分录已调整。',
+    ],
 ];

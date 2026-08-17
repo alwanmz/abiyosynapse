@@ -1,0 +1,76 @@
+{
+    "nav": {
+        "inventory": "재고"
+    },
+    "stock_overview": {
+        "title": "재고 현황",
+        "breadcrumb": "재고 현황",
+        "description": "제품 및 창고별 현재 재고 잔량을 확인합니다.",
+        "list_title": "재고 잔량",
+        "all_warehouses": "모든 창고",
+        "table": {
+            "product": "제품",
+            "warehouse": "창고",
+            "quantity_on_hand": "수량",
+            "average_cost": "평균 원가",
+            "total_value": "총 가치"
+        },
+        "empty": "아직 기록된 재고가 없습니다.",
+        "view_card": "재고 카드 보기"
+    },
+    "stock_card": {
+        "title": "재고 카드",
+        "breadcrumb": "재고 카드",
+        "description": "이 제품의 입출고 이력입니다.",
+        "table": {
+            "date": "날짜",
+            "warehouse": "창고",
+            "type": "유형",
+            "quantity": "수량",
+            "unit_cost": "단가",
+            "total_cost": "총 원가",
+            "balance": "잔량"
+        },
+        "type_in": "입고",
+        "type_out": "출고",
+        "type_transfer_in": "이체 입고",
+        "type_transfer_out": "이체 출고",
+        "empty": "이 제품의 입출고 이력이 아직 없습니다.",
+        "back": "재고 현황으로 돌아가기"
+    },
+    "stock_opname": {
+        "title": "재고 실사",
+        "breadcrumb": "재고 실사",
+        "description": "실지 재고를 조사하여 시스템 기록과 대조합니다.",
+        "list_title": "재고 실사 목록",
+        "add": "재고 실사 생성",
+        "add_title": "새 재고 실사 생성",
+        "warehouse": "창고",
+        "warehouse_placeholder": "창고 선택",
+        "opname_date": "실사일",
+        "notes": "비고",
+        "notes_placeholder": "선택 사항",
+        "table": {
+            "number": "번호",
+            "warehouse": "창고",
+            "date": "날짜",
+            "status": "상태",
+            "actions": "작업"
+        },
+        "status_draft": "초안",
+        "status_completed": "완료",
+        "empty": "아직 재고 실사가 없습니다.",
+        "detail_title": "재고 실사 상세",
+        "lines_table": {
+            "product": "제품",
+            "system_quantity": "시스템 수량",
+            "counted_quantity": "실사 수량",
+            "variance": "차이"
+        },
+        "save_counts": "실사 수량 저장",
+        "complete": "완료 및 재고 조정",
+        "complete_confirm_title": "이 재고 실사를 완료하시겠습니까?",
+        "complete_confirm_description": "입력된 실사 수량에 따라 재고가 조정됩니다. 입력하지 않은 항목은 건너뜁니다. 이 작업은 되돌릴 수 없습니다.",
+        "completed_at": "완료 시각"
+    }
+}

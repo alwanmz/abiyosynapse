@@ -1,0 +1,73 @@
+{
+    "nav": {
+        "quality": "Kualitas"
+    },
+    "inspection": {
+        "title": "Inspeksi Kualitas",
+        "breadcrumb": "Inspeksi",
+        "description": "Riwayat inspeksi Incoming, In-Process, dan Final.",
+        "list_title": "Daftar Inspeksi",
+        "empty": "Belum ada inspeksi.",
+        "type_incoming": "Incoming",
+        "type_in_process": "In-Process",
+        "type_final": "Final",
+        "result_pending": "Menunggu",
+        "result_pass": "Lulus",
+        "result_fail": "Gagal",
+        "table": {
+            "type": "Tipe",
+            "product": "Produk",
+            "quantity_inspected": "Diinspeksi",
+            "quantity_passed": "Lulus",
+            "quantity_failed": "Gagal",
+            "result": "Hasil",
+            "inspector": "Inspektor",
+            "date": "Tanggal"
+        }
+    },
+    "final_inspection": {
+        "title": "Inspeksi Akhir (QC)",
+        "description": "Catat hasil inspeksi akhir sebelum barang jadi masuk stok. Kuantitas yang tidak lulus akan diproses sebagai scrap.",
+        "quantity_passed": "Kuantitas Lulus",
+        "notes": "Catatan",
+        "notes_placeholder": "Opsional",
+        "submit": "Catat Hasil & Selesaikan Order",
+        "total_to_inspect": "Total yang Diinspeksi"
+    },
+    "ncr": {
+        "title": "Non-Conformance Report (NCR)",
+        "breadcrumb": "NCR",
+        "description": "Kelola laporan ketidaksesuaian dan tindak lanjutnya.",
+        "list_title": "Daftar NCR",
+        "empty": "Belum ada NCR.",
+        "table": {
+            "number": "Nomor",
+            "product": "Produk",
+            "description": "Deskripsi",
+            "status": "Status",
+            "disposition": "Disposisi",
+            "created_at": "Dibuat"
+        },
+        "status_open": "Terbuka",
+        "status_investigation": "Investigasi",
+        "status_disposition": "Disposisi",
+        "status_corrective_action": "Tindakan Korektif",
+        "status_closed": "Ditutup",
+        "disposition_rework": "Rework",
+        "disposition_scrap": "Scrap",
+        "disposition_return": "Return",
+        "disposition_use_as_is": "Use As-Is",
+        "detail_title": "Detail NCR",
+        "set_disposition": "Tetapkan Disposisi",
+        "disposition_label": "Disposisi",
+        "disposition_placeholder": "Pilih disposisi",
+        "disposition_notes": "Catatan Disposisi",
+        "disposition_notes_placeholder": "Opsional",
+        "apply_corrective_action": "Catat Tindakan Korektif",
+        "corrective_action_label": "Tindakan Korektif",
+        "corrective_action_placeholder": "Jelaskan tindakan korektif yang diambil",
+        "close_ncr": "Tutup NCR",
+        "close_confirm_title": "Tutup NCR ini?",
+        "close_confirm_description": "NCR yang sudah ditutup tidak dapat diubah lagi."
+    }
+}

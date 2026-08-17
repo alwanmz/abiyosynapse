@@ -16,5 +16,9 @@ export function AppShell({ children, variant = 'header' }: AppShellProps) {
         );
     }
 
+    // AppShell now sits inside the persistent Inertia layout (see
+    // Page.layout on each page component), so this only mounts once per
+    // full page load — defaultOpen reflects the cookie at that load and
+    // subsequent client-side toggles/navigations don't re-read it.
     return <SidebarProvider defaultOpen={isOpen}>{children}</SidebarProvider>;
 }

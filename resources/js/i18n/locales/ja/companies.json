@@ -1,0 +1,60 @@
+{
+    "head_title": "会社",
+    "breadcrumb": "会社",
+    "page_title": "会社",
+    "page_description": "所属している会社。",
+    "add_company": "会社を追加",
+    "list_title": "会社一覧",
+    "table": {
+        "name": "名前",
+        "code": "コード",
+        "currency": "通貨",
+        "status": "ステータス",
+        "default": "デフォルト",
+        "actions": "操作",
+        "active": "有効",
+        "inactive": "無効",
+        "empty": "会社がまだありません。"
+    },
+    "dialog": {
+        "delete": {
+            "title": "会社を削除",
+            "description": "本当に削除しますか：",
+            "description_suffix": "この操作は取り消せません。",
+            "warning_title": "警告",
+            "warning_body": "この会社と、それに紐づくすべてのユーザーメンバーシップが完全に削除されます。",
+            "submit": "会社を削除",
+            "submitting": "削除中...",
+            "cancel": "キャンセル"
+        }
+    },
+    "form": {
+        "create_breadcrumb": "会社を作成",
+        "create_title": "新しい会社を作成",
+        "create_description": "この会社のスーパー管理者になります。",
+        "create_head_title": "会社を作成",
+        "create_submit": "会社を作成",
+        "create_submitting": "作成中...",
+        "edit_breadcrumb": "編集",
+        "edit_title": "会社を編集",
+        "edit_description": "会社情報を更新します。",
+        "edit_head_title": "会社を編集",
+        "edit_submit": "変更を保存",
+        "edit_submitting": "保存中...",
+        "name": "会社名",
+        "name_placeholder": "会社名を入力してください",
+        "legal_name": "法人名",
+        "legal_name_placeholder": "例：株式会社サンプル",
+        "tax_id": "税務番号",
+        "tax_id_placeholder": "任意",
+        "address": "住所",
+        "address_placeholder": "任意",
+        "currency": "通貨",
+        "fiscal_year_start_month": "会計年度開始月",
+        "is_active": "会社を有効にする"
+    },
+    "months": [
+        "1月", "2月", "3月", "4月", "5月", "6月",
+        "7月", "8月", "9月", "10月", "11月", "12月"
+    ]
+}

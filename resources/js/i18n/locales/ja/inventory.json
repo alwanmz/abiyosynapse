@@ -1,0 +1,76 @@
+{
+    "nav": {
+        "inventory": "在庫"
+    },
+    "stock_overview": {
+        "title": "在庫概要",
+        "breadcrumb": "在庫概要",
+        "description": "製品・倉庫ごとの現在庫を確認します。",
+        "list_title": "在庫残高",
+        "all_warehouses": "すべての倉庫",
+        "table": {
+            "product": "製品",
+            "warehouse": "倉庫",
+            "quantity_on_hand": "数量",
+            "average_cost": "平均原価",
+            "total_value": "合計金額"
+        },
+        "empty": "まだ在庫が記録されていません。",
+        "view_card": "在庫カードを見る"
+    },
+    "stock_card": {
+        "title": "在庫カード",
+        "breadcrumb": "在庫カード",
+        "description": "この製品の入出庫履歴です。",
+        "table": {
+            "date": "日付",
+            "warehouse": "倉庫",
+            "type": "種別",
+            "quantity": "数量",
+            "unit_cost": "単価",
+            "total_cost": "合計原価",
+            "balance": "残高"
+        },
+        "type_in": "入庫",
+        "type_out": "出庫",
+        "type_transfer_in": "振替入庫",
+        "type_transfer_out": "振替出庫",
+        "empty": "この製品の入出庫履歴はまだありません。",
+        "back": "在庫概要に戻る"
+    },
+    "stock_opname": {
+        "title": "棚卸",
+        "breadcrumb": "棚卸",
+        "description": "実地棚卸を行い、システム記録と照合します。",
+        "list_title": "棚卸一覧",
+        "add": "棚卸を作成",
+        "add_title": "新規棚卸を作成",
+        "warehouse": "倉庫",
+        "warehouse_placeholder": "倉庫を選択",
+        "opname_date": "棚卸日",
+        "notes": "備考",
+        "notes_placeholder": "任意",
+        "table": {
+            "number": "番号",
+            "warehouse": "倉庫",
+            "date": "日付",
+            "status": "ステータス",
+            "actions": "操作"
+        },
+        "status_draft": "下書き",
+        "status_completed": "完了",
+        "empty": "まだ棚卸がありません。",
+        "detail_title": "棚卸詳細",
+        "lines_table": {
+            "product": "製品",
+            "system_quantity": "システム数量",
+            "counted_quantity": "実地数量",
+            "variance": "差異"
+        },
+        "save_counts": "実地数量を保存",
+        "complete": "完了して在庫を調整",
+        "complete_confirm_title": "この棚卸を完了しますか？",
+        "complete_confirm_description": "入力済みの実地数量に基づいて在庫が調整されます。未入力の行はスキップされます。この操作は取り消せません。",
+        "completed_at": "完了日時"
+    }
+}

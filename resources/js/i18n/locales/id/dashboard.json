@@ -1,0 +1,8 @@
+{
+    "breadcrumb": "Beranda",
+    "head_title": "Dasbor",
+    "welcome": "Selamat datang kembali!",
+    "placeholder_description": "Dashboard ini akan diisi begitu modul-modul ERP mulai berjalan.",
+    "empty_title": "Belum ada data",
+    "empty_description": "Ringkasan eksekutif akan tersedia setelah modul transaksional (Kas Bank, AR, AP, Sales, Pembelian) mulai posting ke buku besar."
+}

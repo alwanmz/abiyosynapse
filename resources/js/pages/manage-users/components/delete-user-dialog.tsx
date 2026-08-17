@@ -10,6 +10,7 @@ import {
 import { User } from '@/types/user';
 import { useForm } from '@inertiajs/react';
 import { IconAlertTriangle } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 interface DeleteUserDialogProps {
     user: User | null;
@@ -22,6 +23,7 @@ export function DeleteUserDialog({
     open,
     onOpenChange,
 }: DeleteUserDialogProps) {
+    const { t } = useTranslation('manage-users');
     const { delete: destroy, processing } = useForm({});
 
     const handleDelete = () => {
@@ -41,12 +43,12 @@ export function DeleteUserDialog({
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 text-destructive">
                         <IconAlertTriangle className="h-5 w-5" />
-                        Hapus Pengguna
+                        {t('dialog.delete.title')}
                     </DialogTitle>
                     <DialogDescription>
-                        Apakah Anda yakin ingin menghapus{' '}
+                        {t('dialog.delete.description')}{' '}
                         <span className="font-semibold">{user?.name}</span>?
-                        Tindakan ini tidak dapat dibatalkan.
+                        {' '}{t('dialog.delete.description_suffix')}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -55,10 +57,10 @@ export function DeleteUserDialog({
                         <IconAlertTriangle className="h-5 w-5 text-destructive" />
                         <div className="flex-1 space-y-1">
                             <p className="text-sm font-medium text-destructive">
-                                Peringatan
+                                {t('dialog.delete.warning_title')}
                             </p>
                             <p className="text-sm text-muted-foreground">
-                                Ini akan menghapus akun pengguna dan semua data terkait secara permanen.
+                                {t('dialog.delete.warning_body')}
                             </p>
                         </div>
                     </div>
@@ -71,7 +73,7 @@ export function DeleteUserDialog({
                         onClick={() => onOpenChange(false)}
                         disabled={processing}
                     >
-                        Batal
+                        {t('dialog.cancel')}
                     </Button>
                     <Button
                         type="button"
@@ -79,7 +81,7 @@ export function DeleteUserDialog({
                         onClick={handleDelete}
                         disabled={processing}
                     >
-                        {processing ? 'Menghapus...' : 'Hapus Pengguna'}
+                        {processing ? t('dialog.delete.submitting') : t('dialog.delete.submit')}
                     </Button>
                 </DialogFooter>
             </DialogContent>

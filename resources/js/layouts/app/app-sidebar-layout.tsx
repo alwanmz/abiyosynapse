@@ -3,21 +3,20 @@ import { AppShell } from '@/components/app-shell';
 import { AppSidebar } from '@/components/app-sidebar';
 import { AppSidebarHeader } from '@/components/app-sidebar-header';
 import { FlashMessage } from '@/components/flash-message';
-import { type BreadcrumbItem } from '@/types';
+import { BreadcrumbsProvider } from '@/hooks/use-breadcrumbs';
 import { type PropsWithChildren } from 'react';
 
-export default function AppSidebarLayout({
-    children,
-    breadcrumbs = [],
-}: PropsWithChildren<{ breadcrumbs?: BreadcrumbItem[] }>) {
+export default function AppSidebarLayout({ children }: PropsWithChildren) {
     return (
-        <AppShell variant="sidebar">
-            <AppSidebar />
-            <AppContent variant="sidebar" className="overflow-x-hidden">
-                <AppSidebarHeader breadcrumbs={breadcrumbs} />
-                {children}
-            </AppContent>
-            <FlashMessage />
-        </AppShell>
+        <BreadcrumbsProvider>
+            <AppShell variant="sidebar">
+                <AppSidebar />
+                <AppContent variant="sidebar" className="overflow-x-hidden">
+                    <AppSidebarHeader />
+                    {children}
+                </AppContent>
+                <FlashMessage />
+            </AppShell>
+        </BreadcrumbsProvider>
     );
 }

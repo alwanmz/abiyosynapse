@@ -10,6 +10,7 @@ import {
 import companiesRoutes from '@/routes/companies';
 import { useForm } from '@inertiajs/react';
 import { IconAlertTriangle } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 interface DeleteCompanyDialogProps {
     company: { id: number; name: string } | null;
@@ -22,6 +23,7 @@ export function DeleteCompanyDialog({
     open,
     onOpenChange,
 }: DeleteCompanyDialogProps) {
+    const { t } = useTranslation('companies');
     const { delete: destroy, processing } = useForm({});
 
     const handleDelete = () => {
@@ -41,12 +43,12 @@ export function DeleteCompanyDialog({
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 text-destructive">
                         <IconAlertTriangle className="h-5 w-5" />
-                        Hapus Perusahaan
+                        {t('dialog.delete.title')}
                     </DialogTitle>
                     <DialogDescription>
-                        Apakah Anda yakin ingin menghapus{' '}
+                        {t('dialog.delete.description')}{' '}
                         <span className="font-semibold">{company?.name}</span>?
-                        Tindakan ini tidak dapat dibatalkan.
+                        {' '}{t('dialog.delete.description_suffix')}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -55,12 +57,10 @@ export function DeleteCompanyDialog({
                         <IconAlertTriangle className="h-5 w-5 text-destructive" />
                         <div className="flex-1 space-y-1">
                             <p className="text-sm font-medium text-destructive">
-                                Peringatan
+                                {t('dialog.delete.warning_title')}
                             </p>
                             <p className="text-sm text-muted-foreground">
-                                Ini akan menghapus perusahaan dan seluruh
-                                keanggotaan pengguna di dalamnya secara
-                                permanen.
+                                {t('dialog.delete.warning_body')}
                             </p>
                         </div>
                     </div>
@@ -73,7 +73,7 @@ export function DeleteCompanyDialog({
                         onClick={() => onOpenChange(false)}
                         disabled={processing}
                     >
-                        Batal
+                        {t('dialog.delete.cancel')}
                     </Button>
                     <Button
                         type="button"
@@ -81,7 +81,7 @@ export function DeleteCompanyDialog({
                         onClick={handleDelete}
                         disabled={processing}
                     >
-                        {processing ? 'Menghapus...' : 'Hapus Perusahaan'}
+                        {processing ? t('dialog.delete.submitting') : t('dialog.delete.submit')}
                     </Button>
                 </DialogFooter>
             </DialogContent>

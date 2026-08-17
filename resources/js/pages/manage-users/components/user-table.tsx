@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/table';
 import { User } from '@/types/user';
 import { Users } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { UserTableRow } from './user-table-row';
 
 interface UserTableProps {
@@ -25,18 +26,20 @@ export function UserTable({
     onChangeRole,
     onDeleteUser,
 }: UserTableProps) {
+    const { t } = useTranslation('manage-users');
+
     if (users.length === 0) {
         return (
             <div className="overflow-hidden rounded-lg border">
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="w-[50px]">#</TableHead>
-                            <TableHead>Pengguna</TableHead>
-                            <TableHead>Email</TableHead>
-                            <TableHead>Peran</TableHead>
-                            <TableHead>Bergabung</TableHead>
-                            <TableHead className="w-[80px]">Aksi</TableHead>
+                            <TableHead className="w-[50px]">{t('table.number')}</TableHead>
+                            <TableHead>{t('table.user')}</TableHead>
+                            <TableHead>{t('table.email')}</TableHead>
+                            <TableHead>{t('table.role')}</TableHead>
+                            <TableHead>{t('table.joined')}</TableHead>
+                            <TableHead className="w-[80px]">{t('table.actions')}</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -44,9 +47,9 @@ export function UserTable({
                             <TableCell colSpan={6} className="h-32 text-center">
                                 <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
                                     <Users className="h-10 w-10" />
-                                    <p>Pengguna tidak ditemukan</p>
+                                    <p>{t('table.empty_title')}</p>
                                     <p className="text-xs">
-                                        Coba sesuaikan filter Anda
+                                        {t('table.empty_hint')}
                                     </p>
                                 </div>
                             </TableCell>
@@ -62,12 +65,12 @@ export function UserTable({
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="w-[50px]">#</TableHead>
-                        <TableHead>Pengguna</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Peran</TableHead>
-                        <TableHead>Bergabung</TableHead>
-                        <TableHead className="w-[80px]">Aksi</TableHead>
+                        <TableHead className="w-[50px]">{t('table.number')}</TableHead>
+                        <TableHead>{t('table.user')}</TableHead>
+                        <TableHead>{t('table.email')}</TableHead>
+                        <TableHead>{t('table.role')}</TableHead>
+                        <TableHead>{t('table.joined')}</TableHead>
+                        <TableHead className="w-[80px]">{t('table.actions')}</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>

@@ -1,0 +1,76 @@
+{
+    "nav": {
+        "inventory": "Inventori"
+    },
+    "stock_overview": {
+        "title": "Ringkasan Stok",
+        "breadcrumb": "Ringkasan Stok",
+        "description": "Lihat saldo stok saat ini per produk dan gudang.",
+        "list_title": "Saldo Stok",
+        "all_warehouses": "Semua Gudang",
+        "table": {
+            "product": "Produk",
+            "warehouse": "Gudang",
+            "quantity_on_hand": "Kuantitas",
+            "average_cost": "Biaya Rata-rata",
+            "total_value": "Nilai Total"
+        },
+        "empty": "Belum ada stok tercatat.",
+        "view_card": "Lihat Kartu Stok"
+    },
+    "stock_card": {
+        "title": "Kartu Stok",
+        "breadcrumb": "Kartu Stok",
+        "description": "Riwayat mutasi stok untuk produk ini.",
+        "table": {
+            "date": "Tanggal",
+            "warehouse": "Gudang",
+            "type": "Tipe",
+            "quantity": "Kuantitas",
+            "unit_cost": "Biaya Satuan",
+            "total_cost": "Total Biaya",
+            "balance": "Saldo"
+        },
+        "type_in": "Masuk",
+        "type_out": "Keluar",
+        "type_transfer_in": "Transfer Masuk",
+        "type_transfer_out": "Transfer Keluar",
+        "empty": "Belum ada mutasi untuk produk ini.",
+        "back": "Kembali ke Ringkasan Stok"
+    },
+    "stock_opname": {
+        "title": "Stock Opname",
+        "breadcrumb": "Stock Opname",
+        "description": "Hitung fisik stok dan sesuaikan dengan catatan sistem.",
+        "list_title": "Daftar Stock Opname",
+        "add": "Buat Stock Opname",
+        "add_title": "Buat Stock Opname Baru",
+        "warehouse": "Gudang",
+        "warehouse_placeholder": "Pilih gudang",
+        "opname_date": "Tanggal Opname",
+        "notes": "Catatan",
+        "notes_placeholder": "Opsional",
+        "table": {
+            "number": "Nomor",
+            "warehouse": "Gudang",
+            "date": "Tanggal",
+            "status": "Status",
+            "actions": "Aksi"
+        },
+        "status_draft": "Draft",
+        "status_completed": "Selesai",
+        "empty": "Belum ada stock opname.",
+        "detail_title": "Detail Stock Opname",
+        "lines_table": {
+            "product": "Produk",
+            "system_quantity": "Kuantitas Sistem",
+            "counted_quantity": "Kuantitas Fisik",
+            "variance": "Selisih"
+        },
+        "save_counts": "Simpan Hasil Hitung",
+        "complete": "Selesaikan & Sesuaikan Stok",
+        "complete_confirm_title": "Selesaikan stock opname?",
+        "complete_confirm_description": "Stok akan disesuaikan sesuai hasil hitung fisik yang sudah diisi. Baris yang belum diisi akan diabaikan. Tindakan ini tidak dapat dibatalkan.",
+        "completed_at": "Diselesaikan pada"
+    }
+}

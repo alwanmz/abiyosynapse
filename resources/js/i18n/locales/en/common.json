@@ -5,7 +5,7 @@
         "roles": "Roles & Permissions",
         "companies": "Companies",
         "group_overview": "Overview",
-        "group_master": "Master Data"
+        "group_master": "Administration"
     },
     "action": {
         "save": "Save",
@@ -31,5 +31,10 @@
         "ja": "日本語",
         "ko": "한국어",
         "switcher": "Language"
+    },
+    "pagination": {
+        "showing": "Showing {{from}} to {{to}} of {{total}} results",
+        "per_page": "Per page:",
+        "page_of": "Page {{current}} of {{last}}"
     }
 }

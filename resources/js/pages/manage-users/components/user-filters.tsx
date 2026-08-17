@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/select';
 import { User } from '@/types/user';
 import { IconSearch } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 interface UserFiltersProps {
     searchQuery: string;
@@ -26,13 +27,15 @@ export function UserFilters({
     uniqueRoles,
     users,
 }: UserFiltersProps) {
+    const { t } = useTranslation('manage-users');
+
     return (
         <div className="flex flex-wrap items-center gap-2">
             {/* Search */}
             <div className="relative">
                 <IconSearch className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                    placeholder="Cari pengguna..."
+                    placeholder={t('search_placeholder')}
                     className="w-[250px] pl-9"
                     value={searchQuery}
                     onChange={(e) => onSearchChange(e.target.value)}
@@ -42,10 +45,10 @@ export function UserFilters({
             {/* Role Filter */}
             <Select value={selectedRole} onValueChange={onRoleChange}>
                 <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Semua Peran" />
+                    <SelectValue placeholder={t('all_roles')} />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="all">Semua Peran</SelectItem>
+                    <SelectItem value="all">{t('all_roles')}</SelectItem>
                     {uniqueRoles.map((role) => (
                         <SelectItem key={role} value={role!}>
                             {users

@@ -54,4 +54,14 @@ class Company extends Model
     {
         return $this->hasMany(CompanyUser::class);
     }
+
+    public function accounts(): HasMany
+    {
+        return $this->hasMany(Account::class);
+    }
+
+    public function journalEntries(): HasMany
+    {
+        return $this->hasMany(JournalEntry::class);
+    }
 }

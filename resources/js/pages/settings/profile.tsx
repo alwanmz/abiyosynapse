@@ -1,7 +1,7 @@
 import { send } from '@/routes/verification';
-import { type BreadcrumbItem, type SharedData } from '@/types';
+import { type SharedData } from '@/types';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { FormEvent, useState } from 'react';
+import { FormEvent, type ReactElement, useState } from 'react';
 
 import { AvatarUploadField } from '@/components/avatar-upload-field';
 import DeleteUser from '@/components/delete-user';
@@ -10,18 +10,12 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useBreadcrumbs } from '@/hooks/use-breadcrumbs';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { edit } from '@/routes/profile';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Pengaturan Profil',
-        href: edit().url,
-    },
-];
-
-export default function Profile({
+function Profile({
     mustVerifyEmail,
     status,
 }: {
@@ -30,6 +24,13 @@ export default function Profile({
 }) {
     const { auth } = usePage<SharedData>().props;
     const [savedAt, setSavedAt] = useState<number | null>(null);
+
+    useBreadcrumbs([
+        {
+            title: 'Pengaturan Profil',
+            href: edit().url,
+        },
+    ]);
 
     // Manual useForm so we can send a file with `_method=patch`. Inertia's
     // patch()/put() helpers don't accept multipart bodies.
@@ -64,7 +65,7 @@ export default function Profile({
     const recentlySuccessful = savedAt !== null && Date.now() - savedAt < 2000;
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Pengaturan Profil" />
 
             <h1 className="sr-only">Pengaturan Profil</h1>
@@ -168,6 +169,10 @@ export default function Profile({
 
                 <DeleteUser />
             </SettingsLayout>
-        </AppLayout>
+        </>
     );
 }
+
+Profile.layout = (page: ReactElement) => <AppLayout>{page}</AppLayout>;
+
+export default Profile;

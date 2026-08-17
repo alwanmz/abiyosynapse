@@ -18,6 +18,7 @@ import {
     IconShield,
     IconTrash,
 } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 import { getRoleColor } from '../constants';
 
 interface UserTableRowProps {
@@ -37,6 +38,8 @@ export function UserTableRow({
     onChangeRole,
     onDeleteUser,
 }: UserTableRowProps) {
+    const { t } = useTranslation('manage-users');
+
     const getInitials = (name: string) => {
         return name
             .split(' ')
@@ -85,7 +88,7 @@ export function UserTableRow({
                         {user.role.display_name}
                     </Badge>
                 ) : (
-                    <Badge variant="outline">Tanpa Peran</Badge>
+                    <Badge variant="outline">{t('table.no_role')}</Badge>
                 )}
             </TableCell>
             <TableCell className="text-sm text-muted-foreground">
@@ -96,19 +99,19 @@ export function UserTableRow({
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="h-8 w-8">
                             <IconDotsVertical className="h-4 w-4" />
-                            <span className="sr-only">Aksi</span>
+                            <span className="sr-only">{t('table.actions')}</span>
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Aksi</DropdownMenuLabel>
+                        <DropdownMenuLabel>{t('table.actions')}</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => onEditUser(user)}>
                             <IconEdit className="mr-2 h-4 w-4" />
-                            Edit Pengguna
+                            {t('table.action_edit')}
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => onChangeRole(user)}>
                             <IconShield className="mr-2 h-4 w-4" />
-                            Ubah Peran
+                            {t('table.action_change_role')}
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
@@ -118,7 +121,7 @@ export function UserTableRow({
                             disabled={isCurrentUser}
                         >
                             <IconTrash className="mr-2 h-4 w-4" />
-                            {isCurrentUser ? 'Tidak Dapat Menghapus Diri Sendiri' : 'Hapus'}
+                            {isCurrentUser ? t('table.action_cannot_delete_self') : t('table.action_delete')}
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

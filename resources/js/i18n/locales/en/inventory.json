@@ -1,0 +1,76 @@
+{
+    "nav": {
+        "inventory": "Inventory"
+    },
+    "stock_overview": {
+        "title": "Stock Overview",
+        "breadcrumb": "Stock Overview",
+        "description": "View current stock balances by product and warehouse.",
+        "list_title": "Stock Balances",
+        "all_warehouses": "All Warehouses",
+        "table": {
+            "product": "Product",
+            "warehouse": "Warehouse",
+            "quantity_on_hand": "Quantity",
+            "average_cost": "Average Cost",
+            "total_value": "Total Value"
+        },
+        "empty": "No stock recorded yet.",
+        "view_card": "View Stock Card"
+    },
+    "stock_card": {
+        "title": "Stock Card",
+        "breadcrumb": "Stock Card",
+        "description": "Movement history for this product.",
+        "table": {
+            "date": "Date",
+            "warehouse": "Warehouse",
+            "type": "Type",
+            "quantity": "Quantity",
+            "unit_cost": "Unit Cost",
+            "total_cost": "Total Cost",
+            "balance": "Balance"
+        },
+        "type_in": "In",
+        "type_out": "Out",
+        "type_transfer_in": "Transfer In",
+        "type_transfer_out": "Transfer Out",
+        "empty": "No movements for this product yet.",
+        "back": "Back to Stock Overview"
+    },
+    "stock_opname": {
+        "title": "Stock Opname",
+        "breadcrumb": "Stock Opname",
+        "description": "Perform a physical count and reconcile it against system records.",
+        "list_title": "Stock Opname List",
+        "add": "New Stock Opname",
+        "add_title": "Create New Stock Opname",
+        "warehouse": "Warehouse",
+        "warehouse_placeholder": "Select warehouse",
+        "opname_date": "Opname Date",
+        "notes": "Notes",
+        "notes_placeholder": "Optional",
+        "table": {
+            "number": "Number",
+            "warehouse": "Warehouse",
+            "date": "Date",
+            "status": "Status",
+            "actions": "Actions"
+        },
+        "status_draft": "Draft",
+        "status_completed": "Completed",
+        "empty": "No stock opname yet.",
+        "detail_title": "Stock Opname Detail",
+        "lines_table": {
+            "product": "Product",
+            "system_quantity": "System Quantity",
+            "counted_quantity": "Counted Quantity",
+            "variance": "Variance"
+        },
+        "save_counts": "Save Counted Quantities",
+        "complete": "Complete & Adjust Stock",
+        "complete_confirm_title": "Complete this stock opname?",
+        "complete_confirm_description": "Stock will be adjusted to match the counted quantities entered. Lines left blank will be skipped. This action cannot be undone.",
+        "completed_at": "Completed at"
+    }
+}

@@ -1,0 +1,58 @@
+{
+    "head_title": "ロールと権限",
+    "breadcrumb": "ロールと権限",
+    "page_title": "ロールと権限",
+    "page_description": "現在有効なモジュールに応じてロールとアクセス権限を管理します。",
+    "add_role": "ロールを追加",
+    "list_title": "ロール一覧",
+    "modules": {
+        "companies": "会社",
+        "clients": "クライアント",
+        "task-types": "タスク種別",
+        "users": "ユーザー",
+        "roles": "ロールと権限",
+        "teams": "チーム",
+        "projects": "プロジェクト",
+        "timelines": "タイムライン",
+        "tickets": "チケット",
+        "daily-logs": "日報",
+        "minutes": "議事録",
+        "analytics": "分析",
+        "reports": "レポート",
+        "other": "その他"
+    },
+    "dialog": {
+        "edit_title": "ロールを編集",
+        "create_title": "新規ロールを追加",
+        "edit_description": "ロールの詳細と権限を更新します。",
+        "create_description": "新しいロールを作成し、アクセスを許可するモジュールを選択してください。",
+        "system_name": "システム名（一意・スペース不可）",
+        "system_name_placeholder": "例：support_staff",
+        "display_name": "表示名",
+        "display_name_placeholder": "例：サポートスタッフ",
+        "description": "説明（任意）",
+        "description_placeholder": "このロールの役割を簡潔に説明してください...",
+        "permissions": "アクセス権限",
+        "permissions_hint": "このロールに付与する権限にチェックを入れてください。",
+        "permissions_selected": "選択済み",
+        "cancel": "キャンセル",
+        "submit": "ロールを保存"
+    },
+    "table": {
+        "role": "ロール",
+        "system_identifier": "システム識別子",
+        "permissions": "権限",
+        "actions": "操作",
+        "all_permissions_admin": "すべての権限（管理者）",
+        "no_permissions": "権限なし",
+        "more_others": "件その他",
+        "manage": "管理",
+        "empty": "まだロールがありません。"
+    },
+    "delete": {
+        "title": "ロールを削除しますか？",
+        "description_prefix": "ロール",
+        "description_suffix": "は完全に削除されます。ロールは、いずれのユーザーにも使用されていない場合のみ削除できます。",
+        "confirm": "はい、削除します"
+    }
+}

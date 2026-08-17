@@ -1,0 +1,60 @@
+{
+    "head_title": "Perusahaan",
+    "breadcrumb": "Perusahaan",
+    "page_title": "Perusahaan",
+    "page_description": "Perusahaan yang Anda ikuti.",
+    "add_company": "Tambah Perusahaan",
+    "list_title": "Daftar Perusahaan",
+    "table": {
+        "name": "Nama",
+        "code": "Kode",
+        "currency": "Mata Uang",
+        "status": "Status",
+        "default": "Default",
+        "actions": "Aksi",
+        "active": "Aktif",
+        "inactive": "Nonaktif",
+        "empty": "Belum ada perusahaan."
+    },
+    "dialog": {
+        "delete": {
+            "title": "Hapus Perusahaan",
+            "description": "Apakah Anda yakin ingin menghapus",
+            "description_suffix": "Tindakan ini tidak dapat dibatalkan.",
+            "warning_title": "Peringatan",
+            "warning_body": "Ini akan menghapus perusahaan dan seluruh keanggotaan pengguna di dalamnya secara permanen.",
+            "submit": "Hapus Perusahaan",
+            "submitting": "Menghapus...",
+            "cancel": "Batal"
+        }
+    },
+    "form": {
+        "create_breadcrumb": "Buat Perusahaan",
+        "create_title": "Buat Perusahaan Baru",
+        "create_description": "Anda akan menjadi Super Admin untuk perusahaan ini.",
+        "create_head_title": "Buat Perusahaan",
+        "create_submit": "Buat Perusahaan",
+        "create_submitting": "Membuat...",
+        "edit_breadcrumb": "Edit",
+        "edit_title": "Edit Perusahaan",
+        "edit_description": "Perbarui informasi perusahaan.",
+        "edit_head_title": "Edit Perusahaan",
+        "edit_submit": "Simpan Perubahan",
+        "edit_submitting": "Menyimpan...",
+        "name": "Nama Perusahaan",
+        "name_placeholder": "Masukkan nama perusahaan",
+        "legal_name": "Nama Badan Hukum",
+        "legal_name_placeholder": "Contoh: PT Contoh Sejahtera",
+        "tax_id": "NPWP",
+        "tax_id_placeholder": "Opsional",
+        "address": "Alamat",
+        "address_placeholder": "Opsional",
+        "currency": "Mata Uang",
+        "fiscal_year_start_month": "Awal Tahun Fiskal",
+        "is_active": "Perusahaan aktif"
+    },
+    "months": [
+        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    ]
+}

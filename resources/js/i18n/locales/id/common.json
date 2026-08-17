@@ -5,7 +5,7 @@
         "roles": "Hak Akses",
         "companies": "Perusahaan",
         "group_overview": "Ringkasan",
-        "group_master": "Data Master"
+        "group_master": "Administrasi"
     },
     "action": {
         "save": "Simpan",
@@ -31,5 +31,10 @@
         "ja": "日本語",
         "ko": "한국어",
         "switcher": "Bahasa"
+    },
+    "pagination": {
+        "showing": "Menampilkan {{from}} sampai {{to}} dari {{total}} hasil",
+        "per_page": "Per halaman:",
+        "page_of": "Halaman {{current}} dari {{last}}"
     }
 }

@@ -1,0 +1,73 @@
+{
+    "nav": {
+        "quality": "质量"
+    },
+    "inspection": {
+        "title": "质量检验",
+        "breadcrumb": "检验",
+        "description": "进料检验、过程检验和终检的历史记录。",
+        "list_title": "检验列表",
+        "empty": "暂无检验记录。",
+        "type_incoming": "进料检验",
+        "type_in_process": "过程检验",
+        "type_final": "终检",
+        "result_pending": "待处理",
+        "result_pass": "合格",
+        "result_fail": "不合格",
+        "table": {
+            "type": "类型",
+            "product": "产品",
+            "quantity_inspected": "检验数量",
+            "quantity_passed": "合格数量",
+            "quantity_failed": "不合格数量",
+            "result": "结果",
+            "inspector": "检验员",
+            "date": "日期"
+        }
+    },
+    "final_inspection": {
+        "title": "终检（质检）",
+        "description": "在成品入库前记录终检结果。不合格数量将作为报废处理。",
+        "quantity_passed": "合格数量",
+        "notes": "备注",
+        "notes_placeholder": "选填",
+        "submit": "记录结果并完成工单",
+        "total_to_inspect": "待检验总数"
+    },
+    "ncr": {
+        "title": "不合格报告（NCR）",
+        "breadcrumb": "NCR",
+        "description": "管理不合格报告及其后续处理。",
+        "list_title": "NCR 列表",
+        "empty": "暂无 NCR。",
+        "table": {
+            "number": "编号",
+            "product": "产品",
+            "description": "描述",
+            "status": "状态",
+            "disposition": "处置方式",
+            "created_at": "创建时间"
+        },
+        "status_open": "待处理",
+        "status_investigation": "调查中",
+        "status_disposition": "处置中",
+        "status_corrective_action": "纠正措施",
+        "status_closed": "已关闭",
+        "disposition_rework": "返工",
+        "disposition_scrap": "报废",
+        "disposition_return": "退货",
+        "disposition_use_as_is": "让步接收",
+        "detail_title": "NCR 详情",
+        "set_disposition": "设置处置方式",
+        "disposition_label": "处置方式",
+        "disposition_placeholder": "选择处置方式",
+        "disposition_notes": "处置说明",
+        "disposition_notes_placeholder": "选填",
+        "apply_corrective_action": "记录纠正措施",
+        "corrective_action_label": "纠正措施",
+        "corrective_action_placeholder": "描述采取的纠正措施",
+        "close_ncr": "关闭 NCR",
+        "close_confirm_title": "确认关闭此 NCR？",
+        "close_confirm_description": "已关闭的 NCR 无法再修改。"
+    }
+}

@@ -1,10 +1,11 @@
 import { ListHeader } from '@/components/list-header';
 import { Card, CardContent } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem } from '@/types';
+import { useBreadcrumbs } from '@/hooks/use-breadcrumbs';
 import { User } from '@/types/user';
 import { Head, usePage } from '@inertiajs/react';
-import { useState } from 'react';
+import { type ReactElement, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AddUserDialog } from './components/add-user-dialog';
 import { ChangeRoleDialog } from './components/change-role-dialog';
 import { DeleteUserDialog } from './components/delete-user-dialog';
@@ -16,13 +17,6 @@ import { UserStatsCards } from './components/user-stats-cards';
 import { UserTable } from './components/user-table';
 import { useUserFilters } from './hooks/use-user-filters';
 import { useUserStats } from './hooks/use-user-stats';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Kelola Pengguna',
-        href: '#',
-    },
-];
 
 interface PaginatedUsers {
     data: User[];
@@ -40,9 +34,17 @@ interface ManageUsersProps {
     roles: Array<{ id: number; name: string; display_name: string }>;
 }
 
-export default function ManageUsersPage({ users, roles }: ManageUsersProps) {
+function ManageUsersPage({ users, roles }: ManageUsersProps) {
+    const { t } = useTranslation('manage-users');
     const { auth } = usePage().props as any;
     const currentUserId = auth?.user?.id;
+
+    useBreadcrumbs([
+        {
+            title: t('breadcrumb'),
+            href: '#',
+        },
+    ]);
 
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [addUserOpen, setAddUserOpen] = useState(false);
@@ -81,8 +83,8 @@ export default function ManageUsersPage({ users, roles }: ManageUsersProps) {
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Kelola Pengguna" />
+        <>
+            <Head title={t('head_title')} />
 
             <div className="p-6">
                 <PageHeader onAddUser={handleAddUser} />
@@ -90,7 +92,7 @@ export default function ManageUsersPage({ users, roles }: ManageUsersProps) {
                 <UserStatsCards stats={stats} />
 
                 <Card className="mb-6 overflow-hidden p-0">
-                    <ListHeader title="Direktori Pengguna" />
+                    <ListHeader title={t('directory_title')} />
 
                     <CardContent className="p-5">
                         <div className="mb-4">
@@ -143,6 +145,10 @@ export default function ManageUsersPage({ users, roles }: ManageUsersProps) {
                     onOpenChange={setDeleteUserOpen}
                 />
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+ManageUsersPage.layout = (page: ReactElement) => <AppLayout>{page}</AppLayout>;
+
+export default ManageUsersPage;

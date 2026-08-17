@@ -5,7 +5,7 @@
         "roles": "역할 및 권한",
         "companies": "회사",
         "group_overview": "개요",
-        "group_master": "마스터 데이터"
+        "group_master": "관리"
     },
     "action": {
         "save": "저장",
@@ -31,5 +31,10 @@
         "ja": "日本語",
         "ko": "한국어",
         "switcher": "언어"
+    },
+    "pagination": {
+        "showing": "전체 {{total}}개 중 {{from}}–{{to}}개 표시",
+        "per_page": "페이지당:",
+        "page_of": "{{last}}페이지 중 {{current}}페이지"
     }
 }

@@ -1,0 +1,60 @@
+{
+    "head_title": "公司",
+    "breadcrumb": "公司",
+    "page_title": "公司",
+    "page_description": "您所加入的公司。",
+    "add_company": "添加公司",
+    "list_title": "公司列表",
+    "table": {
+        "name": "名称",
+        "code": "代码",
+        "currency": "货币",
+        "status": "状态",
+        "default": "默认",
+        "actions": "操作",
+        "active": "启用",
+        "inactive": "停用",
+        "empty": "暂无公司。"
+    },
+    "dialog": {
+        "delete": {
+            "title": "删除公司",
+            "description": "确定要删除",
+            "description_suffix": "此操作无法撤销。",
+            "warning_title": "警告",
+            "warning_body": "此操作将永久删除该公司及其所有用户成员关系。",
+            "submit": "删除公司",
+            "submitting": "删除中...",
+            "cancel": "取消"
+        }
+    },
+    "form": {
+        "create_breadcrumb": "创建公司",
+        "create_title": "创建新公司",
+        "create_description": "您将成为该公司的超级管理员。",
+        "create_head_title": "创建公司",
+        "create_submit": "创建公司",
+        "create_submitting": "创建中...",
+        "edit_breadcrumb": "编辑",
+        "edit_title": "编辑公司",
+        "edit_description": "更新公司信息。",
+        "edit_head_title": "编辑公司",
+        "edit_submit": "保存更改",
+        "edit_submitting": "保存中...",
+        "name": "公司名称",
+        "name_placeholder": "请输入公司名称",
+        "legal_name": "法定名称",
+        "legal_name_placeholder": "例如：某某有限公司",
+        "tax_id": "税号",
+        "tax_id_placeholder": "选填",
+        "address": "地址",
+        "address_placeholder": "选填",
+        "currency": "货币",
+        "fiscal_year_start_month": "财年起始月",
+        "is_active": "公司启用"
+    },
+    "months": [
+        "一月", "二月", "三月", "四月", "五月", "六月",
+        "七月", "八月", "九月", "十月", "十一月", "十二月"
+    ]
+}

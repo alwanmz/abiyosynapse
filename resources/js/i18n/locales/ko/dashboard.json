@@ -1,0 +1,8 @@
+{
+    "breadcrumb": "홈",
+    "head_title": "대시보드",
+    "welcome": "다시 오신 것을 환영합니다!",
+    "placeholder_description": "ERP 모듈이 가동되면 이 대시보드가 채워집니다.",
+    "empty_title": "아직 데이터가 없습니다",
+    "empty_description": "현금/은행, 매출채권, 매입채무, 판매, 구매 등 거래 모듈이 총계정원장에 전기를 시작하면 경영진 요약을 확인할 수 있습니다."
+}

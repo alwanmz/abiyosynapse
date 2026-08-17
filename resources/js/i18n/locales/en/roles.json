@@ -1,0 +1,58 @@
+{
+    "head_title": "Roles & Permissions",
+    "breadcrumb": "Roles & Permissions",
+    "page_title": "Roles & Permissions",
+    "page_description": "Manage roles and access permissions for the currently active modules.",
+    "add_role": "Add Role",
+    "list_title": "Role List",
+    "modules": {
+        "companies": "Companies",
+        "clients": "Clients",
+        "task-types": "Task Types",
+        "users": "Users",
+        "roles": "Roles & Permissions",
+        "teams": "Teams",
+        "projects": "Projects",
+        "timelines": "Timelines",
+        "tickets": "Tickets",
+        "daily-logs": "Daily Logs",
+        "minutes": "Minutes",
+        "analytics": "Analytics",
+        "reports": "Reports",
+        "other": "Other"
+    },
+    "dialog": {
+        "edit_title": "Edit Role",
+        "create_title": "Add New Role",
+        "edit_description": "Update role details and permissions.",
+        "create_description": "Create a new role, then choose which modules it can access.",
+        "system_name": "System Name (unique, no spaces)",
+        "system_name_placeholder": "e.g. support_staff",
+        "display_name": "Display Name",
+        "display_name_placeholder": "e.g. Support Staff",
+        "description": "Description (optional)",
+        "description_placeholder": "A short description of what this role does...",
+        "permissions": "Permissions",
+        "permissions_hint": "Check the permissions you want to grant this role.",
+        "permissions_selected": "selected",
+        "cancel": "Cancel",
+        "submit": "Save Role"
+    },
+    "table": {
+        "role": "Role",
+        "system_identifier": "System Identifier",
+        "permissions": "Permissions",
+        "actions": "Actions",
+        "all_permissions_admin": "All Permissions (Admin)",
+        "no_permissions": "No permissions",
+        "more_others": "more",
+        "manage": "Manage",
+        "empty": "No roles yet."
+    },
+    "delete": {
+        "title": "Delete role?",
+        "description_prefix": "Role",
+        "description_suffix": "will be permanently deleted. A role can only be deleted if it isn't used by any user.",
+        "confirm": "Yes, Delete Role"
+    }
+}

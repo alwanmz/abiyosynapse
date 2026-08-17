@@ -19,6 +19,7 @@ import { User } from '@/types/user';
 import { useForm } from '@inertiajs/react';
 import { IconShield } from '@tabler/icons-react';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface ChangeRoleDialogProps {
     user: User | null;
@@ -33,6 +34,7 @@ export function ChangeRoleDialog({
     onOpenChange,
     availableRoles,
 }: ChangeRoleDialogProps) {
+    const { t } = useTranslation('manage-users');
     const { data, setData, put, processing, errors, reset } = useForm({
         role_id: user?.role?.id || '',
     });
@@ -65,26 +67,26 @@ export function ChangeRoleDialog({
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <IconShield className="h-5 w-5" />
-                        Ubah Peran Pengguna
+                        {t('dialog.change_role.title')}
                     </DialogTitle>
                     <DialogDescription>
-                        Perbarui peran untuk{' '}
+                        {t('dialog.change_role.description')}{' '}
                         <span className="font-semibold">{user?.name}</span>.
-                        Ini akan mengubah hak akses mereka.
+                        {' '}{t('dialog.change_role.description_suffix')}
                     </DialogDescription>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit}>
                     <div className="grid gap-4 py-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="role">Peran Saat Ini</Label>
+                            <Label htmlFor="role">{t('dialog.change_role.current_role')}</Label>
                             <div className="text-sm text-muted-foreground">
-                                {user?.role?.display_name || 'Belum Ada Peran'}
+                                {user?.role?.display_name || t('dialog.change_role.no_role')}
                             </div>
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="role">Peran Baru</Label>
+                            <Label htmlFor="role">{t('dialog.change_role.new_role')}</Label>
                             <Select
                                 value={data.role_id.toString()}
                                 onValueChange={(value) =>
@@ -92,12 +94,12 @@ export function ChangeRoleDialog({
                                 }
                             >
                                 <SelectTrigger id="role">
-                                    <SelectValue placeholder="Pilih peran" />
+                                    <SelectValue placeholder={t('dialog.change_role.role_placeholder')} />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-72">
                                     {availableRoles.length === 0 ? (
                                         <div className="px-2 py-3 text-sm text-muted-foreground">
-                                            Belum ada peran tersedia.
+                                            {t('dialog.change_role.role_empty')}
                                         </div>
                                     ) : availableRoles.map((role) => (
                                         <SelectItem
@@ -124,10 +126,10 @@ export function ChangeRoleDialog({
                             onClick={() => onOpenChange(false)}
                             disabled={processing}
                         >
-                            Batal
+                            {t('dialog.cancel')}
                         </Button>
                         <Button type="submit" disabled={processing}>
-                            {processing ? 'Memperbarui...' : 'Perbarui Peran'}
+                            {processing ? t('dialog.change_role.submitting') : t('dialog.change_role.submit')}
                         </Button>
                     </DialogFooter>
                 </form>

@@ -13,6 +13,7 @@ import {
     IconChevronsLeft,
     IconChevronsRight,
 } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 interface PaginationLink {
     url: string | null;
@@ -35,6 +36,7 @@ interface PaginationProps {
 }
 
 export function Pagination({ pagination }: PaginationProps) {
+    const { t } = useTranslation();
     const { current_page, last_page, per_page, total, from, to, links } =
         pagination;
 
@@ -54,7 +56,7 @@ export function Pagination({ pagination }: PaginationProps) {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             {/* Results info */}
             <div className="text-sm text-muted-foreground">
-                Menampilkan {from || 0} sampai {to || 0} dari {total} hasil
+                {t('pagination.showing', { from: from || 0, to: to || 0, total })}
             </div>
 
             {/* Pagination controls */}
@@ -62,7 +64,7 @@ export function Pagination({ pagination }: PaginationProps) {
                 {/* Per page selector */}
                 <div className="flex items-center gap-2">
                     <span className="text-sm text-muted-foreground">
-                        Per halaman:
+                        {t('pagination.per_page')}
                     </span>
                     <Select
                         value={per_page.toString()}
@@ -165,7 +167,7 @@ export function Pagination({ pagination }: PaginationProps) {
                     {/* Current page indicator (mobile) */}
                     <div className="flex items-center sm:hidden">
                         <span className="text-sm text-muted-foreground">
-                            Halaman {current_page} dari {last_page}
+                            {t('pagination.page_of', { current: current_page, last: last_page })}
                         </span>
                     </div>
 

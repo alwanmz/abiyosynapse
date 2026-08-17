@@ -1,0 +1,73 @@
+{
+    "nav": {
+        "quality": "품질"
+    },
+    "inspection": {
+        "title": "품질 검사",
+        "breadcrumb": "검사",
+        "description": "수입검사, 공정검사, 최종검사 이력입니다.",
+        "list_title": "검사 목록",
+        "empty": "아직 검사 기록이 없습니다.",
+        "type_incoming": "수입검사",
+        "type_in_process": "공정검사",
+        "type_final": "최종검사",
+        "result_pending": "대기 중",
+        "result_pass": "합격",
+        "result_fail": "불합격",
+        "table": {
+            "type": "유형",
+            "product": "제품",
+            "quantity_inspected": "검사 수량",
+            "quantity_passed": "합격 수량",
+            "quantity_failed": "불합격 수량",
+            "result": "결과",
+            "inspector": "검사자",
+            "date": "날짜"
+        }
+    },
+    "final_inspection": {
+        "title": "최종검사 (QC)",
+        "description": "완제품이 재고에 입고되기 전에 최종검사 결과를 기록합니다. 불합격 수량은 폐기로 처리됩니다.",
+        "quantity_passed": "합격 수량",
+        "notes": "비고",
+        "notes_placeholder": "선택 사항",
+        "submit": "결과 기록 및 지시서 완료",
+        "total_to_inspect": "총 검사 수량"
+    },
+    "ncr": {
+        "title": "부적합 보고서 (NCR)",
+        "breadcrumb": "NCR",
+        "description": "부적합 보고서와 후속 조치를 관리합니다.",
+        "list_title": "NCR 목록",
+        "empty": "아직 NCR이 없습니다.",
+        "table": {
+            "number": "번호",
+            "product": "제품",
+            "description": "설명",
+            "status": "상태",
+            "disposition": "처리 방침",
+            "created_at": "생성일"
+        },
+        "status_open": "열림",
+        "status_investigation": "조사 중",
+        "status_disposition": "처리 방침 결정",
+        "status_corrective_action": "시정 조치",
+        "status_closed": "종료",
+        "disposition_rework": "재작업",
+        "disposition_scrap": "폐기",
+        "disposition_return": "반품",
+        "disposition_use_as_is": "그대로 사용",
+        "detail_title": "NCR 상세",
+        "set_disposition": "처리 방침 설정",
+        "disposition_label": "처리 방침",
+        "disposition_placeholder": "처리 방침 선택",
+        "disposition_notes": "처리 방침 비고",
+        "disposition_notes_placeholder": "선택 사항",
+        "apply_corrective_action": "시정 조치 기록",
+        "corrective_action_label": "시정 조치",
+        "corrective_action_placeholder": "취해진 시정 조치를 입력하세요",
+        "close_ncr": "NCR 종료",
+        "close_confirm_title": "이 NCR을 종료하시겠습니까?",
+        "close_confirm_description": "종료된 NCR은 더 이상 수정할 수 없습니다."
+    }
+}

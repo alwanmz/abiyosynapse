@@ -8,14 +8,17 @@ import AuthLayout from '@/layouts/auth-layout';
 import { login } from '@/routes';
 import { store } from '@/routes/register';
 import { Form, Head } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 
 export default function Register() {
+    const { t } = useTranslation('auth');
+
     return (
         <AuthLayout
-            title="Coba gratis 7 hari"
-            description="Buat akun & perusahaan Anda sendiri, tanpa kartu kredit"
+            title={t('register.title')}
+            description={t('register.description')}
         >
-            <Head title="Daftar" />
+            <Head title={t('register.head_title')} />
 
             <Form
                 {...store()}
@@ -26,7 +29,7 @@ export default function Register() {
                     <>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="name">Nama Lengkap</Label>
+                                <Label htmlFor="name">{t('register.full_name')}</Label>
                                 <Input
                                     id="name"
                                     type="text"
@@ -35,13 +38,13 @@ export default function Register() {
                                     autoFocus
                                     tabIndex={1}
                                     autoComplete="name"
-                                    placeholder="Nama lengkap Anda"
+                                    placeholder={t('register.full_name_placeholder')}
                                 />
                                 <InputError message={errors.name} />
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="company_name">Nama Perusahaan</Label>
+                                <Label htmlFor="company_name">{t('register.company_name')}</Label>
                                 <Input
                                     id="company_name"
                                     type="text"
@@ -49,13 +52,13 @@ export default function Register() {
                                     required
                                     tabIndex={2}
                                     autoComplete="organization"
-                                    placeholder="Nama perusahaan Anda"
+                                    placeholder={t('register.company_name_placeholder')}
                                 />
                                 <InputError message={errors.company_name} />
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="username">Username</Label>
+                                <Label htmlFor="username">{t('register.username')}</Label>
                                 <Input
                                     id="username"
                                     type="text"
@@ -69,7 +72,7 @@ export default function Register() {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Alamat Email</Label>
+                                <Label htmlFor="email">{t('register.email')}</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -83,7 +86,7 @@ export default function Register() {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="password">Kata Sandi</Label>
+                                <Label htmlFor="password">{t('register.password')}</Label>
                                 <Input
                                     id="password"
                                     type="password"
@@ -91,14 +94,14 @@ export default function Register() {
                                     required
                                     tabIndex={5}
                                     autoComplete="new-password"
-                                    placeholder="Kata Sandi"
+                                    placeholder={t('register.password')}
                                 />
                                 <InputError message={errors.password} />
                             </div>
 
                             <div className="grid gap-2">
                                 <Label htmlFor="password_confirmation">
-                                    Konfirmasi Kata Sandi
+                                    {t('register.password_confirmation')}
                                 </Label>
                                 <Input
                                     id="password_confirmation"
@@ -107,7 +110,7 @@ export default function Register() {
                                     required
                                     tabIndex={6}
                                     autoComplete="new-password"
-                                    placeholder="Konfirmasi kata sandi"
+                                    placeholder={t('register.password_confirmation_placeholder')}
                                 />
                                 <InputError message={errors.password_confirmation} />
                             </div>
@@ -120,14 +123,14 @@ export default function Register() {
                                 data-test="register-button"
                             >
                                 {processing && <Spinner />}
-                                Mulai Trial Gratis
+                                {t('register.submit')}
                             </Button>
                         </div>
 
                         <div className="text-center text-sm text-muted-foreground">
-                            Sudah punya akun?{' '}
+                            {t('register.have_account')}{' '}
                             <TextLink href={login()} tabIndex={8}>
-                                Masuk
+                                {t('register.login')}
                             </TextLink>
                         </div>
                     </>

@@ -11,23 +11,23 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
+import { useBreadcrumbs } from '@/hooks/use-breadcrumbs';
 import companies from '@/routes/companies';
-import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
+import { type ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Buat Perusahaan',
-        href: companies.create().url,
-    },
-];
+function CreateCompanyPage() {
+    const { t } = useTranslation('companies');
+    const months = t('months', { returnObjects: true }) as string[];
 
-const MONTHS = [
-    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
-];
+    useBreadcrumbs([
+        {
+            title: t('form.create_breadcrumb'),
+            href: companies.create().url,
+        },
+    ]);
 
-export default function CreateCompanyPage() {
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         legal_name: '',
@@ -43,14 +43,14 @@ export default function CreateCompanyPage() {
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Buat Perusahaan" />
+        <>
+            <Head title={t('form.create_head_title')} />
 
             <div className="mx-auto max-w-2xl p-6">
                 <div className="mb-6">
-                    <h1 className="text-2xl font-semibold">Buat Perusahaan Baru</h1>
+                    <h1 className="text-2xl font-semibold">{t('form.create_title')}</h1>
                     <p className="text-sm text-muted-foreground">
-                        Anda akan menjadi Super Admin untuk perusahaan ini.
+                        {t('form.create_description')}
                     </p>
                 </div>
 
@@ -58,12 +58,12 @@ export default function CreateCompanyPage() {
                     <CardContent className="p-6">
                         <form onSubmit={handleSubmit} className="grid gap-5">
                             <div className="grid gap-2">
-                                <Label htmlFor="name">Nama Perusahaan</Label>
+                                <Label htmlFor="name">{t('form.name')}</Label>
                                 <Input
                                     id="name"
                                     value={data.name}
                                     onChange={(e) => setData('name', e.target.value)}
-                                    placeholder="Masukkan nama perusahaan"
+                                    placeholder={t('form.name_placeholder')}
                                 />
                                 {errors.name && (
                                     <p className="text-sm text-destructive">{errors.name}</p>
@@ -71,12 +71,12 @@ export default function CreateCompanyPage() {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="legal_name">Nama Badan Hukum</Label>
+                                <Label htmlFor="legal_name">{t('form.legal_name')}</Label>
                                 <Input
                                     id="legal_name"
                                     value={data.legal_name}
                                     onChange={(e) => setData('legal_name', e.target.value)}
-                                    placeholder="Contoh: PT Contoh Sejahtera"
+                                    placeholder={t('form.legal_name_placeholder')}
                                 />
                                 {errors.legal_name && (
                                     <p className="text-sm text-destructive">{errors.legal_name}</p>
@@ -84,12 +84,12 @@ export default function CreateCompanyPage() {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="tax_id">NPWP</Label>
+                                <Label htmlFor="tax_id">{t('form.tax_id')}</Label>
                                 <Input
                                     id="tax_id"
                                     value={data.tax_id}
                                     onChange={(e) => setData('tax_id', e.target.value)}
-                                    placeholder="Opsional"
+                                    placeholder={t('form.tax_id_placeholder')}
                                 />
                                 {errors.tax_id && (
                                     <p className="text-sm text-destructive">{errors.tax_id}</p>
@@ -97,12 +97,12 @@ export default function CreateCompanyPage() {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="address">Alamat</Label>
+                                <Label htmlFor="address">{t('form.address')}</Label>
                                 <Textarea
                                     id="address"
                                     value={data.address}
                                     onChange={(e) => setData('address', e.target.value)}
-                                    placeholder="Opsional"
+                                    placeholder={t('form.address_placeholder')}
                                 />
                                 {errors.address && (
                                     <p className="text-sm text-destructive">{errors.address}</p>
@@ -111,7 +111,7 @@ export default function CreateCompanyPage() {
 
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="grid gap-2">
-                                    <Label htmlFor="currency">Mata Uang</Label>
+                                    <Label htmlFor="currency">{t('form.currency')}</Label>
                                     <Input
                                         id="currency"
                                         value={data.currency}
@@ -124,7 +124,7 @@ export default function CreateCompanyPage() {
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="fiscal_year_start_month">Awal Tahun Fiskal</Label>
+                                    <Label htmlFor="fiscal_year_start_month">{t('form.fiscal_year_start_month')}</Label>
                                     <Select
                                         value={data.fiscal_year_start_month.toString()}
                                         onValueChange={(value) =>
@@ -135,7 +135,7 @@ export default function CreateCompanyPage() {
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {MONTHS.map((month, index) => (
+                                            {months.map((month, index) => (
                                                 <SelectItem key={month} value={(index + 1).toString()}>
                                                     {month}
                                                 </SelectItem>
@@ -152,13 +152,17 @@ export default function CreateCompanyPage() {
 
                             <div className="flex justify-end">
                                 <Button type="submit" disabled={processing}>
-                                    {processing ? 'Membuat...' : 'Buat Perusahaan'}
+                                    {processing ? t('form.create_submitting') : t('form.create_submit')}
                                 </Button>
                             </div>
                         </form>
                     </CardContent>
                 </Card>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+CreateCompanyPage.layout = (page: ReactElement) => <AppLayout>{page}</AppLayout>;
+
+export default CreateCompanyPage;

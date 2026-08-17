@@ -1,0 +1,73 @@
+{
+    "nav": {
+        "quality": "Quality"
+    },
+    "inspection": {
+        "title": "Quality Inspections",
+        "breadcrumb": "Inspections",
+        "description": "History of Incoming, In-Process, and Final inspections.",
+        "list_title": "Inspection List",
+        "empty": "No inspections yet.",
+        "type_incoming": "Incoming",
+        "type_in_process": "In-Process",
+        "type_final": "Final",
+        "result_pending": "Pending",
+        "result_pass": "Pass",
+        "result_fail": "Fail",
+        "table": {
+            "type": "Type",
+            "product": "Product",
+            "quantity_inspected": "Inspected",
+            "quantity_passed": "Passed",
+            "quantity_failed": "Failed",
+            "result": "Result",
+            "inspector": "Inspector",
+            "date": "Date"
+        }
+    },
+    "final_inspection": {
+        "title": "Final Inspection (QC)",
+        "description": "Record the final inspection result before finished goods enter stock. Failed quantity will be processed as scrap.",
+        "quantity_passed": "Passed Quantity",
+        "notes": "Notes",
+        "notes_placeholder": "Optional",
+        "submit": "Record Result & Complete Order",
+        "total_to_inspect": "Total to Inspect"
+    },
+    "ncr": {
+        "title": "Non-Conformance Reports (NCR)",
+        "breadcrumb": "NCR",
+        "description": "Manage non-conformance reports and their follow-up.",
+        "list_title": "NCR List",
+        "empty": "No NCRs yet.",
+        "table": {
+            "number": "Number",
+            "product": "Product",
+            "description": "Description",
+            "status": "Status",
+            "disposition": "Disposition",
+            "created_at": "Created"
+        },
+        "status_open": "Open",
+        "status_investigation": "Investigation",
+        "status_disposition": "Disposition",
+        "status_corrective_action": "Corrective Action",
+        "status_closed": "Closed",
+        "disposition_rework": "Rework",
+        "disposition_scrap": "Scrap",
+        "disposition_return": "Return",
+        "disposition_use_as_is": "Use As-Is",
+        "detail_title": "NCR Detail",
+        "set_disposition": "Set Disposition",
+        "disposition_label": "Disposition",
+        "disposition_placeholder": "Select disposition",
+        "disposition_notes": "Disposition Notes",
+        "disposition_notes_placeholder": "Optional",
+        "apply_corrective_action": "Record Corrective Action",
+        "corrective_action_label": "Corrective Action",
+        "corrective_action_placeholder": "Describe the corrective action taken",
+        "close_ncr": "Close NCR",
+        "close_confirm_title": "Close this NCR?",
+        "close_confirm_description": "A closed NCR can no longer be changed."
+    }
+}

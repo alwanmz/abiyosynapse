@@ -30,6 +30,30 @@ class RolePermissionSeeder extends Seeder
         'companies.edit'   => 'Mengubah data perusahaan',
         'companies.delete' => 'Menghapus perusahaan',
         'companies.manage' => 'Mengelola perusahaan (gabungan)',
+
+        'accounts.view'   => 'Melihat bagan akun',
+        'accounts.create' => 'Membuat akun baru',
+        'accounts.edit'   => 'Mengubah akun',
+        'accounts.delete' => 'Menghapus akun',
+        'accounts.manage' => 'Mengelola bagan akun (gabungan)',
+
+        'master-data.view'   => 'Melihat data master (UOM, gudang, pajak, supplier, customer, produk)',
+        'master-data.manage' => 'Mengelola data master (gabungan)',
+
+        'inventory.view'   => 'Melihat stok dan kartu stok',
+        'inventory.manage' => 'Mengelola stok (opname, penyesuaian)',
+
+        'manufacturing.view'   => 'Melihat BOM, routing, work order, dan MRP',
+        'manufacturing.manage' => 'Mengelola BOM, routing, dan work order produksi',
+
+        'quality.view'   => 'Melihat hasil inspeksi dan NCR',
+        'quality.manage' => 'Mengelola inspeksi kualitas dan NCR',
+
+        'purchasing.view'   => 'Melihat purchase request, PO, penerimaan barang, dan invoice supplier',
+        'purchasing.manage' => 'Mengelola purchase request, PO, penerimaan barang, dan invoice supplier',
+
+        'sales.view'   => 'Melihat sales order, delivery order, invoice, dan retur penjualan',
+        'sales.manage' => 'Mengelola sales order, delivery order, invoice, dan retur penjualan',
     ];
 
     public function run(): void

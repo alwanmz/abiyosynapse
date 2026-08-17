@@ -1,0 +1,58 @@
+{
+    "head_title": "Hak Akses",
+    "breadcrumb": "Hak Akses",
+    "page_title": "Hak Akses",
+    "page_description": "Kelola role dan izin akses sesuai modul yang aktif saat ini.",
+    "add_role": "Tambah Role",
+    "list_title": "Daftar Role",
+    "modules": {
+        "companies": "Perusahaan",
+        "clients": "Klien",
+        "task-types": "Jenis Tugas",
+        "users": "Pengguna",
+        "roles": "Hak Akses",
+        "teams": "Tim",
+        "projects": "Proyek",
+        "timelines": "Linimasa",
+        "tickets": "Tiket",
+        "daily-logs": "Catatan Harian",
+        "minutes": "Notulensi",
+        "analytics": "Analitik",
+        "reports": "Laporan",
+        "other": "Lainnya"
+    },
+    "dialog": {
+        "edit_title": "Edit Role",
+        "create_title": "Tambah Role Baru",
+        "edit_description": "Perbarui detail role dan izinnya.",
+        "create_description": "Buat role baru lalu tentukan modul mana yang boleh diakses.",
+        "system_name": "Nama Sistem (unik, tanpa spasi)",
+        "system_name_placeholder": "mis. support_staff",
+        "display_name": "Nama Tampilan",
+        "display_name_placeholder": "mis. Support Staff",
+        "description": "Deskripsi (opsional)",
+        "description_placeholder": "Deskripsi singkat fungsi role ini...",
+        "permissions": "Izin Akses",
+        "permissions_hint": "Centang izin yang ingin diberikan ke role ini.",
+        "permissions_selected": "dipilih",
+        "cancel": "Batal",
+        "submit": "Simpan Role"
+    },
+    "table": {
+        "role": "Peran",
+        "system_identifier": "Pengidentifikasi Sistem",
+        "permissions": "Izin",
+        "actions": "Aksi",
+        "all_permissions_admin": "Semua Izin (Admin)",
+        "no_permissions": "Tidak ada izin",
+        "more_others": "lainnya",
+        "manage": "Kelola",
+        "empty": "Belum ada role."
+    },
+    "delete": {
+        "title": "Hapus role?",
+        "description_prefix": "Role",
+        "description_suffix": "akan dihapus permanen. Role hanya bisa dihapus jika belum digunakan oleh user manapun.",
+        "confirm": "Ya, Hapus Role"
+    }
+}

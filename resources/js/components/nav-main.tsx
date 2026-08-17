@@ -26,7 +26,7 @@ export function NavMain({ items = [], label = 'Platform' }: { items: NavItem[]; 
                         >
                             <Link href={item.href} prefetch>
                                 {item.icon && <item.icon />}
-                                <span>{item.title}</span>
+                                <span className="truncate" title={item.title}>{item.title}</span>
                                 {item.title === 'Notifications' && unreadNotifications > 0 && (
                                     <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
                                         {unreadNotifications > 9 ? '9+' : unreadNotifications}

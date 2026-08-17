@@ -21,6 +21,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useForm } from '@inertiajs/react';
 import { IconUserPlus } from '@tabler/icons-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface AddUserDialogProps {
     open: boolean;
@@ -33,6 +34,7 @@ export function AddUserDialog({
     onOpenChange,
     availableRoles,
 }: AddUserDialogProps) {
+    const { t } = useTranslation('manage-users');
     const [mode, setMode] = useState<'new' | 'existing'>('new');
 
     const createForm = useForm<{
@@ -95,27 +97,26 @@ export function AddUserDialog({
 
     return (
         <Dialog open={open} onOpenChange={handleClose}>
-            <DialogContent className="flex max-h-[92vh] max-w-3xl flex-col gap-0 overflow-hidden p-0">
+            <DialogContent className="flex h-[min(92vh,44rem)] w-full max-w-3xl flex-col gap-0 overflow-hidden p-0">
                 <DialogHeader className="border-b px-6 py-4 pr-12">
                     <DialogTitle className="flex items-center gap-2">
                         <IconUserPlus className="h-5 w-5" />
-                        Tambah Pengguna
+                        {t('dialog.add.title')}
                     </DialogTitle>
                     <DialogDescription>
-                        Buat pengguna baru, atau tambahkan pengguna yang sudah
-                        terdaftar di perusahaan lain ke perusahaan ini.
+                        {t('dialog.add.description')}
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="px-6 pt-4">
+                <div className="border-b px-6 py-4">
                     <Tabs
                         value={mode}
                         onValueChange={(value) => setMode(value as 'new' | 'existing')}
                     >
                         <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="new">Pengguna Baru</TabsTrigger>
+                            <TabsTrigger value="new">{t('dialog.add.tab_new')}</TabsTrigger>
                             <TabsTrigger value="existing">
-                                Pengguna Terdaftar
+                                {t('dialog.add.tab_existing')}
                             </TabsTrigger>
                         </TabsList>
                     </Tabs>
@@ -142,12 +143,12 @@ export function AddUserDialog({
                                 )}
                             </div>
 
-                            <div className="grid gap-4 md:grid-cols-2">
+                            <div className="grid items-start gap-4 md:grid-cols-2">
                                 <div className="grid gap-2">
-                                    <Label htmlFor="name">Nama Lengkap</Label>
+                                    <Label htmlFor="name">{t('dialog.add.full_name')}</Label>
                                     <Input
                                         id="name"
-                                        placeholder="Masukkan nama lengkap"
+                                        placeholder={t('dialog.add.full_name_placeholder')}
                                         value={createForm.data.name}
                                         onChange={(e) =>
                                             createForm.setData(
@@ -166,11 +167,11 @@ export function AddUserDialog({
 
                                 <div className="grid gap-2">
                                     <Label htmlFor="add-username">
-                                        Username
+                                        {t('dialog.add.username')}
                                     </Label>
                                     <Input
                                         id="add-username"
-                                        placeholder="contoh: john_doe"
+                                        placeholder={t('dialog.add.username_placeholder')}
                                         value={createForm.data.username}
                                         onChange={(e) =>
                                             createForm.setData(
@@ -181,8 +182,7 @@ export function AddUserDialog({
                                         autoComplete="username"
                                     />
                                     <p className="text-xs text-muted-foreground">
-                                        Digunakan untuk login. Hanya huruf,
-                                        angka, underscore, dan strip.
+                                        {t('dialog.add.username_hint')}
                                     </p>
                                     {createForm.errors.username && (
                                         <p className="text-sm text-destructive">
@@ -193,12 +193,12 @@ export function AddUserDialog({
 
                                 <div className="grid gap-2">
                                     <Label htmlFor="add-email">
-                                        Alamat Email
+                                        {t('dialog.add.email')}
                                     </Label>
                                     <Input
                                         id="add-email"
                                         type="email"
-                                        placeholder="Masukkan alamat email"
+                                        placeholder={t('dialog.add.email_placeholder')}
                                         value={createForm.data.email}
                                         onChange={(e) =>
                                             createForm.setData(
@@ -216,7 +216,7 @@ export function AddUserDialog({
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="role">Peran</Label>
+                                    <Label htmlFor="role">{t('dialog.add.role')}</Label>
                                     <Select
                                         value={createForm.data.role_id.toString()}
                                         onValueChange={(value) =>
@@ -227,12 +227,12 @@ export function AddUserDialog({
                                         }
                                     >
                                         <SelectTrigger id="role">
-                                            <SelectValue placeholder="Pilih peran" />
+                                            <SelectValue placeholder={t('dialog.add.role_placeholder')} />
                                         </SelectTrigger>
                                         <SelectContent className="max-h-72">
                                             {availableRoles.length === 0 ? (
                                                 <div className="px-2 py-3 text-sm text-muted-foreground">
-                                                    Belum ada peran tersedia.
+                                                    {t('dialog.add.role_empty')}
                                                 </div>
                                             ) : (
                                                 availableRoles.map((role) => (
@@ -254,15 +254,15 @@ export function AddUserDialog({
                                 </div>
                             </div>
 
-                            <div className="grid gap-4 md:grid-cols-2">
+                            <div className="grid items-start gap-4 md:grid-cols-2">
                                 <div className="grid gap-2">
                                     <Label htmlFor="password">
-                                        Kata Sandi
+                                        {t('dialog.add.password')}
                                     </Label>
                                     <Input
                                         id="password"
                                         type="password"
-                                        placeholder="Masukkan kata sandi"
+                                        placeholder={t('dialog.add.password_placeholder')}
                                         value={createForm.data.password}
                                         onChange={(e) =>
                                             createForm.setData(
@@ -281,12 +281,12 @@ export function AddUserDialog({
 
                                 <div className="grid gap-2">
                                     <Label htmlFor="password_confirmation">
-                                        Konfirmasi Kata Sandi
+                                        {t('dialog.add.password_confirmation')}
                                     </Label>
                                     <Input
                                         id="password_confirmation"
                                         type="password"
-                                        placeholder="Konfirmasi kata sandi"
+                                        placeholder={t('dialog.add.password_confirmation_placeholder')}
                                         value={
                                             createForm.data
                                                 .password_confirmation
@@ -319,12 +319,12 @@ export function AddUserDialog({
                                 onClick={() => handleClose(false)}
                                 disabled={createForm.processing}
                             >
-                                Batal
+                                {t('dialog.cancel')}
                             </Button>
                             <Button type="submit" disabled={createForm.processing}>
                                 {createForm.processing
-                                    ? 'Membuat...'
-                                    : 'Buat Pengguna'}
+                                    ? t('dialog.add.submitting')
+                                    : t('dialog.add.submit')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -333,75 +333,73 @@ export function AddUserDialog({
                         onSubmit={handleInviteSubmit}
                         className="flex min-h-0 flex-1 flex-col"
                     >
-                        <div className="grid min-h-0 gap-5 overflow-y-auto px-6 py-5">
-                            <p className="text-sm text-muted-foreground">
-                                Masukkan email pengguna yang sudah terdaftar
-                                di Nexumi ERP (mis. anggota perusahaan lain).
-                                Akun baru tidak akan dibuat — pengguna
-                                tersebut hanya ditambahkan sebagai anggota
-                                perusahaan ini.
-                            </p>
-
-                            <div className="grid gap-2">
-                                <Label htmlFor="invite-email">
-                                    Alamat Email
-                                </Label>
-                                <Input
-                                    id="invite-email"
-                                    type="email"
-                                    placeholder="Masukkan alamat email terdaftar"
-                                    value={inviteForm.data.email}
-                                    onChange={(e) =>
-                                        inviteForm.setData(
-                                            'email',
-                                            e.target.value,
-                                        )
-                                    }
-                                    autoComplete="email"
-                                />
-                                {inviteForm.errors.email && (
-                                    <p className="text-sm text-destructive">
-                                        {inviteForm.errors.email}
-                                    </p>
-                                )}
+                        <div className="grid min-h-0 flex-1 content-start gap-5 overflow-y-auto px-6 py-5">
+                            <div className="rounded-lg border bg-muted/20 p-4 text-sm text-muted-foreground">
+                                {t('dialog.add.invite_hint')}
                             </div>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="invite-role">Peran</Label>
-                                <Select
-                                    value={inviteForm.data.role_id.toString()}
-                                    onValueChange={(value) =>
-                                        inviteForm.setData(
-                                            'role_id',
-                                            parseInt(value),
-                                        )
-                                    }
-                                >
-                                    <SelectTrigger id="invite-role">
-                                        <SelectValue placeholder="Pilih peran" />
-                                    </SelectTrigger>
-                                    <SelectContent className="max-h-72">
-                                        {availableRoles.length === 0 ? (
-                                            <div className="px-2 py-3 text-sm text-muted-foreground">
-                                                Belum ada peran tersedia.
-                                            </div>
-                                        ) : (
-                                            availableRoles.map((role) => (
-                                                <SelectItem
-                                                    key={role.id}
-                                                    value={role.id.toString()}
-                                                >
-                                                    {role.display_name}
-                                                </SelectItem>
-                                            ))
-                                        )}
-                                    </SelectContent>
-                                </Select>
-                                {inviteForm.errors.role_id && (
-                                    <p className="text-sm text-destructive">
-                                        {inviteForm.errors.role_id}
-                                    </p>
-                                )}
+                            <div className="grid items-start gap-4 md:grid-cols-2">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="invite-email">
+                                        {t('dialog.add.email')}
+                                    </Label>
+                                    <Input
+                                        id="invite-email"
+                                        type="email"
+                                        placeholder={t('dialog.add.invite_email_placeholder')}
+                                        value={inviteForm.data.email}
+                                        onChange={(e) =>
+                                            inviteForm.setData(
+                                                'email',
+                                                e.target.value,
+                                            )
+                                        }
+                                        autoComplete="email"
+                                    />
+                                    {inviteForm.errors.email && (
+                                        <p className="text-sm text-destructive">
+                                            {inviteForm.errors.email}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="grid gap-2">
+                                    <Label htmlFor="invite-role">{t('dialog.add.role')}</Label>
+                                    <Select
+                                        value={inviteForm.data.role_id.toString()}
+                                        onValueChange={(value) =>
+                                            inviteForm.setData(
+                                                'role_id',
+                                                parseInt(value),
+                                            )
+                                        }
+                                    >
+                                        <SelectTrigger id="invite-role">
+                                            <SelectValue placeholder={t('dialog.add.role_placeholder')} />
+                                        </SelectTrigger>
+                                        <SelectContent className="max-h-72">
+                                            {availableRoles.length === 0 ? (
+                                                <div className="px-2 py-3 text-sm text-muted-foreground">
+                                                    {t('dialog.add.role_empty')}
+                                                </div>
+                                            ) : (
+                                                availableRoles.map((role) => (
+                                                    <SelectItem
+                                                        key={role.id}
+                                                        value={role.id.toString()}
+                                                    >
+                                                        {role.display_name}
+                                                    </SelectItem>
+                                                ))
+                                            )}
+                                        </SelectContent>
+                                    </Select>
+                                    {inviteForm.errors.role_id && (
+                                        <p className="text-sm text-destructive">
+                                            {inviteForm.errors.role_id}
+                                        </p>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -412,15 +410,15 @@ export function AddUserDialog({
                                 onClick={() => handleClose(false)}
                                 disabled={inviteForm.processing}
                             >
-                                Batal
+                                {t('dialog.cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={inviteForm.processing}
                             >
                                 {inviteForm.processing
-                                    ? 'Menambahkan...'
-                                    : 'Tambahkan Pengguna'}
+                                    ? t('dialog.add.invite_submitting')
+                                    : t('dialog.add.invite_submit')}
                             </Button>
                         </DialogFooter>
                     </form>

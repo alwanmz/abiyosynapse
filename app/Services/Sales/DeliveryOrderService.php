@@ -1,0 +1,148 @@
+<?php
+
+namespace App\Services\Sales;
+
+use App\Models\Account;
+use App\Models\DeliveryOrder;
+use App\Models\SalesOrder;
+use App\Models\SalesOrderLine;
+use App\Models\User;
+use App\Services\Accounting\JournalPostingService;
+use App\Services\CurrentCompany;
+use App\Services\Inventory\InventoryValuationService;
+use Illuminate\Support\Facades\DB;
+use RuntimeException;
+
+/**
+ * Drives Delivery Order creation and shipment (blueprint §6, §12, mirrors
+ * GoodsReceiptService but simpler — no inspection step on the outbound
+ * side). create() records the delivery lines against an approved SO
+ * without touching stock/GL yet (status draft); ship() issues the actual
+ * Finished Goods stock via InventoryValuationService::issue() and posts
+ * COGS (debit) / Finished Goods (credit) using the cost returned by the
+ * valuation layer, then bumps each SalesOrderLine.delivered_quantity so
+ * the SO's partial/fulfilled status and the eventual Sales Invoice's
+ * remaining-to-invoice cap both see the true delivered quantity.
+ */
+class DeliveryOrderService
+{
+    private const FINISHED_GOODS_ACCOUNT_CODE = '1.1.6';
+    private const COGS_ACCOUNT_CODE = '5.1';
+
+    public function __construct(
+        private readonly CurrentCompany $currentCompany,
+        private readonly InventoryValuationService $valuation,
+        private readonly JournalPostingService $posting,
+    ) {
+    }
+
+    public function create(SalesOrder $order, array $lineInputs, ?User $creator = null): DeliveryOrder
+    {
+        if (! $order->isApproved()) {
+            throw new RuntimeException("Sales order {$order->number} must be approved before it can be delivered.");
+        }
+
+        return DB::transaction(function () use ($order, $lineInputs) {
+            $delivery = DeliveryOrder::create([
+                'number' => $this->nextNumber(),
+                'sales_order_id' => $order->id,
+                'warehouse_id' => $order->warehouse_id,
+                'delivery_date' => now()->toDateString(),
+                'status' => 'draft',
+            ]);
+
+            foreach ($lineInputs as $input) {
+                /** @var SalesOrderLine $soLine */
+                $soLine = SalesOrderLine::where('sales_order_id', $order->id)
+                    ->where('id', $input['sales_order_line_id'])
+                    ->firstOrFail();
+
+                $quantity = (float) $input['quantity'];
+
+                if ($quantity > $soLine->remainingToDeliver() + 0.0001) {
+                    throw new RuntimeException("Cannot deliver more than the remaining ordered quantity for product #{$soLine->product_id}.");
+                }
+
+                $delivery->lines()->create([
+                    'sales_order_line_id' => $soLine->id,
+                    'product_id' => $soLine->product_id,
+                    'quantity' => $quantity,
+                ]);
+            }
+
+            return $delivery->fresh('lines');
+        });
+    }
+
+    public function ship(DeliveryOrder $delivery, ?User $shipper = null): DeliveryOrder
+    {
+        if (! $delivery->isDraft()) {
+            throw new RuntimeException("Delivery order {$delivery->number} has already been shipped.");
+        }
+
+        return DB::transaction(function () use ($delivery, $shipper) {
+            $totalCost = 0.0;
+
+            foreach ($delivery->lines as $line) {
+                $result = $this->valuation->issue(
+                    $line->product,
+                    $delivery->warehouse,
+                    (float) $line->quantity,
+                    $delivery,
+                    'out',
+                    "Delivery order {$delivery->number} shipped",
+                );
+
+                $unitCost = (float) $line->quantity > 0 ? $result['total_cost'] / (float) $line->quantity : 0.0;
+                $line->update(['unit_cost' => $unitCost]);
+
+                $line->salesOrderLine->increment('delivered_quantity', (float) $line->quantity);
+
+                $totalCost += $result['total_cost'];
+            }
+
+            if ($totalCost > 0) {
+                $this->posting->post(
+                    description: "Delivery order {$delivery->number} shipped",
+                    lines: [
+                        ['account_id' => $this->accountId(self::COGS_ACCOUNT_CODE), 'debit' => $totalCost],
+                        ['account_id' => $this->accountId(self::FINISHED_GOODS_ACCOUNT_CODE), 'credit' => $totalCost],
+                    ],
+                    sourceable: $delivery,
+                );
+            }
+
+            $order = $delivery->salesOrder;
+            $order->update(['status' => $order->fresh('lines')->isFullyDelivered() ? 'fulfilled' : 'partial']);
+
+            $delivery->update(['status' => 'shipped', 'shipped_by' => $shipper?->id]);
+
+            return $delivery->fresh('lines');
+        });
+    }
+
+    private function nextNumber(): string
+    {
+        $prefix = 'DO-' . now()->format('Y') . '-';
+
+        $lastNumber = DeliveryOrder::where('number', 'like', $prefix . '%')
+            ->orderByRaw('CAST(SUBSTR(number, ' . (strlen($prefix) + 1) . ') AS INTEGER) DESC')
+            ->value('number');
+
+        $nextSequence = $lastNumber ? ((int) substr($lastNumber, strlen($prefix))) + 1 : 1;
+
+        return $prefix . str_pad((string) $nextSequence, 6, '0', STR_PAD_LEFT);
+    }
+
+    private function accountId(string $code): int
+    {
+        $companyId = $this->currentCompany->id();
+        $account = Account::where('company_id', $companyId)->where('code', $code)->first();
+
+        if (! $account) {
+            throw new RuntimeException("Chart of accounts is missing the expected account \"{$code}\" for sales postings.");
+        }
+
+        return $account->id;
+    }
+}

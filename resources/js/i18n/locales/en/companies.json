@@ -1,0 +1,60 @@
+{
+    "head_title": "Companies",
+    "breadcrumb": "Companies",
+    "page_title": "Companies",
+    "page_description": "Companies you belong to.",
+    "add_company": "Add Company",
+    "list_title": "Company List",
+    "table": {
+        "name": "Name",
+        "code": "Code",
+        "currency": "Currency",
+        "status": "Status",
+        "default": "Default",
+        "actions": "Actions",
+        "active": "Active",
+        "inactive": "Inactive",
+        "empty": "No companies yet."
+    },
+    "dialog": {
+        "delete": {
+            "title": "Delete Company",
+            "description": "Are you sure you want to delete",
+            "description_suffix": "This action cannot be undone.",
+            "warning_title": "Warning",
+            "warning_body": "This will permanently delete the company and all user memberships within it.",
+            "submit": "Delete Company",
+            "submitting": "Deleting...",
+            "cancel": "Cancel"
+        }
+    },
+    "form": {
+        "create_breadcrumb": "Create Company",
+        "create_title": "Create New Company",
+        "create_description": "You will become Super Admin for this company.",
+        "create_head_title": "Create Company",
+        "create_submit": "Create Company",
+        "create_submitting": "Creating...",
+        "edit_breadcrumb": "Edit",
+        "edit_title": "Edit Company",
+        "edit_description": "Update company information.",
+        "edit_head_title": "Edit Company",
+        "edit_submit": "Save Changes",
+        "edit_submitting": "Saving...",
+        "name": "Company Name",
+        "name_placeholder": "Enter company name",
+        "legal_name": "Legal Name",
+        "legal_name_placeholder": "e.g. Acme Corp Ltd.",
+        "tax_id": "Tax ID",
+        "tax_id_placeholder": "Optional",
+        "address": "Address",
+        "address_placeholder": "Optional",
+        "currency": "Currency",
+        "fiscal_year_start_month": "Fiscal Year Start",
+        "is_active": "Company active"
+    },
+    "months": [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ]
+}

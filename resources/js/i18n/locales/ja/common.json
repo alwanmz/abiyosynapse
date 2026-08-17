@@ -5,7 +5,7 @@
         "roles": "ロールと権限",
         "companies": "会社",
         "group_overview": "概要",
-        "group_master": "マスタデータ"
+        "group_master": "管理設定"
     },
     "action": {
         "save": "保存",
@@ -31,5 +31,10 @@
         "ja": "日本語",
         "ko": "한국어",
         "switcher": "言語"
+    },
+    "pagination": {
+        "showing": "{{total}} 件中 {{from}} から {{to}} 件を表示",
+        "per_page": "表示件数：",
+        "page_of": "{{last}} ページ中 {{current}} ページ目"
     }
 }

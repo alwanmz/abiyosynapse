@@ -1,0 +1,76 @@
+{
+    "nav": {
+        "inventory": "库存"
+    },
+    "stock_overview": {
+        "title": "库存概览",
+        "breadcrumb": "库存概览",
+        "description": "查看各产品和仓库的当前库存余额。",
+        "list_title": "库存余额",
+        "all_warehouses": "所有仓库",
+        "table": {
+            "product": "产品",
+            "warehouse": "仓库",
+            "quantity_on_hand": "数量",
+            "average_cost": "平均成本",
+            "total_value": "总价值"
+        },
+        "empty": "暂无库存记录。",
+        "view_card": "查看库存卡"
+    },
+    "stock_card": {
+        "title": "库存卡",
+        "breadcrumb": "库存卡",
+        "description": "该产品的库存变动记录。",
+        "table": {
+            "date": "日期",
+            "warehouse": "仓库",
+            "type": "类型",
+            "quantity": "数量",
+            "unit_cost": "单位成本",
+            "total_cost": "总成本",
+            "balance": "结余"
+        },
+        "type_in": "入库",
+        "type_out": "出库",
+        "type_transfer_in": "调入",
+        "type_transfer_out": "调出",
+        "empty": "该产品暂无变动记录。",
+        "back": "返回库存概览"
+    },
+    "stock_opname": {
+        "title": "库存盘点",
+        "breadcrumb": "库存盘点",
+        "description": "进行实地盘点并与系统记录核对。",
+        "list_title": "库存盘点列表",
+        "add": "新建盘点",
+        "add_title": "创建新库存盘点",
+        "warehouse": "仓库",
+        "warehouse_placeholder": "选择仓库",
+        "opname_date": "盘点日期",
+        "notes": "备注",
+        "notes_placeholder": "选填",
+        "table": {
+            "number": "编号",
+            "warehouse": "仓库",
+            "date": "日期",
+            "status": "状态",
+            "actions": "操作"
+        },
+        "status_draft": "草稿",
+        "status_completed": "已完成",
+        "empty": "暂无库存盘点。",
+        "detail_title": "盘点详情",
+        "lines_table": {
+            "product": "产品",
+            "system_quantity": "系统数量",
+            "counted_quantity": "实盘数量",
+            "variance": "差异"
+        },
+        "save_counts": "保存盘点结果",
+        "complete": "完成并调整库存",
+        "complete_confirm_title": "确认完成此次盘点？",
+        "complete_confirm_description": "库存将根据已填写的实盘数量进行调整。未填写的行将被跳过。此操作无法撤销。",
+        "completed_at": "完成时间"
+    }
+}

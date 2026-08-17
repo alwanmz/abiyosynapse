@@ -1,0 +1,73 @@
+{
+    "nav": {
+        "quality": "品質"
+    },
+    "inspection": {
+        "title": "品質検査",
+        "breadcrumb": "検査",
+        "description": "受入検査、工程内検査、最終検査の履歴です。",
+        "list_title": "検査一覧",
+        "empty": "まだ検査記録がありません。",
+        "type_incoming": "受入検査",
+        "type_in_process": "工程内検査",
+        "type_final": "最終検査",
+        "result_pending": "保留",
+        "result_pass": "合格",
+        "result_fail": "不合格",
+        "table": {
+            "type": "種別",
+            "product": "製品",
+            "quantity_inspected": "検査数量",
+            "quantity_passed": "合格数量",
+            "quantity_failed": "不合格数量",
+            "result": "結果",
+            "inspector": "検査担当者",
+            "date": "日付"
+        }
+    },
+    "final_inspection": {
+        "title": "最終検査（QC）",
+        "description": "完成品が入庫される前に最終検査結果を記録します。不合格数量はスクラップとして処理されます。",
+        "quantity_passed": "合格数量",
+        "notes": "備考",
+        "notes_placeholder": "任意",
+        "submit": "結果を記録して指図を完了",
+        "total_to_inspect": "検査対象合計"
+    },
+    "ncr": {
+        "title": "不適合報告書（NCR）",
+        "breadcrumb": "NCR",
+        "description": "不適合報告書とそのフォローアップを管理します。",
+        "list_title": "NCR一覧",
+        "empty": "まだNCRがありません。",
+        "table": {
+            "number": "番号",
+            "product": "製品",
+            "description": "内容",
+            "status": "ステータス",
+            "disposition": "処置",
+            "created_at": "作成日"
+        },
+        "status_open": "未処理",
+        "status_investigation": "調査中",
+        "status_disposition": "処置中",
+        "status_corrective_action": "是正措置",
+        "status_closed": "クローズ",
+        "disposition_rework": "手直し",
+        "disposition_scrap": "廃棄",
+        "disposition_return": "返品",
+        "disposition_use_as_is": "そのまま使用",
+        "detail_title": "NCR詳細",
+        "set_disposition": "処置を設定",
+        "disposition_label": "処置",
+        "disposition_placeholder": "処置を選択",
+        "disposition_notes": "処置に関する備考",
+        "disposition_notes_placeholder": "任意",
+        "apply_corrective_action": "是正措置を記録",
+        "corrective_action_label": "是正措置",
+        "corrective_action_placeholder": "実施した是正措置を記入してください",
+        "close_ncr": "NCRをクローズ",
+        "close_confirm_title": "このNCRをクローズしますか？",
+        "close_confirm_description": "クローズしたNCRは変更できなくなります。"
+    }
+}

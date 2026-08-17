@@ -12,25 +12,11 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
+import { useBreadcrumbs } from '@/hooks/use-breadcrumbs';
 import companies from '@/routes/companies';
-import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Perusahaan',
-        href: companies.index().url,
-    },
-    {
-        title: 'Edit',
-        href: '#',
-    },
-];
-
-const MONTHS = [
-    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
-];
+import { type ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface Company {
     id: number;
@@ -47,7 +33,21 @@ interface EditCompanyPageProps {
     company: Company;
 }
 
-export default function EditCompanyPage({ company }: EditCompanyPageProps) {
+function EditCompanyPage({ company }: EditCompanyPageProps) {
+    const { t } = useTranslation('companies');
+    const months = t('months', { returnObjects: true }) as string[];
+
+    useBreadcrumbs([
+        {
+            title: t('breadcrumb'),
+            href: companies.index().url,
+        },
+        {
+            title: t('form.edit_breadcrumb'),
+            href: '#',
+        },
+    ]);
+
     const { data, setData, put, processing, errors } = useForm({
         name: company.name,
         legal_name: company.legal_name ?? '',
@@ -64,14 +64,14 @@ export default function EditCompanyPage({ company }: EditCompanyPageProps) {
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Edit Perusahaan" />
+        <>
+            <Head title={t('form.edit_head_title')} />
 
             <div className="mx-auto max-w-2xl p-6">
                 <div className="mb-6">
-                    <h1 className="text-2xl font-semibold">Edit Perusahaan</h1>
+                    <h1 className="text-2xl font-semibold">{t('form.edit_title')}</h1>
                     <p className="text-sm text-muted-foreground">
-                        Perbarui informasi perusahaan.
+                        {t('form.edit_description')}
                     </p>
                 </div>
 
@@ -79,7 +79,7 @@ export default function EditCompanyPage({ company }: EditCompanyPageProps) {
                     <CardContent className="p-6">
                         <form onSubmit={handleSubmit} className="grid gap-5">
                             <div className="grid gap-2">
-                                <Label htmlFor="name">Nama Perusahaan</Label>
+                                <Label htmlFor="name">{t('form.name')}</Label>
                                 <Input
                                     id="name"
                                     value={data.name}
@@ -91,7 +91,7 @@ export default function EditCompanyPage({ company }: EditCompanyPageProps) {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="legal_name">Nama Badan Hukum</Label>
+                                <Label htmlFor="legal_name">{t('form.legal_name')}</Label>
                                 <Input
                                     id="legal_name"
                                     value={data.legal_name}
@@ -103,7 +103,7 @@ export default function EditCompanyPage({ company }: EditCompanyPageProps) {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="tax_id">NPWP</Label>
+                                <Label htmlFor="tax_id">{t('form.tax_id')}</Label>
                                 <Input
                                     id="tax_id"
                                     value={data.tax_id}
@@ -115,7 +115,7 @@ export default function EditCompanyPage({ company }: EditCompanyPageProps) {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="address">Alamat</Label>
+                                <Label htmlFor="address">{t('form.address')}</Label>
                                 <Textarea
                                     id="address"
                                     value={data.address}
@@ -128,7 +128,7 @@ export default function EditCompanyPage({ company }: EditCompanyPageProps) {
 
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="grid gap-2">
-                                    <Label htmlFor="currency">Mata Uang</Label>
+                                    <Label htmlFor="currency">{t('form.currency')}</Label>
                                     <Input
                                         id="currency"
                                         value={data.currency}
@@ -141,7 +141,7 @@ export default function EditCompanyPage({ company }: EditCompanyPageProps) {
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="fiscal_year_start_month">Awal Tahun Fiskal</Label>
+                                    <Label htmlFor="fiscal_year_start_month">{t('form.fiscal_year_start_month')}</Label>
                                     <Select
                                         value={data.fiscal_year_start_month.toString()}
                                         onValueChange={(value) =>
@@ -152,7 +152,7 @@ export default function EditCompanyPage({ company }: EditCompanyPageProps) {
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {MONTHS.map((month, index) => (
+                                            {months.map((month, index) => (
                                                 <SelectItem key={month} value={(index + 1).toString()}>
                                                     {month}
                                                 </SelectItem>
@@ -174,19 +174,23 @@ export default function EditCompanyPage({ company }: EditCompanyPageProps) {
                                     onCheckedChange={(checked) => setData('is_active', checked === true)}
                                 />
                                 <Label htmlFor="is_active" className="font-normal">
-                                    Perusahaan aktif
+                                    {t('form.is_active')}
                                 </Label>
                             </div>
 
                             <div className="flex justify-end">
                                 <Button type="submit" disabled={processing}>
-                                    {processing ? 'Menyimpan...' : 'Simpan Perubahan'}
+                                    {processing ? t('form.edit_submitting') : t('form.edit_submit')}
                                 </Button>
                             </div>
                         </form>
                     </CardContent>
                 </Card>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+EditCompanyPage.layout = (page: ReactElement) => <AppLayout>{page}</AppLayout>;
+
+export default EditCompanyPage;

@@ -18,6 +18,13 @@ class DatabaseSeeder extends Seeder
             CompanySeeder::class,
             UserSeeder::class,
             RolePermissionSeeder::class,
+            ChartOfAccountsSeeder::class,
+            MasterDataDemoSeeder::class,
+            InventoryDemoSeeder::class,
+            ManufacturingDemoSeeder::class,
+            QualityDemoSeeder::class,
+            PurchasingDemoSeeder::class,
+            SalesDemoSeeder::class,
         ]);
     }
 }

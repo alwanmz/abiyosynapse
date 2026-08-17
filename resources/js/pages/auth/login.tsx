@@ -12,6 +12,7 @@ import { request } from '@/routes/password';
 import { Form, Head } from '@inertiajs/react';
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface LoginProps {
     status?: string;
@@ -21,13 +22,14 @@ interface LoginProps {
 
 export default function Login({ status, canResetPassword, canRegister }: LoginProps) {
     const [showPassword, setShowPassword] = useState(false);
+    const { t } = useTranslation('auth');
 
     return (
         <AuthLayout
-            title="Masuk ke akun Anda"
-            description="Masukkan username dan kata sandi Anda untuk masuk"
+            title={t('login.title')}
+            description={t('login.description')}
         >
-            <Head title="Masuk" />
+            <Head title={t('login.head_title')} />
 
             <Form
                 {...store()}
@@ -38,7 +40,7 @@ export default function Login({ status, canResetPassword, canRegister }: LoginPr
                     <>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="username">Username</Label>
+                                <Label htmlFor="username">{t('login.username')}</Label>
                                 <Input
                                     id="username"
                                     type="text"
@@ -54,14 +56,14 @@ export default function Login({ status, canResetPassword, canRegister }: LoginPr
 
                             <div className="grid gap-2">
                                 <div className="flex items-center">
-                                    <Label htmlFor="password">Kata Sandi</Label>
+                                    <Label htmlFor="password">{t('login.password')}</Label>
                                     {canResetPassword && (
                                         <TextLink
                                             href={request()}
                                             className="ml-auto text-sm"
                                             tabIndex={5}
                                         >
-                                            Lupa kata sandi?
+                                            {t('login.forgot_password')}
                                         </TextLink>
                                     )}
                                 </div>
@@ -75,7 +77,7 @@ export default function Login({ status, canResetPassword, canRegister }: LoginPr
                                         required
                                         tabIndex={2}
                                         autoComplete="current-password"
-                                        placeholder="Kata Sandi"
+                                        placeholder={t('login.password')}
                                         className="pr-10"
                                     />
                                     <button
@@ -86,8 +88,8 @@ export default function Login({ status, canResetPassword, canRegister }: LoginPr
                                         tabIndex={-1}
                                         aria-label={
                                             showPassword
-                                                ? 'Sembunyikan kata sandi'
-                                                : 'Tampilkan kata sandi'
+                                                ? t('login.hide_password')
+                                                : t('login.show_password')
                                         }
                                         className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
                                     >
@@ -107,7 +109,7 @@ export default function Login({ status, canResetPassword, canRegister }: LoginPr
                                     name="remember"
                                     tabIndex={3}
                                 />
-                                <Label htmlFor="remember">Ingat saya</Label>
+                                <Label htmlFor="remember">{t('login.remember_me')}</Label>
                             </div>
 
                             <Button
@@ -118,20 +120,20 @@ export default function Login({ status, canResetPassword, canRegister }: LoginPr
                                 data-test="login-button"
                             >
                                 {processing && <Spinner />}
-                                Masuk
+                                {t('login.submit')}
                             </Button>
                         </div>
 
                         <div className="text-center text-sm text-muted-foreground">
                             {canRegister ? (
                                 <>
-                                    Belum punya akun?{' '}
+                                    {t('login.no_account')}{' '}
                                     <TextLink href={register()} tabIndex={6}>
-                                        Coba gratis 7 hari
+                                        {t('login.try_free')}
                                     </TextLink>
                                 </>
                             ) : (
-                                'Belum punya akun? Hubungi admin Anda.'
+                                t('login.no_account_contact_admin')
                             )}
                         </div>
                     </>

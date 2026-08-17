@@ -5,7 +5,7 @@
         "roles": "角色与权限",
         "companies": "公司",
         "group_overview": "概览",
-        "group_master": "主数据"
+        "group_master": "管理设置"
     },
     "action": {
         "save": "保存",
@@ -31,5 +31,10 @@
         "ja": "日本語",
         "ko": "한국어",
         "switcher": "语言"
+    },
+    "pagination": {
+        "showing": "显示第 {{from}} 至 {{to}} 条，共 {{total}} 条结果",
+        "per_page": "每页显示：",
+        "page_of": "第 {{current}} / {{last}} 页"
     }
 }

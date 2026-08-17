@@ -9,10 +9,11 @@ import {
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link } from '@inertiajs/react';
 import { IconShieldLock } from '@tabler/icons-react';
+import { type ReactElement } from 'react';
 
-export default function Error403() {
+function Error403() {
     return (
-        <AppLayout>
+        <>
             <Head title="403 - Akses Ditolak" />
 
             <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-6">
@@ -47,6 +48,10 @@ export default function Error403() {
                     </CardContent>
                 </Card>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+Error403.layout = (page: ReactElement) => <AppLayout>{page}</AppLayout>;
+
+export default Error403;

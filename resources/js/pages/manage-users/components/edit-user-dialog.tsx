@@ -14,6 +14,7 @@ import { User } from '@/types/user';
 import { useForm } from '@inertiajs/react';
 import { IconEdit } from '@tabler/icons-react';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface EditUserDialogProps {
     user: User | null;
@@ -26,6 +27,8 @@ export function EditUserDialog({
     open,
     onOpenChange,
 }: EditUserDialogProps) {
+    const { t } = useTranslation('manage-users');
+
     // We POST with a `_method=PUT` field instead of put() because Inertia's
     // put() doesn't support file uploads.
     const { data, setData, post, processing, errors, reset } = useForm<{
@@ -78,10 +81,10 @@ export function EditUserDialog({
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <IconEdit className="h-5 w-5" />
-                        Edit Pengguna
+                        {t('dialog.edit.title')}
                     </DialogTitle>
                     <DialogDescription>
-                        Perbarui informasi pengguna untuk{' '}
+                        {t('dialog.edit.description')}{' '}
                         <span className="font-semibold">{user?.name}</span>
                     </DialogDescription>
                 </DialogHeader>
@@ -103,10 +106,10 @@ export function EditUserDialog({
                         )}
 
                         <div className="grid gap-2">
-                            <Label htmlFor="edit-name">Nama Lengkap</Label>
+                            <Label htmlFor="edit-name">{t('dialog.edit.full_name')}</Label>
                             <Input
                                 id="edit-name"
-                                placeholder="Masukkan nama lengkap"
+                                placeholder={t('dialog.edit.full_name_placeholder')}
                                 value={data.name}
                                 onChange={(e) =>
                                     setData('name', e.target.value)
@@ -121,10 +124,10 @@ export function EditUserDialog({
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="edit-username">Username</Label>
+                            <Label htmlFor="edit-username">{t('dialog.edit.username')}</Label>
                             <Input
                                 id="edit-username"
-                                placeholder="contoh: john_doe"
+                                placeholder={t('dialog.edit.username_placeholder')}
                                 value={data.username}
                                 onChange={(e) =>
                                     setData('username', e.target.value)
@@ -132,7 +135,7 @@ export function EditUserDialog({
                                 autoComplete="username"
                             />
                             <p className="text-xs text-muted-foreground">
-                                Digunakan untuk login. Hanya huruf, angka, underscore, dan strip.
+                                {t('dialog.edit.username_hint')}
                             </p>
                             {errors.username && (
                                 <p className="text-sm text-destructive">
@@ -142,11 +145,11 @@ export function EditUserDialog({
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="edit-email">Alamat Email</Label>
+                            <Label htmlFor="edit-email">{t('dialog.edit.email')}</Label>
                             <Input
                                 id="edit-email"
                                 type="email"
-                                placeholder="Masukkan alamat email"
+                                placeholder={t('dialog.edit.email_placeholder')}
                                 value={data.email}
                                 onChange={(e) =>
                                     setData('email', e.target.value)
@@ -168,10 +171,10 @@ export function EditUserDialog({
                             onClick={() => onOpenChange(false)}
                             disabled={processing}
                         >
-                            Batal
+                            {t('dialog.cancel')}
                         </Button>
                         <Button type="submit" disabled={processing}>
-                            {processing ? 'Menyimpan...' : 'Simpan Perubahan'}
+                            {processing ? t('dialog.edit.submitting') : t('dialog.edit.submit')}
                         </Button>
                     </DialogFooter>
                 </form>

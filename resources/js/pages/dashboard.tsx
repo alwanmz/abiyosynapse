@@ -6,42 +6,49 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import { useBreadcrumbs } from '@/hooks/use-breadcrumbs';
 import { Head } from '@inertiajs/react';
+import { type ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Beranda',
-        href: '/dashboard',
-    },
-];
+function Dashboard() {
+    const { t } = useTranslation('dashboard');
 
-export default function Dashboard() {
+    useBreadcrumbs([
+        {
+            title: t('breadcrumb'),
+            href: '/dashboard',
+        },
+    ]);
+
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Dasbor" />
+        <>
+            <Head title={t('head_title')} />
 
             <div className="p-6">
                 <div className="mb-6">
                     <h1 className="text-2xl font-semibold tracking-tight">
-                        Selamat datang kembali!
+                        {t('welcome')}
                     </h1>
                     <p className="text-sm text-muted-foreground">
-                        Dashboard ini akan diisi begitu modul-modul ERP mulai berjalan.
+                        {t('placeholder_description')}
                     </p>
                 </div>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-base">Belum ada data</CardTitle>
+                        <CardTitle className="text-base">{t('empty_title')}</CardTitle>
                         <CardDescription>
-                            Ringkasan eksekutif akan tersedia setelah modul transaksional
-                            (Kas Bank, AR, AP, Sales, Pembelian) mulai posting ke buku besar.
+                            {t('empty_description')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent />
                 </Card>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+Dashboard.layout = (page: ReactElement) => <AppLayout>{page}</AppLayout>;
+
+export default Dashboard;

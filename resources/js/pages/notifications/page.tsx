@@ -1,23 +1,16 @@
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import AppLayout from "@/layouts/app-layout";
-import { BreadcrumbItem } from "@/types";
+import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
 import { NotificationsPageProps } from "@/types/notification";
 import { Head } from "@inertiajs/react";
-import { useState } from "react";
+import { type ReactElement, useState } from "react";
 import { NotificationEmptyState } from "./components/notification-empty-state";
 import { NotificationHeader } from "./components/notification-header";
 import { NotificationList } from "./components/notification-list";
 import { NotificationStats } from "./components/notification-stats";
 import { useNotificationActions } from "./hooks/use-notification-actions";
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Notifikasi',
-        href: "#"
-    },
-];
-
-export default function NotificationsPage({ notifications }: NotificationsPageProps) {
+function NotificationsPage({ notifications }: NotificationsPageProps) {
     const unreadCount = notifications.filter(n => !n.read).length;
     const readCount = notifications.length - unreadCount;
 
@@ -32,8 +25,15 @@ export default function NotificationsPage({ notifications }: NotificationsPagePr
     const [deletingId, setDeletingId] = useState<string | null>(null);
     const [showClearAll, setShowClearAll] = useState(false);
 
+    useBreadcrumbs([
+        {
+            title: 'Notifikasi',
+            href: "#"
+        },
+    ]);
+
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Notifikasi" />
 
             <div className="p-6">
@@ -90,6 +90,10 @@ export default function NotificationsPage({ notifications }: NotificationsPagePr
                     setShowClearAll(false);
                 }}
             />
-        </AppLayout>
+        </>
     );
 }
+
+NotificationsPage.layout = (page: ReactElement) => <AppLayout>{page}</AppLayout>;
+
+export default NotificationsPage;

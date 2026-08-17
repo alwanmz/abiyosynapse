@@ -11,19 +11,13 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
+import { useBreadcrumbs } from '@/hooks/use-breadcrumbs';
 import companiesRoutes from '@/routes/companies';
-import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { Pencil, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { type ReactElement, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DeleteCompanyDialog } from './components/delete-company-dialog';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Perusahaan',
-        href: companiesRoutes.index().url,
-    },
-];
 
 interface Company {
     id: number;
@@ -42,46 +36,54 @@ interface CompaniesPageProps {
     companies: Company[];
 }
 
-export default function CompaniesPage({ companies }: CompaniesPageProps) {
+function CompaniesPage({ companies }: CompaniesPageProps) {
+    const { t } = useTranslation('companies');
     const [companyToDelete, setCompanyToDelete] = useState<Company | null>(null);
 
+    useBreadcrumbs([
+        {
+            title: t('breadcrumb'),
+            href: companiesRoutes.index().url,
+        },
+    ]);
+
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Perusahaan" />
+        <>
+            <Head title={t('head_title')} />
 
             <div className="p-6">
                 <div className="mb-6 flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-semibold">Perusahaan</h1>
+                        <h1 className="text-2xl font-semibold">{t('page_title')}</h1>
                         <p className="text-sm text-muted-foreground">
-                            Perusahaan yang Anda ikuti.
+                            {t('page_description')}
                         </p>
                     </div>
                     <Button asChild>
-                        <Link href={companiesRoutes.create().url}>Tambah Perusahaan</Link>
+                        <Link href={companiesRoutes.create().url}>{t('add_company')}</Link>
                     </Button>
                 </div>
 
                 <Card className="overflow-hidden p-0">
-                    <ListHeader title="Daftar Perusahaan" />
+                    <ListHeader title={t('list_title')} />
 
                     <CardContent className="p-5">
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Nama</TableHead>
-                                    <TableHead>Kode</TableHead>
-                                    <TableHead>Mata Uang</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>Default</TableHead>
-                                    <TableHead className="text-right">Aksi</TableHead>
+                                    <TableHead>{t('table.name')}</TableHead>
+                                    <TableHead>{t('table.code')}</TableHead>
+                                    <TableHead>{t('table.currency')}</TableHead>
+                                    <TableHead>{t('table.status')}</TableHead>
+                                    <TableHead>{t('table.default')}</TableHead>
+                                    <TableHead className="text-right">{t('table.actions')}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {companies.length === 0 ? (
                                     <TableRow>
                                         <TableCell colSpan={6} className="text-center text-muted-foreground">
-                                            Belum ada perusahaan.
+                                            {t('table.empty')}
                                         </TableCell>
                                     </TableRow>
                                 ) : (
@@ -96,28 +98,30 @@ export default function CompaniesPage({ companies }: CompaniesPageProps) {
                                             <TableCell>{company.currency}</TableCell>
                                             <TableCell>
                                                 <Badge variant={company.is_active ? 'default' : 'outline'}>
-                                                    {company.is_active ? 'Aktif' : 'Nonaktif'}
+                                                    {company.is_active ? t('table.active') : t('table.inactive')}
                                                 </Badge>
                                             </TableCell>
                                             <TableCell>
                                                 {company.pivot?.is_default && (
-                                                    <Badge variant="outline">Default</Badge>
+                                                    <Badge variant="outline">{t('table.default')}</Badge>
                                                 )}
                                             </TableCell>
                                             <TableCell className="text-right">
-                                                <Button variant="ghost" size="icon" asChild>
-                                                    <Link href={companiesRoutes.edit(company.id).url}>
-                                                        <Pencil className="h-4 w-4" />
-                                                    </Link>
-                                                </Button>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="text-destructive hover:text-destructive"
-                                                    onClick={() => setCompanyToDelete(company)}
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
+                                                <div className="flex items-center justify-end gap-1">
+                                                    <Button variant="ghost" size="icon" asChild>
+                                                        <Link href={companiesRoutes.edit(company.id).url}>
+                                                            <Pencil className="h-4 w-4" />
+                                                        </Link>
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="text-destructive hover:text-destructive"
+                                                        onClick={() => setCompanyToDelete(company)}
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
                                             </TableCell>
                                         </TableRow>
                                     ))
@@ -135,6 +139,10 @@ export default function CompaniesPage({ companies }: CompaniesPageProps) {
                     }}
                 />
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+CompaniesPage.layout = (page: ReactElement) => <AppLayout>{page}</AppLayout>;
+
+export default CompaniesPage;

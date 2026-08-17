@@ -3,28 +3,21 @@ import TwoFactorRecoveryCodes from '@/components/two-factor-recovery-codes';
 import TwoFactorSetupModal from '@/components/two-factor-setup-modal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useBreadcrumbs } from '@/hooks/use-breadcrumbs';
 import { useTwoFactorAuth } from '@/hooks/use-two-factor-auth';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { disable, enable, show } from '@/routes/two-factor';
-import { type BreadcrumbItem } from '@/types';
 import { Form, Head } from '@inertiajs/react';
 import { ShieldBan, ShieldCheck } from 'lucide-react';
-import { useState } from 'react';
+import { type ReactElement, useState } from 'react';
 
 interface TwoFactorProps {
     requiresConfirmation?: boolean;
     twoFactorEnabled?: boolean;
 }
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Autentikasi Dua Faktor',
-        href: show.url(),
-    },
-];
-
-export default function TwoFactor({
+function TwoFactor({
     requiresConfirmation = false,
     twoFactorEnabled = false,
 }: TwoFactorProps) {
@@ -40,8 +33,15 @@ export default function TwoFactor({
     } = useTwoFactorAuth();
     const [showSetupModal, setShowSetupModal] = useState<boolean>(false);
 
+    useBreadcrumbs([
+        {
+            title: 'Autentikasi Dua Faktor',
+            href: show.url(),
+        },
+    ]);
+
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Autentikasi Dua Faktor" />
 
             <h1 className="sr-only">Autentikasi Dua Faktor</h1>
@@ -129,6 +129,10 @@ export default function TwoFactor({
                     />
                 </div>
             </SettingsLayout>
-        </AppLayout>
+        </>
     );
 }
+
+TwoFactor.layout = (page: ReactElement) => <AppLayout>{page}</AppLayout>;
+
+export default TwoFactor;
