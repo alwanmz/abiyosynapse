@@ -14,6 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
     Table,
     TableBody,
@@ -40,13 +41,18 @@ interface Supplier {
     address: string | null;
     payment_term_days: number;
     is_active: boolean;
+    currency_code: string | null;
 }
+
+interface CompanyCurrency { currency_code: string; currency: { code: string; name: string } }
 
 interface PageProps {
     suppliers: Supplier[];
+    baseCurrency: string;
+    currencies: CompanyCurrency[];
 }
 
-function SuppliersPage({ suppliers }: PageProps) {
+function SuppliersPage({ suppliers, baseCurrency, currencies }: PageProps) {
     const { t } = useTranslation('master');
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editing, setEditing] = useState<Supplier | null>(null);
@@ -66,6 +72,7 @@ function SuppliersPage({ suppliers }: PageProps) {
         address: '',
         payment_term_days: 0,
         is_active: true,
+        currency_code: baseCurrency,
     });
 
     const { delete: destroy, processing: deleting_ } = useForm({});
@@ -87,6 +94,7 @@ function SuppliersPage({ suppliers }: PageProps) {
             address: supplier.address ?? '',
             payment_term_days: supplier.payment_term_days,
             is_active: supplier.is_active,
+            currency_code: supplier.currency_code ?? baseCurrency,
         });
         setDialogOpen(true);
     };
@@ -142,6 +150,7 @@ function SuppliersPage({ suppliers }: PageProps) {
                                 <TableRow>
                                     <TableHead>{t('common.code')}</TableHead>
                                     <TableHead>{t('common.name')}</TableHead>
+                                    <TableHead>{t('currency.title')}</TableHead>
                                     <TableHead>{t('supplier.email')}</TableHead>
                                     <TableHead>{t('supplier.phone')}</TableHead>
                                     <TableHead>{t('common.status')}</TableHead>
@@ -160,6 +169,7 @@ function SuppliersPage({ suppliers }: PageProps) {
                                         <TableRow key={supplier.id}>
                                             <TableCell className="font-mono text-sm">{supplier.code}</TableCell>
                                             <TableCell>{supplier.name}</TableCell>
+                                            <TableCell className="font-mono text-sm">{supplier.currency_code ?? baseCurrency}</TableCell>
                                             <TableCell className="text-sm text-muted-foreground">{supplier.email ?? '—'}</TableCell>
                                             <TableCell className="text-sm text-muted-foreground">{supplier.phone ?? '—'}</TableCell>
                                             <TableCell>
@@ -268,6 +278,15 @@ function SuppliersPage({ suppliers }: PageProps) {
                                         <p className="text-sm text-destructive">{errors.payment_term_days}</p>
                                     )}
                                 </div>
+
+                                <div className="grid gap-2">
+                                    <Label>{t('currency.title')}</Label>
+                                    <Select value={data.currency_code} onValueChange={(value) => setData('currency_code', value)}>
+                                        <SelectTrigger><SelectValue /></SelectTrigger>
+                                        <SelectContent>{currencies.map((currency) => <SelectItem key={currency.currency_code} value={currency.currency_code}>{currency.currency_code} — {currency.currency.name}</SelectItem>)}</SelectContent>
+                                    </Select>
+                                    {errors.currency_code && <p className="text-sm text-destructive">{errors.currency_code}</p>}
+                                </div>
                             </div>
 
                             <div className="grid gap-2">
@@ -284,13 +303,13 @@ function SuppliersPage({ suppliers }: PageProps) {
                         <DialogFooter>
                             <Button
                                 type="button"
-                                variant="outline"
+                                variant="cancel"
                                 onClick={() => setDialogOpen(false)}
                                 disabled={processing}
                             >
                                 {t('common.cancel')}
                             </Button>
-                            <Button type="submit" disabled={processing}>
+                            <Button type="submit" variant="save" disabled={processing}>
                                 {processing ? t('common.saving') : t('common.save')}
                             </Button>
                         </DialogFooter>

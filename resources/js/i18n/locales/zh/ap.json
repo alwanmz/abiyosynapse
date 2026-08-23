@@ -1,0 +1,39 @@
+{
+    "nav": {
+        "ap": "应付账款"
+    },
+    "common": {
+        "cancel": "取消",
+        "save": "保存",
+        "saving": "保存中..."
+    },
+    "ap_payment": {
+        "title": "应付账款付款",
+        "breadcrumb": "应付账款付款",
+        "description": "记录支付给供应商的应付账款款项。",
+        "list_title": "付款列表",
+        "add": "新增付款",
+        "add_title": "新增应付账款付款",
+        "add_description": "选择供应商，然后将付款分配到一张或多张发票。",
+        "supplier": "供应商",
+        "supplier_placeholder": "选择供应商",
+        "bank_account": "账户",
+        "bank_account_placeholder": "选择账户",
+        "payment_date": "付款日期",
+        "reference": "备注编号",
+        "reference_placeholder": "例如：银行转账单号",
+        "invoices": "结清的发票",
+        "no_payable_invoices": "该供应商没有可支付的发票。",
+        "outstanding": "未结余额",
+        "total_applied": "分配总额",
+        "empty": "尚无应付账款付款记录。",
+        "table": {
+            "number": "编号",
+            "supplier": "供应商",
+            "bank_account": "账户",
+            "date": "日期",
+            "invoices": "发票",
+            "amount": "金额"
+        }
+    }
+}

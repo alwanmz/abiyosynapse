@@ -5,6 +5,8 @@ namespace App\Services\Accounting;
 use App\Models\Account;
 use App\Models\JournalEntry;
 use App\Services\CurrentCompany;
+use Brick\Math\BigDecimal;
+use Brick\Math\RoundingMode;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -33,7 +35,7 @@ class JournalPostingService
     }
 
     /**
-     * @param  array<int, array{account_id: int, debit?: float, credit?: float, description?: string, costable?: Model}>  $lines
+     * @param  array<int, array{account_id: int, debit?: string|float, credit?: string|float, debit_base?: string|float, credit_base?: string|float, amount_currency?: string|float, currency_code?: string, exchange_rate?: string|float, description?: string, costable?: Model}>  $lines
      */
     public function post(
         string $description,
@@ -45,15 +47,15 @@ class JournalPostingService
             throw new RuntimeException('A journal entry needs at least two lines.');
         }
 
-        $totalDebit = 0;
-        $totalCredit = 0;
+        $totalDebit = BigDecimal::zero();
+        $totalCredit = BigDecimal::zero();
 
         foreach ($lines as $line) {
-            $totalDebit += $line['debit'] ?? 0;
-            $totalCredit += $line['credit'] ?? 0;
+            $totalDebit = $totalDebit->plus(BigDecimal::of((string) ($line['debit_base'] ?? $line['debit'] ?? 0)));
+            $totalCredit = $totalCredit->plus(BigDecimal::of((string) ($line['credit_base'] ?? $line['credit'] ?? 0)));
         }
 
-        if (round($totalDebit, 2) !== round($totalCredit, 2)) {
+        if ($totalDebit->toScale(6, RoundingMode::HALF_UP)->compareTo($totalCredit->toScale(6, RoundingMode::HALF_UP)) !== 0) {
             throw new RuntimeException(
                 "Journal entry is not balanced: debit {$totalDebit} != credit {$totalCredit}.",
             );
@@ -65,17 +67,25 @@ class JournalPostingService
             throw new RuntimeException('Cannot post a journal entry without a resolved company context.');
         }
 
-        return DB::transaction(function () use ($companyId, $description, $lines, $sourceable, $entryDate, $totalDebit, $totalCredit) {
+        $company = $this->currentCompany->get();
+        $entryCurrency = strtoupper((string) ($lines[0]['currency_code'] ?? $company?->currency ?? 'IDR'));
+        $entryRate = (string) ($lines[0]['exchange_rate'] ?? 1);
+
+        return DB::transaction(function () use ($companyId, $description, $lines, $sourceable, $entryDate, $totalDebit, $totalCredit, $entryCurrency, $entryRate) {
             $entry = JournalEntry::create([
                 'company_id' => $companyId,
                 'number' => $this->nextNumber($companyId),
                 'entry_date' => $entryDate ?? now()->toDateString(),
                 'description' => $description,
+                'currency_code' => $entryCurrency,
+                'exchange_rate' => $entryRate,
                 'sourceable_type' => $sourceable?->getMorphClass(),
                 'sourceable_id' => $sourceable?->getKey(),
                 'status' => 'posted',
-                'total_debit' => $totalDebit,
-                'total_credit' => $totalCredit,
+                'total_debit' => $totalDebit->toScale(6, RoundingMode::HALF_UP)->__toString(),
+                'total_credit' => $totalCredit->toScale(6, RoundingMode::HALF_UP)->__toString(),
+                'total_debit_base' => $totalDebit->toScale(6, RoundingMode::HALF_UP)->__toString(),
+                'total_credit_base' => $totalCredit->toScale(6, RoundingMode::HALF_UP)->__toString(),
                 'posted_at' => now(),
                 'created_by' => auth()->id(),
             ]);
@@ -83,10 +93,21 @@ class JournalPostingService
             foreach ($lines as $line) {
                 $this->assertPostable($line['account_id']);
 
+                $debitBase = (string) ($line['debit_base'] ?? $line['debit'] ?? 0);
+                $creditBase = (string) ($line['credit_base'] ?? $line['credit'] ?? 0);
+                $amountCurrency = (string) ($line['amount_currency'] ?? BigDecimal::of($debitBase)->minus(BigDecimal::of($creditBase)));
+                $currencyCode = strtoupper((string) ($line['currency_code'] ?? $entryCurrency));
+                $exchangeRate = (string) ($line['exchange_rate'] ?? 1);
+
                 $entry->lines()->create([
                     'account_id' => $line['account_id'],
-                    'debit' => $line['debit'] ?? 0,
-                    'credit' => $line['credit'] ?? 0,
+                    'currency_code' => $currencyCode,
+                    'amount_currency' => $amountCurrency,
+                    'exchange_rate' => $exchangeRate,
+                    'debit' => $debitBase,
+                    'credit' => $creditBase,
+                    'debit_base' => $debitBase,
+                    'credit_base' => $creditBase,
                     'description' => $line['description'] ?? null,
                     'costable_type' => ($line['costable'] ?? null)?->getMorphClass(),
                     'costable_id' => ($line['costable'] ?? null)?->getKey(),

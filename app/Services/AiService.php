@@ -36,6 +36,35 @@ class AiService
     }
 
     /**
+     * Ask the provider for a machine-readable object. The caller still owns
+     * validation and authorization; this method only handles extraction.
+     *
+     * @return array<string, mixed>
+     */
+    public function generateJson(string $systemPrompt, string $userPrompt, ?string $model = null): array
+    {
+        $answer = $this->chatCompletion([
+            ['role' => 'system', 'content' => $systemPrompt],
+            ['role' => 'user', 'content' => $userPrompt],
+        ], $model);
+
+        $start = strpos($answer, '{');
+        $end = strrpos($answer, '}');
+
+        if ($start === false || $end === false || $end <= $start) {
+            throw new RuntimeException('AI tidak mengembalikan object JSON yang valid.');
+        }
+
+        $decoded = json_decode(substr($answer, $start, $end - $start + 1), true);
+
+        if (! is_array($decoded)) {
+            throw new RuntimeException('AI mengembalikan JSON yang tidak dapat dibaca.');
+        }
+
+        return $decoded;
+    }
+
+    /**
      * Summarize a longer block of text into a short professional summary.
      */
     public function summarize(string $text, int $maxSentences = 3): string
@@ -99,7 +128,7 @@ class AiService
      */
     public function analyze(string $task, string $payload): string
     {
-        $prompt = "Anda adalah asisten analitik untuk aplikasi manajemen proyek. "
+        $prompt = "Anda adalah asisten analitik untuk Nexumi ERP multi-company. "
             . "Tugas: {$task}\n\nData:\n{$payload}\n\n"
             . "Jawab dalam Bahasa Indonesia, profesional, dan actionable. Gunakan markdown bila membantu.";
 

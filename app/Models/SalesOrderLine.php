@@ -16,6 +16,7 @@ class SalesOrderLine extends Model
         'tax_code_id',
         'quantity',
         'unit_price',
+        'unit_price_base',
         'delivered_quantity',
         'invoiced_quantity',
     ];
@@ -25,6 +26,7 @@ class SalesOrderLine extends Model
         return [
             'quantity' => 'decimal:4',
             'unit_price' => 'decimal:2',
+            'unit_price_base' => 'decimal:6',
             'delivered_quantity' => 'decimal:4',
             'invoiced_quantity' => 'decimal:4',
         ];

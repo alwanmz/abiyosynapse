@@ -15,8 +15,13 @@ class JournalLine extends Model
     protected $fillable = [
         'journal_entry_id',
         'account_id',
+        'currency_code',
+        'amount_currency',
+        'exchange_rate',
         'debit',
         'credit',
+        'debit_base',
+        'credit_base',
         'description',
         'costable_type',
         'costable_id',
@@ -27,6 +32,10 @@ class JournalLine extends Model
         return [
             'debit' => 'decimal:2',
             'credit' => 'decimal:2',
+            'amount_currency' => 'decimal:6',
+            'exchange_rate' => 'decimal:12',
+            'debit_base' => 'decimal:6',
+            'credit_base' => 'decimal:6',
         ];
     }
 

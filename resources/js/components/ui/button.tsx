@@ -11,6 +11,12 @@ const buttonVariants = cva(
       variant: {
         default:
           "bg-primary text-primary-foreground hover:bg-primary/90",
+        save:
+          "bg-nx-save text-white hover:bg-nx-save/90 focus-visible:ring-nx-save/30",
+        print:
+          "bg-nx-print text-nx-navy-900 hover:bg-nx-print/90 focus-visible:ring-nx-print/30",
+        cancel:
+          "border border-nx-cancel bg-background text-nx-cancel hover:bg-nx-cancel-bg hover:text-nx-cancel focus-visible:ring-nx-cancel/30",
         destructive:
           "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
         outline:

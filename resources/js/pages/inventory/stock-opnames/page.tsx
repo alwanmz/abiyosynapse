@@ -200,13 +200,13 @@ function StockOpnamesPage({ opnames, warehouses }: PageProps) {
                         <DialogFooter>
                             <Button
                                 type="button"
-                                variant="outline"
+                                variant="cancel"
                                 onClick={() => setDialogOpen(false)}
                                 disabled={processing}
                             >
                                 Batal
                             </Button>
-                            <Button type="submit" disabled={processing}>
+                            <Button type="submit" variant="save" disabled={processing}>
                                 {t('stock_opname.add')}
                             </Button>
                         </DialogFooter>

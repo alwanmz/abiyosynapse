@@ -15,14 +15,18 @@ class ProductionOrderComponent extends Model
         'production_order_id',
         'component_id',
         'required_quantity',
+        'standard_unit_cost',
         'issued_quantity',
+        'actual_material_cost',
     ];
 
     protected function casts(): array
     {
         return [
             'required_quantity' => 'decimal:4',
+            'standard_unit_cost' => 'decimal:2',
             'issued_quantity' => 'decimal:4',
+            'actual_material_cost' => 'decimal:2',
         ];
     }
 

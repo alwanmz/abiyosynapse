@@ -1,8 +1,15 @@
 {
-    "breadcrumb": "Beranda",
-    "head_title": "Dasbor",
-    "welcome": "Selamat datang kembali!",
-    "placeholder_description": "Dashboard ini akan diisi begitu modul-modul ERP mulai berjalan.",
-    "empty_title": "Belum ada data",
-    "empty_description": "Ringkasan eksekutif akan tersedia setelah modul transaksional (Kas Bank, AR, AP, Sales, Pembelian) mulai posting ke buku besar."
+  "breadcrumb": "Beranda",
+  "head_title": "Dasbor Eksekutif",
+  "welcome": "Ringkasan bisnis",
+  "description": "Pantau kesehatan keuangan, operasi, kas, dan kualitas dari satu layar.",
+  "filters": { "from": "Dari tanggal", "to": "Sampai tanggal", "apply": "Terapkan" },
+  "comparison": { "vs_previous": "vs periode sebelumnya", "new": "Baru tersedia", "no_data": "tanpa data pembanding" },
+  "financial": { "title": "Keuangan", "revenue": "Pendapatan", "cogs": "HPP", "gross_profit": "Laba kotor", "gross_margin": "Margin kotor", "net_profit": "Laba bersih", "cash_balance": "Saldo kas & bank", "ar_outstanding": "Piutang outstanding", "ap_outstanding": "Hutang outstanding" },
+  "operations": { "title": "Operasi", "inventory_value": "Nilai persediaan", "production_output": "Output produksi", "production_planned": "Rencana produksi", "production_rejected": "Reject produksi", "production_completed": "Order selesai", "yield_rate": "Yield produksi", "otd_rate": "Pengiriman tepat waktu" },
+  "quality": { "title": "Kualitas", "inspection_count": "Jumlah inspeksi", "pass_rate": "Pass rate", "failed_quantity": "Qty gagal", "open_ncrs": "NCR terbuka" },
+  "maintenance": { "title": "Maintenance", "description": "Risiko equipment, preventive overdue, downtime, dan kualitas data.", "high_risk_equipment": "Equipment berisiko tinggi", "overdue_preventive": "Preventive overdue", "downtime_minutes": "Downtime (menit)", "cost_base": "Biaya maintenance", "insufficient_data": "Data belum cukup" },
+  "trend": { "title": "Tren periode", "description": "Perbandingan pendapatan, beban, dan output produksi.", "revenue": "Pendapatan", "expenses": "Beban", "output": "Output", "rejected": "Reject" },
+  "attention": { "title": "Perlu perhatian", "empty": "Tidak ada item kritis pada saat ini.", "overdue_ar": "Piutang telah jatuh tempo", "overdue_ap": "Hutang telah jatuh tempo", "open_ncr": "NCR masih terbuka", "late_production": "Order produksi terlambat", "open": "Buka" },
+  "empty": "Belum ada data pada periode ini."
 }

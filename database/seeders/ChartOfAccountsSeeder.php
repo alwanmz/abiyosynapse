@@ -49,6 +49,7 @@ class ChartOfAccountsSeeder extends Seeder
         // Pendapatan
         ['4', 'Pendapatan', 'revenue', 'credit', false, null],
         ['4.1', 'Pendapatan Penjualan', 'revenue', 'credit', true, '4'],
+        ['4.2', 'Keuntungan Selisih Kurs', 'revenue', 'credit', true, '4'],
 
         // Beban
         ['5', 'Beban', 'expense', 'debit', false, null],
@@ -57,6 +58,8 @@ class ChartOfAccountsSeeder extends Seeder
         ['5.3', 'Beban Overhead Pabrik', 'expense', 'debit', true, '5'],
         ['5.4', 'Beban Scrap / Penyesuaian Persediaan', 'expense', 'debit', true, '5'],
         ['5.5', 'Beban Operasional', 'expense', 'debit', true, '5'],
+        ['5.6', 'Kerugian Selisih Kurs', 'expense', 'debit', true, '5'],
+        ['5.7', 'Kerugian Revaluasi Kurs', 'expense', 'debit', true, '5'],
     ];
 
     public function run(): void

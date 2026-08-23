@@ -83,7 +83,10 @@ export function ConfirmDialog({
                     )}
 
                     <AlertDialogFooter className="gap-2">
-                        <AlertDialogCancel disabled={loading}>
+                        <AlertDialogCancel
+                            disabled={loading}
+                            className="border-nx-cancel bg-background text-nx-cancel hover:bg-nx-cancel-bg hover:text-nx-cancel"
+                        >
                             {cancelLabel}
                         </AlertDialogCancel>
                         <AlertDialogAction

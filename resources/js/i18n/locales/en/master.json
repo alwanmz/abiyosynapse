@@ -130,6 +130,7 @@
         "delete_title": "Delete product?",
         "delete_confirm_prefix": "Are you sure you want to delete"
     },
+    "currency": { "title": "Currencies" },
     "account": {
         "title": "Chart of Accounts",
         "description": "Manage the financial account structure (Assets, Liabilities, Equity, Revenue, Expenses).",

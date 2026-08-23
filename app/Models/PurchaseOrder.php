@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\BelongsToCompany;
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class PurchaseOrder extends Model
 {
     /** @use HasFactory<\Database\Factories\PurchaseOrderFactory> */
-    use HasFactory, BelongsToCompany;
+    use HasFactory, BelongsToCompany, Auditable;
 
     protected $fillable = [
         'company_id',
@@ -20,11 +21,16 @@ class PurchaseOrder extends Model
         'warehouse_id',
         'purchase_request_id',
         'order_date',
+        'currency_code',
+        'exchange_rate',
         'expected_date',
         'status',
         'subtotal',
         'tax_total',
         'total',
+        'subtotal_base',
+        'tax_total_base',
+        'total_base',
         'created_by',
         'approved_by',
         'approved_at',
@@ -40,6 +46,10 @@ class PurchaseOrder extends Model
             'subtotal' => 'decimal:2',
             'tax_total' => 'decimal:2',
             'total' => 'decimal:2',
+            'exchange_rate' => 'decimal:12',
+            'subtotal_base' => 'decimal:6',
+            'tax_total_base' => 'decimal:6',
+            'total_base' => 'decimal:6',
             'approved_at' => 'datetime',
             'sent_at' => 'datetime',
             'closed_at' => 'datetime',

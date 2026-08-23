@@ -1,0 +1,39 @@
+{
+    "nav": {
+        "ar": "应收账款"
+    },
+    "common": {
+        "cancel": "取消",
+        "save": "保存",
+        "saving": "保存中..."
+    },
+    "ar_receipt": {
+        "title": "应收账款收款",
+        "breadcrumb": "应收账款收款",
+        "description": "记录向客户收取的应收账款款项。",
+        "list_title": "收款列表",
+        "add": "新增收款",
+        "add_title": "新增应收账款收款",
+        "add_description": "选择客户，然后将付款分配到一张或多张发票。",
+        "customer": "客户",
+        "customer_placeholder": "选择客户",
+        "bank_account": "账户",
+        "bank_account_placeholder": "选择账户",
+        "receipt_date": "收款日期",
+        "reference": "备注编号",
+        "reference_placeholder": "例如：银行转账单号",
+        "invoices": "结清的发票",
+        "no_outstanding_invoices": "该客户没有未结清的发票。",
+        "outstanding": "未结余额",
+        "total_applied": "分配总额",
+        "empty": "尚无应收账款收款记录。",
+        "table": {
+            "number": "编号",
+            "customer": "客户",
+            "bank_account": "账户",
+            "date": "日期",
+            "invoices": "发票",
+            "amount": "金额"
+        }
+    }
+}

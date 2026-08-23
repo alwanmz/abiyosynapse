@@ -33,7 +33,13 @@
         "status_converted": "Dikonversi",
         "submit": "Ajukan",
         "approve": "Setujui",
-        "reject": "Tolak"
+        "reject": "Tolak",
+        "reject_title": "Tolak Purchase Request",
+        "reject_description": "Catat alasan agar keputusan dapat ditelusuri.",
+        "rejection_reason": "Alasan penolakan",
+        "rejection_reason_placeholder": "Jelaskan alasan penolakan (opsional)",
+        "cancel": "Batal",
+        "rejecting": "Menolak..."
     },
     "purchase_order": {
         "title": "Purchase Order",

@@ -1,0 +1,9 @@
+{
+  "nav": { "audit_trail": "审计轨迹" },
+  "title": "审计轨迹",
+  "description": "当前公司的数据变更和审批决定记录。",
+  "filters": { "search": "搜索单据", "search_placeholder": "编号、说明或单据类型", "event": "活动类型", "all_events": "全部活动", "apply": "应用" },
+  "table": { "date": "时间", "user": "用户", "event": "活动", "document": "单据", "description": "说明", "details": "详情", "empty": "暂无审计活动。" },
+  "events": { "created": "已创建", "updated": "已修改", "submitted": "已提交", "approved": "已批准", "rejected": "已拒绝", "status_changed": "状态变更", "closed": "已关闭", "deleted": "已删除" },
+  "detail": { "title": "审计详情", "document": "单据", "actor": "执行人", "old_values": "原值", "new_values": "新值", "no_changes": "没有字段变更。", "close": "关闭", "empty": "空" }
+}

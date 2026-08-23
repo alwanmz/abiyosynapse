@@ -3,6 +3,7 @@ import { LucideIcon } from 'lucide-react';
 
 export interface Role {
     id: number;
+    company_id?: number | null;
     name: string;
     display_name: string;
     description?: string;

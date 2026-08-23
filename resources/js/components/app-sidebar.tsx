@@ -16,6 +16,9 @@ import { dashboard, manageUsers } from '@/routes';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import {
+    ArrowRightLeft,
+    Banknote,
+    BookOpen,
     Boxes,
     Building2,
     Calculator,
@@ -24,9 +27,15 @@ import {
     ClipboardList,
     Factory,
     FileSpreadsheet,
+    FileScan,
     FileWarning,
+    Gauge,
+    Wrench,
+    HandCoins,
+    History,
     Landmark,
     Layers,
+    ListChecks,
     ListTree,
     Package,
     PackageCheck,
@@ -35,11 +44,13 @@ import {
     ReceiptText,
     Route,
     ShieldCheck,
+    Sparkles,
     ShoppingBag,
     ShoppingCart,
     Truck,
     Undo2,
     Users,
+    Wallet,
     Warehouse as WarehouseIcon,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -131,6 +142,12 @@ export function AppSidebar() {
             href: '/master/customers',
             icon: Users,
         },
+        {
+            title: t('master:currency.title'),
+            permission: 'currencies.view',
+            href: '/master/currencies',
+            icon: Banknote,
+        },
     ];
 
     const inventoryNavItems: NavItem[] = [
@@ -196,6 +213,13 @@ export function AppSidebar() {
         },
     ];
 
+    const maintenanceNavItems: NavItem[] = [
+        { title: t('maintenance:nav.equipment'), permission: 'maintenance.view', href: '/maintenance/equipment', icon: Wrench },
+        { title: t('maintenance:nav.work_orders'), permission: 'maintenance.view', href: '/maintenance/work-orders', icon: Factory },
+        { title: t('maintenance:nav.schedules'), permission: 'maintenance.view', href: '/maintenance/schedules', icon: ClipboardList },
+        { title: t('maintenance:nav.readings'), permission: 'maintenance.view', href: '/maintenance/readings', icon: Gauge },
+    ];
+
     const purchasingNavItems: NavItem[] = [
         {
             title: t('purchasing:purchase_request.title'),
@@ -250,6 +274,87 @@ export function AppSidebar() {
         },
     ];
 
+    const cashBankNavItems: NavItem[] = [
+        {
+            title: t('cash-bank:bank_account.title'),
+            permission: 'cash-bank.view',
+            href: '/cash-bank/bank-accounts',
+            icon: Wallet,
+        },
+        {
+            title: t('cash-bank:cash_transaction.title'),
+            permission: 'cash-bank.view',
+            href: '/cash-bank/cash-transactions',
+            icon: ArrowRightLeft,
+        },
+        {
+            title: t('cash-bank:bank_reconciliation.title'),
+            permission: 'cash-bank.view',
+            href: '/cash-bank/bank-reconciliations',
+            icon: ListChecks,
+        },
+    ];
+
+    const arNavItems: NavItem[] = [
+        {
+            title: t('ar:ar_receipt.title'),
+            permission: 'ar.view',
+            href: '/ar/ar-receipts',
+            icon: HandCoins,
+        },
+    ];
+
+    const apNavItems: NavItem[] = [
+        {
+            title: t('ap:ap_payment.title'),
+            permission: 'ap.view',
+            href: '/ap/ap-payments',
+            icon: Banknote,
+        },
+    ];
+
+    const fixedAssetNavItems: NavItem[] = [
+        {
+            title: t('fixed-assets:asset.title'),
+            permission: 'fixed-assets.view',
+            href: '/fixed-assets',
+            icon: Landmark,
+        },
+    ];
+
+    const reportsNavItems: NavItem[] = [
+        {
+            title: t('reports:nav.gl_reports'),
+            permission: 'reports.view',
+            href: '/reports/gl',
+            icon: BookOpen,
+        },
+    ];
+
+    const aiNavItems: NavItem[] = [
+        {
+            title: t('ai:nav.copilot'),
+            permission: 'ai.use',
+            href: '/ai/copilot',
+            icon: Sparkles,
+        },
+        {
+            title: t('ai:nav.documents'),
+            permission: 'ai.documents.view',
+            href: '/ai/documents',
+            icon: FileScan,
+        },
+    ];
+
+    const auditNavItems: NavItem[] = [
+        {
+            title: t('audit:nav.audit_trail'),
+            permission: 'audit.view',
+            href: '/audit-logs',
+            icon: History,
+        },
+    ];
+
     const isSuperAdmin = userRole === 'super_admin' || userRole === 'admin';
     const permissions = auth.role?.permissions?.map((permission) => permission.name) ?? [];
     const canView = (permission?: string) =>
@@ -281,8 +386,16 @@ export function AppSidebar() {
                 <NavMain items={filterByPermission(inventoryNavItems)} label={t('inventory:nav.inventory')} />
                 <NavMain items={filterByPermission(manufacturingNavItems)} label={t('manufacturing:nav.manufacturing')} />
                 <NavMain items={filterByPermission(qualityNavItems)} label={t('quality:nav.quality')} />
+                <NavMain items={filterByPermission(maintenanceNavItems)} label={t('maintenance:nav.group')} />
                 <NavMain items={filterByPermission(purchasingNavItems)} label={t('purchasing:nav.purchasing')} />
                 <NavMain items={filterByPermission(salesNavItems)} label={t('sales:nav.sales')} />
+                <NavMain items={filterByPermission(cashBankNavItems)} label={t('cash-bank:nav.cash_bank')} />
+                <NavMain items={filterByPermission(arNavItems)} label={t('ar:nav.ar')} />
+                <NavMain items={filterByPermission(apNavItems)} label={t('ap:nav.ap')} />
+                <NavMain items={filterByPermission(fixedAssetNavItems)} label={t('fixed-assets:nav.fixed_assets')} />
+                <NavMain items={filterByPermission(reportsNavItems)} label={t('reports:nav.gl_reports')} />
+                <NavMain items={filterByPermission(aiNavItems)} label={t('ai:nav.group')} />
+                <NavMain items={filterByPermission(auditNavItems)} label={t('audit:nav.audit_trail')} />
                 <NavMain items={filterByPermission(masterNavItems)} label={t('nav.group_master')} />
             </SidebarContent>
 

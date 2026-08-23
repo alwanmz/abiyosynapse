@@ -130,6 +130,7 @@
         "delete_title": "删除产品？",
         "delete_confirm_prefix": "确定要删除"
     },
+    "currency": { "title": "货币" },
     "account": {
         "title": "会计科目表",
         "description": "管理财务科目结构（资产、负债、权益、收入、费用）。",

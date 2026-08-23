@@ -40,6 +40,8 @@ interface Operation {
     name: string;
     planned_minutes: string;
     actual_minutes: string | null;
+    planned_cost: string;
+    actual_cost: string;
     output_quantity: string | null;
     status: 'pending' | 'in_progress' | 'complete';
     work_center: { id: number; code: string; name: string };
@@ -51,6 +53,15 @@ interface Order {
     planned_quantity: string;
     produced_quantity: string;
     rejected_quantity: string;
+    standard_material_cost: string | null;
+    actual_material_cost: string | null;
+    standard_conversion_cost: string | null;
+    actual_conversion_cost: string | null;
+    standard_total_cost: string | null;
+    actual_total_cost: string | null;
+    variance_amount: string | null;
+    variance_percentage: string | null;
+    costed_at: string | null;
     start_date: string;
     due_date: string;
     status: 'planned' | 'released' | 'in_production' | 'qc' | 'completed' | 'closed';
@@ -89,6 +100,7 @@ function ProductionOrderShowPage({ order }: PageProps) {
     const { processing: releasing } = useForm({});
     const { processing: issuing } = useForm({});
     const { processing: submittingQc } = useForm({});
+    const { processing: costing } = useForm({});
     const completeForm = useForm({ produced_quantity: order.planned_quantity });
     const operationForm = useForm({ actual_minutes: '', output_quantity: '' });
     const finalInspectionForm = useForm({ quantity_passed: order.planned_quantity, notes: '' });
@@ -103,6 +115,10 @@ function ProductionOrderShowPage({ order }: PageProps) {
 
     const handleSubmitForQc = () => {
         router.post(`/manufacturing/production-orders/${order.id}/submit-for-qc`, {}, { preserveScroll: true });
+    };
+
+    const handleCost = () => {
+        router.post(`/manufacturing/production-orders/${order.id}/cost`, {}, { preserveScroll: true });
     };
 
     const handleComplete = () => {
@@ -144,6 +160,9 @@ function ProductionOrderShowPage({ order }: PageProps) {
     const canComplete = order.status === 'in_production';
     const canSubmitForQc = order.status === 'in_production';
     const isPendingQc = order.status === 'qc';
+    const isCosted = order.costed_at !== null;
+    const formatCost = (value: string | null) =>
+        value === null ? '—' : Number(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
     return (
         <>
@@ -171,12 +190,12 @@ function ProductionOrderShowPage({ order }: PageProps) {
                             </Button>
                         )}
                         {canIssueMaterials && (
-                            <Button variant="outline" onClick={handleIssueMaterials} disabled={issuing}>
+                            <Button variant="default" onClick={handleIssueMaterials} disabled={issuing}>
                                 {t('production_order.issue_materials')}
                             </Button>
                         )}
                         {canSubmitForQc && (
-                            <Button variant="outline" onClick={handleSubmitForQc} disabled={submittingQc}>
+                            <Button variant="default" onClick={handleSubmitForQc} disabled={submittingQc}>
                                 {t('production_order.submit_for_qc')}
                             </Button>
                         )}
@@ -220,7 +239,7 @@ function ProductionOrderShowPage({ order }: PageProps) {
                                     />
                                 </div>
                                 <div>
-                                    <Button type="submit" disabled={finalInspectionForm.processing} className="w-full">
+                                    <Button type="submit" variant="save" disabled={finalInspectionForm.processing} className="w-full">
                                         {t('quality:final_inspection.submit')}
                                     </Button>
                                 </div>
@@ -326,7 +345,7 @@ function ProductionOrderShowPage({ order }: PageProps) {
                                                 <TableCell className="text-right">
                                                     {op.status === 'pending' && (
                                                         <Button
-                                                            variant="outline"
+                                                            variant="default"
                                                             size="sm"
                                                             onClick={() => handleStartOperation(op.id)}
                                                         >
@@ -335,7 +354,7 @@ function ProductionOrderShowPage({ order }: PageProps) {
                                                     )}
                                                     {op.status === 'in_progress' && (
                                                         <Button
-                                                            variant="outline"
+                                                            variant="default"
                                                             size="sm"
                                                             onClick={() => openCompleteOperationDialog(op)}
                                                         >
@@ -351,6 +370,70 @@ function ProductionOrderShowPage({ order }: PageProps) {
                         </CardContent>
                     </Card>
                 </div>
+
+                {(order.status === 'completed' || order.status === 'closed') && (
+                    <Card className="mt-6 overflow-hidden p-0">
+                        <ListHeader title={t('production_order.costing_title')} />
+                        <CardContent className="p-5">
+                            <div className="mb-4 flex items-center justify-between gap-4">
+                                <p className="text-sm text-muted-foreground">
+                                    {isCosted
+                                        ? `${t('production_order.costed_at')}: ${new Date(order.costed_at as string).toLocaleDateString()}`
+                                        : t('production_order.not_costed')}
+                                </p>
+                                <Button variant={isCosted ? 'outline' : 'default'} onClick={handleCost} disabled={costing}>
+                                    {costing ? t('production_order.costing') : t('production_order.costing_action')}
+                                </Button>
+                            </div>
+                            <div className="grid gap-6 md:grid-cols-2">
+                                <div className="space-y-3">
+                                    <div className="flex items-center justify-between gap-4 text-sm">
+                                        <span className="text-muted-foreground">{t('production_order.standard_material')}</span>
+                                        <span className="tabular-nums">{formatCost(order.standard_material_cost)}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between gap-4 text-sm">
+                                        <span className="text-muted-foreground">{t('production_order.actual_material')}</span>
+                                        <span className="tabular-nums">{formatCost(order.actual_material_cost)}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between gap-4 border-t pt-3 text-sm">
+                                        <span className="font-medium">{t('production_order.material_variance')}</span>
+                                        <span className="tabular-nums">{formatCost(order.actual_material_cost !== null && order.standard_material_cost !== null ? String(Number(order.actual_material_cost) - Number(order.standard_material_cost)) : null)}</span>
+                                    </div>
+                                </div>
+                                <div className="space-y-3">
+                                    <div className="flex items-center justify-between gap-4 text-sm">
+                                        <span className="text-muted-foreground">{t('production_order.standard_conversion')}</span>
+                                        <span className="tabular-nums">{formatCost(order.standard_conversion_cost)}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between gap-4 text-sm">
+                                        <span className="text-muted-foreground">{t('production_order.actual_conversion')}</span>
+                                        <span className="tabular-nums">{formatCost(order.actual_conversion_cost)}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between gap-4 border-t pt-3 text-sm">
+                                        <span className="font-medium">{t('production_order.conversion_variance')}</span>
+                                        <span className="tabular-nums">{formatCost(order.actual_conversion_cost !== null && order.standard_conversion_cost !== null ? String(Number(order.actual_conversion_cost) - Number(order.standard_conversion_cost)) : null)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="mt-5 grid gap-3 border-t pt-4 md:grid-cols-3">
+                                <div>
+                                    <p className="text-xs text-muted-foreground">{t('production_order.standard_total')}</p>
+                                    <p className="mt-1 text-lg font-semibold tabular-nums">{formatCost(order.standard_total_cost)}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-muted-foreground">{t('production_order.actual_total')}</p>
+                                    <p className="mt-1 text-lg font-semibold tabular-nums">{formatCost(order.actual_total_cost)}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-muted-foreground">{t('production_order.variance')}</p>
+                                    <p className={`mt-1 text-lg font-semibold tabular-nums ${Number(order.variance_amount ?? 0) > 0 ? 'text-destructive' : 'text-nx-andon-run'}`}>
+                                        {formatCost(order.variance_amount)} {order.variance_percentage !== null ? `(${Number(order.variance_percentage).toFixed(2)}%)` : ''}
+                                    </p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
             </div>
 
             <ConfirmDialog
@@ -414,7 +497,7 @@ function ProductionOrderShowPage({ order }: PageProps) {
                     <DialogFooter>
                         <Button
                             type="button"
-                            variant="outline"
+                            variant="cancel"
                             onClick={() => setOperationDialog(null)}
                             disabled={operationForm.processing}
                         >

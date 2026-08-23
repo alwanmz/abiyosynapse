@@ -37,7 +37,11 @@ class MrpService
     public function run(Product $finishedProduct, float $demandQuantity, Warehouse $warehouse): array
     {
         /** @var Bom|null $bom */
-        $bom = Bom::where('product_id', $finishedProduct->id)->where('status', 'active')->first();
+        $bom = Bom::where('product_id', $finishedProduct->id)
+            ->where('status', 'active')
+            ->effectiveOn(now()->toDateString())
+            ->orderByDesc('version')
+            ->first();
 
         if (! $bom) {
             return [];

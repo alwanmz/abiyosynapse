@@ -1,8 +1,15 @@
 {
-    "breadcrumb": "ホーム",
-    "head_title": "ダッシュボード",
-    "welcome": "おかえりなさい！",
-    "placeholder_description": "ERPモジュールの稼働が始まると、このダッシュボードにデータが表示されます。",
-    "empty_title": "まだデータがありません",
-    "empty_description": "経営サマリーは、現金・銀行、売掛金、買掛金、販売、購買などの取引モジュールが総勘定元帳への転記を開始した後に利用可能になります。"
+  "breadcrumb": "ダッシュボード",
+  "head_title": "経営ダッシュボード",
+  "welcome": "業務概要",
+  "description": "財務、業務、キャッシュ、品質を1画面で確認します。",
+  "filters": { "from": "開始日", "to": "終了日", "apply": "適用" },
+  "comparison": { "vs_previous": "前期間比", "new": "新規", "no_data": "比較データなし" },
+  "financial": { "title": "財務", "revenue": "売上高", "cogs": "売上原価", "gross_profit": "粗利益", "gross_margin": "粗利率", "net_profit": "純利益", "cash_balance": "現金・銀行残高", "ar_outstanding": "売掛金残高", "ap_outstanding": "買掛金残高" },
+  "operations": { "title": "業務", "inventory_value": "在庫金額", "production_output": "生産実績", "production_planned": "生産計画", "production_rejected": "不良数量", "production_completed": "完了オーダー", "yield_rate": "生産歩留まり", "otd_rate": "納期遵守率" },
+  "quality": { "title": "品質", "inspection_count": "検査数", "pass_rate": "合格率", "failed_quantity": "不合格数量", "open_ncrs": "未完了NCR" },
+  "maintenance": { "title": "保全", "description": "設備リスク、予防保全の遅延、停止時間、データ品質。", "high_risk_equipment": "高リスク設備", "overdue_preventive": "期限超過予防保全", "downtime_minutes": "停止時間（分）", "cost_base": "保全費用", "insufficient_data": "データ不足" },
+  "trend": { "title": "期間トレンド", "description": "売上、費用、生産実績の比較です。", "revenue": "売上", "expenses": "費用", "output": "実績", "rejected": "不良" },
+  "attention": { "title": "要対応", "empty": "現在、重要な対応事項はありません。", "overdue_ar": "売掛金の支払期限超過", "overdue_ap": "買掛金の支払期限超過", "open_ncr": "未完了NCR", "late_production": "遅延生産オーダー", "open": "開く" },
+  "empty": "この期間のデータはありません。"
 }

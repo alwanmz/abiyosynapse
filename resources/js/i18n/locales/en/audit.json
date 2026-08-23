@@ -1,0 +1,9 @@
+{
+  "nav": { "audit_trail": "Audit Trail" },
+  "title": "Audit Trail",
+  "description": "History of data changes and approval decisions in the active company.",
+  "filters": { "search": "Search documents", "search_placeholder": "Number, description, or document type", "event": "Activity type", "all_events": "All activities", "apply": "Apply" },
+  "table": { "date": "Time", "user": "User", "event": "Activity", "document": "Document", "description": "Description", "details": "Details", "empty": "No audit activity yet." },
+  "events": { "created": "Created", "updated": "Updated", "submitted": "Submitted", "approved": "Approved", "rejected": "Rejected", "status_changed": "Status changed", "closed": "Closed", "deleted": "Deleted" },
+  "detail": { "title": "Audit detail", "document": "Document", "actor": "Performed by", "old_values": "Previous values", "new_values": "New values", "no_changes": "No field-level changes.", "close": "Close", "empty": "Empty" }
+}

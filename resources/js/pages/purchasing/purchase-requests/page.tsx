@@ -49,6 +49,7 @@ interface PurchaseRequest {
     notes: string | null;
     status: 'draft' | 'submitted' | 'approved' | 'rejected' | 'converted';
     approved_at: string | null;
+    rejection_reason?: string | null;
     warehouse: { id: number; code: string; name: string };
     requester: { id: number; name: string } | null;
     lines: PurchaseRequestLine[];
@@ -84,6 +85,7 @@ const STATUS_VARIANT: Record<PurchaseRequest['status'], 'default' | 'outline' | 
 function PurchaseRequestsPage({ requests, products, warehouses }: PageProps) {
     const { t } = useTranslation('purchasing');
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [rejectingRequest, setRejectingRequest] = useState<PurchaseRequest | null>(null);
 
     useBreadcrumbs([
         { title: t('nav.purchasing'), href: '#' },
@@ -101,6 +103,7 @@ function PurchaseRequestsPage({ requests, products, warehouses }: PageProps) {
     });
 
     const { processing: actionProcessing } = useForm({});
+    const rejectionForm = useForm({ rejection_reason: '' });
 
     const openCreate = () => {
         reset();
@@ -132,8 +135,20 @@ function PurchaseRequestsPage({ requests, products, warehouses }: PageProps) {
         router.post(`/purchasing/purchase-requests/${id}/approve`, {}, { preserveScroll: true });
     };
 
-    const handleReject = (id: number) => {
-        router.post(`/purchasing/purchase-requests/${id}/reject`, {}, { preserveScroll: true });
+    const handleReject = (request: PurchaseRequest) => {
+        rejectionForm.reset();
+        setRejectingRequest(request);
+    };
+
+    const submitRejection = (event: React.FormEvent) => {
+        event.preventDefault();
+
+        if (!rejectingRequest) return;
+
+        rejectionForm.post(`/purchasing/purchase-requests/${rejectingRequest.id}/reject`, {
+            preserveScroll: true,
+            onSuccess: () => setRejectingRequest(null),
+        });
     };
 
     return (
@@ -193,7 +208,7 @@ function PurchaseRequestsPage({ requests, products, warehouses }: PageProps) {
                                                 <div className="flex justify-end gap-2">
                                                     {pr.status === 'draft' && (
                                                         <Button
-                                                            variant="outline"
+                                                            variant="default"
                                                             size="sm"
                                                             disabled={actionProcessing}
                                                             onClick={() => handleSubmitForApproval(pr.id)}
@@ -204,7 +219,7 @@ function PurchaseRequestsPage({ requests, products, warehouses }: PageProps) {
                                                     {pr.status === 'submitted' && (
                                                         <>
                                                             <Button
-                                                                variant="outline"
+                                                                variant="default"
                                                                 size="sm"
                                                                 disabled={actionProcessing}
                                                                 onClick={() => handleApprove(pr.id)}
@@ -212,11 +227,11 @@ function PurchaseRequestsPage({ requests, products, warehouses }: PageProps) {
                                                                 {t('purchase_request.approve')}
                                                             </Button>
                                                             <Button
-                                                                variant="outline"
+                                                                variant="destructive"
                                                                 size="sm"
                                                                 className="text-destructive hover:text-destructive"
                                                                 disabled={actionProcessing}
-                                                                onClick={() => handleReject(pr.id)}
+                                                                onClick={() => handleReject(pr)}
                                                             >
                                                                 {t('purchase_request.reject')}
                                                             </Button>
@@ -279,7 +294,7 @@ function PurchaseRequestsPage({ requests, products, warehouses }: PageProps) {
                         <div className="space-y-3">
                             <div className="flex items-center justify-between">
                                 <Label className="text-base">{t('purchase_request.lines')}</Label>
-                                <Button type="button" variant="outline" size="sm" onClick={addLine}>
+                                <Button type="button" variant="default" size="sm" onClick={addLine}>
                                     <IconPlus className="mr-1 h-3.5 w-3.5" />
                                     {t('purchase_request.add_line')}
                                 </Button>
@@ -332,12 +347,39 @@ function PurchaseRequestsPage({ requests, products, warehouses }: PageProps) {
                     </form>
 
                     <DialogFooter className="mt-2 border-t pt-4">
-                        <Button type="button" variant="outline" onClick={() => setDialogOpen(false)} disabled={processing}>
+                        <Button type="button" variant="cancel" onClick={() => setDialogOpen(false)} disabled={processing}>
                             Batal
                         </Button>
                         <Button type="submit" form="pr-form" disabled={processing}>
                             {t('purchase_request.add')}
                         </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={!!rejectingRequest} onOpenChange={(open) => !open && setRejectingRequest(null)}>
+                <DialogContent className="sm:max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle>{t('purchase_request.reject_title')}</DialogTitle>
+                        <DialogDescription>
+                            {rejectingRequest?.number} · {t('purchase_request.reject_description')}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <form id="reject-pr-form" onSubmit={submitRejection} className="space-y-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="rejection_reason">{t('purchase_request.rejection_reason')}</Label>
+                            <Textarea
+                                id="rejection_reason"
+                                value={rejectionForm.data.rejection_reason}
+                                placeholder={t('purchase_request.rejection_reason_placeholder')}
+                                onChange={(event) => rejectionForm.setData('rejection_reason', event.target.value)}
+                            />
+                            {rejectionForm.errors.rejection_reason && <p className="text-sm text-destructive">{rejectionForm.errors.rejection_reason}</p>}
+                        </div>
+                    </form>
+                    <DialogFooter>
+                        <Button type="button" variant="cancel" onClick={() => setRejectingRequest(null)} disabled={rejectionForm.processing}>{t('purchase_request.cancel')}</Button>
+                        <Button type="submit" form="reject-pr-form" variant="destructive" disabled={rejectionForm.processing}>{rejectionForm.processing ? t('purchase_request.rejecting') : t('purchase_request.reject')}</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

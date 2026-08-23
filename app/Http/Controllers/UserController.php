@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -58,6 +59,7 @@ class UserController extends Controller
             });
 
         $roles = Role::query()
+            ->availableToCompany($companyId)
             ->select('id', 'name', 'display_name')
             ->orderBy('display_name')
             ->get();
@@ -77,12 +79,13 @@ class UserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        $companyId = app(CurrentCompany::class)->id();
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'username' => 'required|string|max:255|alpha_dash|unique:users,username',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:4|confirmed',
-            'role_id' => 'required|exists:roles,id',
+            'role_id' => ['required', $this->availableRoleRule($companyId)],
             'avatar' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
         ]);
 
@@ -90,8 +93,6 @@ class UserController extends Controller
         if ($request->hasFile('avatar')) {
             $avatarPath = $request->file('avatar')->store('avatars', 'public');
         }
-
-        $companyId = app(CurrentCompany::class)->id();
 
         $user = User::create([
             'name' => $validated['name'],
@@ -125,12 +126,12 @@ class UserController extends Controller
      */
     public function invite(Request $request): RedirectResponse
     {
+        $companyId = app(CurrentCompany::class)->id();
         $validated = $request->validate([
             'email' => ['required', 'string', 'email', 'exists:users,email'],
-            'role_id' => ['required', 'exists:roles,id'],
+            'role_id' => ['required', $this->availableRoleRule($companyId)],
         ]);
 
-        $companyId = app(CurrentCompany::class)->id();
         $user = User::where('email', $validated['email'])->firstOrFail();
 
         $alreadyMember = CompanyUser::where('company_id', $companyId)
@@ -199,11 +200,10 @@ class UserController extends Controller
      */
     public function updateRole(Request $request, User $user): RedirectResponse
     {
-        $validated = $request->validate([
-            'role_id' => 'required|exists:roles,id'
-        ]);
-
         $companyId = app(CurrentCompany::class)->id();
+        $validated = $request->validate([
+            'role_id' => ['required', $this->availableRoleRule($companyId)],
+        ]);
 
         $membership = CompanyUser::where('company_id', $companyId)
             ->where('user_id', $user->id)
@@ -219,7 +219,7 @@ class UserController extends Controller
         $membership->update(['role_id' => $validated['role_id']]);
         $this->forgetUserCaches();
 
-        $newRole = Role::find($validated['role_id'])->display_name;
+        $newRole = Role::findOrFail($validated['role_id'])->display_name;
 
         $user->notify(new \App\Notifications\RoleAssignedNotification(
             $oldRole,
@@ -253,10 +253,13 @@ class UserController extends Controller
         }
 
         // Guard against removing the last super_admin of this company.
-        $superAdminRole = Role::whereIn('name', ['super_admin', 'admin'])->first();
-        if ($superAdminRole && $membership->role_id === $superAdminRole->id) {
+        $adminRoleIds = Role::query()
+            ->whereNull('company_id')
+            ->whereIn('name', ['super_admin', 'admin'])
+            ->pluck('id');
+        if ($adminRoleIds->contains($membership->role_id)) {
             $count = CompanyUser::where('company_id', $companyId)
-                ->where('role_id', $superAdminRole->id)
+                ->whereIn('role_id', $adminRoleIds)
                 ->count();
             if ($count <= 1) {
                 return redirect()->back()->with('error', __('messages.user.cannot_remove_last_admin'));
@@ -276,6 +279,17 @@ class UserController extends Controller
         Cache::forget('users.for-teams');
         Cache::forget('users.for-tickets');
         Cache::forget('projects.index');
+    }
+
+    private function availableRoleRule(?int $companyId)
+    {
+        return Rule::exists('roles', 'id')->where(function ($query) use ($companyId) {
+            $query->whereNull('company_id');
+
+            if ($companyId !== null) {
+                $query->orWhere('company_id', $companyId);
+            }
+        });
     }
 
     /**

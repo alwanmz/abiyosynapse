@@ -47,7 +47,10 @@
         "no_permissions": "Tidak ada izin",
         "more_others": "lainnya",
         "manage": "Kelola",
-        "empty": "Belum ada role."
+        "empty": "Belum ada role.",
+        "system_role": "Role sistem",
+        "company_role": "Role perusahaan",
+        "system_locked": "Dikelola sistem"
     },
     "delete": {
         "title": "Hapus role?",

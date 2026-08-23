@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Contracts\Ai\VisionProvider;
 use App\Services\CurrentCompany;
+use App\Services\Ai\GeminiVisionProvider;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,6 +15,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(CurrentCompany::class);
+        $this->app->bind(VisionProvider::class, GeminiVisionProvider::class);
     }
 
     /**

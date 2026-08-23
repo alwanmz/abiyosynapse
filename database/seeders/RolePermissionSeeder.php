@@ -37,6 +37,9 @@ class RolePermissionSeeder extends Seeder
         'accounts.delete' => 'Menghapus akun',
         'accounts.manage' => 'Mengelola bagan akun (gabungan)',
 
+        'currencies.view' => 'Melihat master currency dan kurs',
+        'currencies.manage' => 'Mengelola currency dan menyetujui kurs',
+
         'master-data.view'   => 'Melihat data master (UOM, gudang, pajak, supplier, customer, produk)',
         'master-data.manage' => 'Mengelola data master (gabungan)',
 
@@ -54,6 +57,31 @@ class RolePermissionSeeder extends Seeder
 
         'sales.view'   => 'Melihat sales order, delivery order, invoice, dan retur penjualan',
         'sales.manage' => 'Mengelola sales order, delivery order, invoice, dan retur penjualan',
+
+        'cash-bank.view'   => 'Melihat rekening kas/bank, transaksi kas, dan rekonsiliasi bank',
+        'cash-bank.manage' => 'Mengelola rekening kas/bank, transaksi kas, dan rekonsiliasi bank',
+
+        'ar.view'   => 'Melihat penerimaan piutang (AR receipt)',
+        'ar.manage' => 'Mengelola penerimaan piutang (AR receipt)',
+
+        'ap.view'   => 'Melihat pembayaran hutang (AP payment)',
+        'ap.manage' => 'Mengelola pembayaran hutang (AP payment)',
+
+        'fixed-assets.view'   => 'Melihat daftar aset tetap dan depresiasi',
+        'fixed-assets.manage' => 'Mengelola aset tetap, depresiasi, dan disposal',
+
+        'reports.view' => 'Melihat laporan keuangan dan buku besar',
+
+        'audit.view' => 'Melihat riwayat perubahan dan persetujuan dokumen',
+
+        'ai.use' => 'Menggunakan AI Copilot dan insight',
+        'ai.execute' => 'Mengonfirmasi pembuatan draft melalui AI Copilot',
+        'ai.documents.view' => 'Melihat dokumen OCR dan hasil ekstraksi',
+        'ai.documents.manage' => 'Mengunggah, memproses, dan mereview dokumen OCR',
+
+        'maintenance.view' => 'Melihat equipment dan maintenance',
+        'maintenance.manage' => 'Mengelola equipment, jadwal, reading, dan work order maintenance',
+        'maintenance.execute' => 'Menjalankan dan menyelesaikan work order maintenance',
     ];
 
     public function run(): void
@@ -72,7 +100,7 @@ class RolePermissionSeeder extends Seeder
             'super_admin' => array_keys(self::PERMISSIONS),
         ];
 
-        foreach (Role::all() as $role) {
+        foreach (Role::whereNull('company_id')->get() as $role) {
             $perms = $matrix[$role->name] ?? null;
             if ($perms === null) {
                 continue;

@@ -320,7 +320,7 @@ function RoutingsPage({ routings, products, workCenters }: PageProps) {
                         <div className="space-y-3">
                             <div className="flex items-center justify-between">
                                 <Label className="text-base">{t('routing.operations')}</Label>
-                                <Button type="button" variant="outline" size="sm" onClick={addOperation}>
+                                <Button type="button" variant="default" size="sm" onClick={addOperation}>
                                     <IconPlus className="mr-1 h-3.5 w-3.5" />
                                     {t('routing.add_operation')}
                                 </Button>
@@ -399,10 +399,10 @@ function RoutingsPage({ routings, products, workCenters }: PageProps) {
                     </form>
 
                     <DialogFooter className="mt-2 border-t pt-4">
-                        <Button type="button" variant="outline" onClick={() => setDialogOpen(false)} disabled={processing}>
+                        <Button type="button" variant="cancel" onClick={() => setDialogOpen(false)} disabled={processing}>
                             Batal
                         </Button>
-                        <Button type="submit" form="routing-form" disabled={processing}>
+                        <Button type="submit" form="routing-form" variant="save" disabled={processing}>
                             {processing ? 'Menyimpan...' : 'Simpan'}
                         </Button>
                     </DialogFooter>

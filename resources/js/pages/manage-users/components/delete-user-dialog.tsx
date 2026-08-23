@@ -69,7 +69,7 @@ export function DeleteUserDialog({
                 <DialogFooter>
                     <Button
                         type="button"
-                        variant="outline"
+                        variant="cancel"
                         onClick={() => onOpenChange(false)}
                         disabled={processing}
                     >

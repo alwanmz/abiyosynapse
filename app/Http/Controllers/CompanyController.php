@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Company;
 use App\Models\CompanyUser;
+use App\Models\CompanyCurrency;
+use App\Models\Currency;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -39,13 +41,23 @@ class CompanyController extends Controller
         ]);
 
         $validated['code'] ??= Str::slug($validated['name']) . '-' . Str::lower(Str::random(4));
+        $validated['currency'] = strtoupper($validated['currency']);
+        Currency::where('code', $validated['currency'])->where('is_active', true)->firstOrFail();
         $validated['trial_ends_at'] = now()->addDays(7);
 
         $user = $request->user();
 
         $company = Company::create($validated);
+        CompanyCurrency::create([
+            'company_id' => $company->id,
+            'currency_code' => $company->currency,
+            'is_active' => true,
+            'is_base' => true,
+        ]);
 
-        $superAdminRoleId = Role::where('name', 'super_admin')->value('id');
+        $superAdminRoleId = Role::whereNull('company_id')
+            ->where('name', 'super_admin')
+            ->value('id');
 
         CompanyUser::create([
             'company_id' => $company->id,
@@ -79,7 +91,22 @@ class CompanyController extends Controller
             'is_active' => 'boolean',
         ]);
 
+        $validated['currency'] = strtoupper($validated['currency']);
+
+        if ($validated['currency'] !== $company->currency && $company->journalEntries()->exists()) {
+            return redirect()->back()->with('error', __('messages.company.currency_locked'));
+        }
+
+        Currency::where('code', $validated['currency'])->where('is_active', true)->firstOrFail();
+
+        CompanyCurrency::where('company_id', $company->id)
+            ->where('currency_code', '!=', $validated['currency'])
+            ->update(['is_base' => false]);
         $company->update($validated);
+        CompanyCurrency::updateOrCreate(
+            ['company_id' => $company->id, 'currency_code' => $company->currency],
+            ['is_active' => true, 'is_base' => true],
+        );
 
         return redirect()->route('companies.index')->with('success', __('messages.company.updated'));
     }

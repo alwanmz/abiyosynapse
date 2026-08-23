@@ -1,8 +1,15 @@
 {
-    "breadcrumb": "Home",
-    "head_title": "Dashboard",
-    "welcome": "Welcome back!",
-    "placeholder_description": "This dashboard will populate once the ERP modules start running.",
-    "empty_title": "No data yet",
-    "empty_description": "Executive summaries will be available once transactional modules (Cash & Bank, AR, AP, Sales, Purchasing) start posting to the general ledger."
+  "breadcrumb": "Dashboard",
+  "head_title": "Executive Dashboard",
+  "welcome": "Business overview",
+  "description": "Monitor financial health, operations, cash, and quality from one screen.",
+  "filters": { "from": "From date", "to": "To date", "apply": "Apply" },
+  "comparison": { "vs_previous": "vs previous period", "new": "Newly available", "no_data": "no comparison data" },
+  "financial": { "title": "Financial", "revenue": "Revenue", "cogs": "COGS", "gross_profit": "Gross profit", "gross_margin": "Gross margin", "net_profit": "Net profit", "cash_balance": "Cash & bank balance", "ar_outstanding": "Outstanding AR", "ap_outstanding": "Outstanding AP" },
+  "operations": { "title": "Operations", "inventory_value": "Inventory value", "production_output": "Production output", "production_planned": "Planned production", "production_rejected": "Rejected output", "production_completed": "Orders completed", "yield_rate": "Production yield", "otd_rate": "On-time delivery" },
+  "quality": { "title": "Quality", "inspection_count": "Inspections", "pass_rate": "Pass rate", "failed_quantity": "Failed quantity", "open_ncrs": "Open NCRs" },
+  "maintenance": { "title": "Maintenance", "description": "Equipment risk, overdue preventive work, downtime, and data quality.", "high_risk_equipment": "High-risk equipment", "overdue_preventive": "Overdue preventive", "downtime_minutes": "Downtime (minutes)", "cost_base": "Maintenance cost", "insufficient_data": "Insufficient data" },
+  "trend": { "title": "Period trend", "description": "Revenue, expenses, and production output comparison.", "revenue": "Revenue", "expenses": "Expenses", "output": "Output", "rejected": "Rejected" },
+  "attention": { "title": "Needs attention", "empty": "There are no critical items right now.", "overdue_ar": "Overdue receivables", "overdue_ap": "Overdue payables", "open_ncr": "Open NCRs", "late_production": "Late production orders", "open": "Open" },
+  "empty": "No data for this period."
 }

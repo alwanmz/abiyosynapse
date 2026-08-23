@@ -1,0 +1,12 @@
+{
+  "nav": { "gl_reports": "GL Reports" },
+  "title": "Financial Reports",
+  "description": "Read the financial position from posted journals.",
+  "filters": { "report": "Report type", "from": "From date", "to": "To date", "account": "Account", "account_placeholder": "Select an account for the ledger", "apply": "Show report", "loading": "Loading..." },
+  "report": { "trial_balance": "Trial balance", "general_ledger": "General ledger", "profit_loss": "Profit and loss", "balance_sheet": "Balance sheet" },
+  "common": { "account": "Account", "code": "Code", "name": "Name", "debit": "Debit", "credit": "Credit", "amount": "Amount", "date": "Date", "number": "Number", "description_label": "Description", "total": "Total", "empty": "No data exists for this period." },
+  "trial_balance": { "title": "Trial Balance", "as_of": "Balance through", "balanced": "Balanced", "not_balanced": "Not balanced" },
+  "general_ledger": { "title": "General Ledger", "opening": "Opening balance", "closing": "Closing balance", "empty": "No account movements exist for this period." },
+  "profit_loss": { "title": "Profit and Loss", "revenue": "Revenue", "expenses": "Expenses", "total_revenue": "Total revenue", "total_expenses": "Total expenses", "net_profit": "Net profit / (loss)" },
+  "balance_sheet": { "title": "Balance Sheet", "assets": "Assets", "liabilities": "Liabilities", "equity": "Equity", "current_earnings": "Current earnings / (loss)", "total_assets": "Total assets", "total_liabilities_equity": "Total liabilities + equity", "balanced": "Balance sheet balanced", "not_balanced": "Check balance sheet difference" }
+}

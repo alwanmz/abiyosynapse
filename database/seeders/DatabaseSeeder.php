@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleSeeder::class,
             CompanySeeder::class,
+            CurrencySeeder::class,
             UserSeeder::class,
             RolePermissionSeeder::class,
             ChartOfAccountsSeeder::class,
@@ -25,6 +26,12 @@ class DatabaseSeeder extends Seeder
             QualityDemoSeeder::class,
             PurchasingDemoSeeder::class,
             SalesDemoSeeder::class,
+            CashBankDemoSeeder::class,
+            ArDemoSeeder::class,
+            ApDemoSeeder::class,
+            FixedAssetDemoSeeder::class,
+            MaintenanceDemoSeeder::class,
+            MultiCurrencyDemoSeeder::class,
         ]);
     }
 }

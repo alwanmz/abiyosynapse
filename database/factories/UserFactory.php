@@ -70,7 +70,7 @@ class UserFactory extends Factory
 
         $company = Company::factory()->create();
         $role = Role::firstOrCreate(
-            ['name' => 'super_admin'],
+            ['name' => 'super_admin', 'company_id' => null],
             ['display_name' => 'Super Admin', 'description' => 'Full system access']
         );
 

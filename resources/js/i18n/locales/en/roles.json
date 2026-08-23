@@ -47,7 +47,10 @@
         "no_permissions": "No permissions",
         "more_others": "more",
         "manage": "Manage",
-        "empty": "No roles yet."
+        "empty": "No roles yet.",
+        "system_role": "System role",
+        "company_role": "Company role",
+        "system_locked": "System-managed"
     },
     "delete": {
         "title": "Delete role?",

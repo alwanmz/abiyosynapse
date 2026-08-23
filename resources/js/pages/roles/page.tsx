@@ -39,6 +39,7 @@ interface Permission {
 
 interface Role {
     id: number;
+    company_id: number | null;
     name: string;
     display_name: string;
     description: string | null;
@@ -436,7 +437,7 @@ function RolesPage({
 
                             <DialogFooter className="mt-4 border-t pt-4">
                                 <Button
-                                    variant="outline"
+                                    variant="cancel"
                                     type="button"
                                     onClick={() => setOpenDialog(false)}
                                 >
@@ -444,6 +445,7 @@ function RolesPage({
                                 </Button>
                                 <Button
                                     type="submit"
+                                    variant="save"
                                     form="role-form"
                                     disabled={processing}
                                 >
@@ -472,7 +474,7 @@ function RolesPage({
                                 const modernPerms = role.permissions.filter((p) =>
                                     p.name.includes('.'),
                                 );
-                                const locked = isLockedRole(role.name);
+                                const locked = role.company_id === null || isLockedRole(role.name);
                                 return (
                                     <TableRow key={role.id}>
                                         <TableCell>
@@ -484,6 +486,14 @@ function RolesPage({
                                                     {role.description}
                                                 </div>
                                             )}
+                                            <Badge
+                                                variant={role.company_id === null ? 'secondary' : 'outline'}
+                                                className="mt-2 text-[10px]"
+                                            >
+                                                {role.company_id === null
+                                                    ? t('table.system_role')
+                                                    : t('table.company_role')}
+                                            </Badge>
                                         </TableCell>
                                         <TableCell>
                                             <Badge
@@ -531,13 +541,15 @@ function RolesPage({
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex items-center justify-end gap-1">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => handleOpenDialog(role)}
-                                                >
-                                                    {t('table.manage')}
-                                                </Button>
+                                                {!locked && (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => handleOpenDialog(role)}
+                                                    >
+                                                        {t('table.manage')}
+                                                    </Button>
+                                                )}
                                                 {!locked && (
                                                     <Button
                                                         variant="ghost"
@@ -549,6 +561,11 @@ function RolesPage({
                                                     >
                                                         <Trash2 className="h-4 w-4" />
                                                     </Button>
+                                                )}
+                                                {locked && (
+                                                    <span className="text-xs text-muted-foreground">
+                                                        {t('table.system_locked')}
+                                                    </span>
                                                 )}
                                             </div>
                                         </TableCell>

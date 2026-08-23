@@ -7,7 +7,9 @@ use App\Models\Product;
 use App\Models\SalesOrder;
 use App\Models\TaxCode;
 use App\Models\Warehouse;
+use App\Models\CompanyCurrency;
 use App\Services\Sales\SalesOrderService;
+use App\Services\CurrencyDocumentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -26,6 +28,7 @@ class SalesOrderController extends Controller
             'customers' => Customer::where('is_active', true)->orderBy('code')->get(['id', 'code', 'name']),
             'warehouses' => Warehouse::where('is_active', true)->orderBy('code')->get(['id', 'code', 'name']),
             'taxCodes' => TaxCode::where('is_active', true)->orderBy('code')->get(['id', 'code', 'name', 'rate']),
+            'currencies' => CompanyCurrency::with('currency:code,name')->where('is_active', true)->get(),
         ]);
     }
 
@@ -34,6 +37,7 @@ class SalesOrderController extends Controller
         $validated = $request->validate([
             'customer_id' => 'required|exists:customers,id',
             'warehouse_id' => 'required|exists:warehouses,id',
+            'currency_code' => 'nullable|string|size:3|exists:currencies,code',
             'requested_delivery_date' => 'nullable|date',
             'lines' => 'required|array|min:1',
             'lines.*.product_id' => 'required|exists:products,id',
@@ -42,17 +46,27 @@ class SalesOrderController extends Controller
             'lines.*.tax_code_id' => 'nullable|exists:tax_codes,id',
         ]);
 
+        $customer = Customer::findOrFail($validated['customer_id']);
+        $currency = app(CurrencyDocumentService::class)->resolve(
+            $validated['currency_code'] ?? null,
+            now()->toDateString(),
+            $customer->currency_code,
+        );
+
         $order = SalesOrder::create([
             'number' => $this->nextNumber(),
             'customer_id' => $validated['customer_id'],
             'warehouse_id' => $validated['warehouse_id'],
             'order_date' => now()->toDateString(),
+            'currency_code' => $currency['currency_code'],
+            'exchange_rate' => $currency['exchange_rate'],
             'requested_delivery_date' => $validated['requested_delivery_date'] ?? null,
             'status' => 'draft',
             'created_by' => $request->user()->id,
         ]);
 
         foreach ($validated['lines'] as $line) {
+            $line['unit_price_base'] = app(CurrencyDocumentService::class)->baseAmount((string) $line['unit_price'], $currency);
             $order->lines()->create($line);
         }
 

@@ -263,7 +263,7 @@ function ProductionOrdersPage({ orders, products, warehouses }: PageProps) {
                         </div>
 
                         <DialogFooter>
-                            <Button type="button" variant="outline" onClick={() => setDialogOpen(false)} disabled={processing}>
+                            <Button type="button" variant="cancel" onClick={() => setDialogOpen(false)} disabled={processing}>
                                 Batal
                             </Button>
                             <Button type="submit" disabled={processing}>

@@ -74,8 +74,12 @@ class PurchaseRequestController extends Controller
 
     public function reject(Request $request, PurchaseRequest $purchaseRequest, PurchaseRequestService $service): RedirectResponse
     {
+        $validated = $request->validate([
+            'rejection_reason' => ['nullable', 'string', 'max:2000'],
+        ]);
+
         try {
-            $service->reject($purchaseRequest, $request->user());
+            $service->reject($purchaseRequest, $request->user(), $validated['rejection_reason'] ?? null);
         } catch (RuntimeException $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }

@@ -3,15 +3,17 @@
 namespace App\Models;
 
 use App\Models\Concerns\BelongsToCompany;
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;
 
 class Bom extends Model
 {
     /** @use HasFactory<\Database\Factories\BomFactory> */
-    use HasFactory, BelongsToCompany;
+    use HasFactory, BelongsToCompany, Auditable;
 
     protected $fillable = [
         'company_id',
@@ -21,6 +23,11 @@ class Bom extends Model
         'batch_quantity',
         'status',
         'notes',
+        'effective_from',
+        'effective_until',
+        'revision_reason',
+        'approved_by',
+        'approved_at',
     ];
 
     protected function casts(): array
@@ -28,6 +35,9 @@ class Bom extends Model
         return [
             'version' => 'integer',
             'batch_quantity' => 'decimal:4',
+            'effective_from' => 'date',
+            'effective_until' => 'date',
+            'approved_at' => 'datetime',
         ];
     }
 
@@ -44,6 +54,17 @@ class Bom extends Model
     public function isActive(): bool
     {
         return $this->status === 'active';
+    }
+
+    public function scopeEffectiveOn(Builder $query, string $date): Builder
+    {
+        return $query
+            ->where(function (Builder $query) use ($date) {
+                $query->whereNull('effective_from')->orWhereDate('effective_from', '<=', $date);
+            })
+            ->where(function (Builder $query) use ($date) {
+                $query->whereNull('effective_until')->orWhereDate('effective_until', '>=', $date);
+            });
     }
 
     /**

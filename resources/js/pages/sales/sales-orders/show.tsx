@@ -214,7 +214,7 @@ function SalesOrderShowPage({ order }: PageProps) {
                             </Button>
                         )}
                         {canClose && (
-                            <Button variant="outline" onClick={handleClose} disabled={closing}>
+                            <Button variant="default" onClick={handleClose} disabled={closing}>
                                 {t('sales_order.close')}
                             </Button>
                         )}

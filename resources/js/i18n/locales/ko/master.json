@@ -130,6 +130,7 @@
         "delete_title": "제품을 삭제하시겠습니까?",
         "delete_confirm_prefix": "정말로 삭제하시겠습니까:"
     },
+    "currency": { "title": "통화" },
     "account": {
         "title": "계정과목표",
         "description": "재무 계정 구조(자산, 부채, 자본, 수익, 비용)를 관리합니다.",

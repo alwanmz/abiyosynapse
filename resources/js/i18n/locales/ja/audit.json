@@ -1,0 +1,9 @@
+{
+  "nav": { "audit_trail": "監査履歴" },
+  "title": "監査履歴",
+  "description": "現在の会社におけるデータ変更と承認判断の履歴です。",
+  "filters": { "search": "伝票を検索", "search_placeholder": "番号、説明、伝票タイプ", "event": "活動タイプ", "all_events": "すべての活動", "apply": "適用" },
+  "table": { "date": "日時", "user": "ユーザー", "event": "活動", "document": "伝票", "description": "説明", "details": "詳細", "empty": "監査活動はまだありません。" },
+  "events": { "created": "作成", "updated": "変更", "submitted": "申請", "approved": "承認", "rejected": "却下", "status_changed": "ステータス変更", "closed": "完了", "deleted": "削除" },
+  "detail": { "title": "監査詳細", "document": "伝票", "actor": "実行者", "old_values": "変更前", "new_values": "変更後", "no_changes": "項目の変更内容はありません。", "close": "閉じる", "empty": "空" }
+}

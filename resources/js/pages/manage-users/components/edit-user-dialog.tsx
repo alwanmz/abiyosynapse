@@ -167,13 +167,13 @@ export function EditUserDialog({
                     <DialogFooter>
                         <Button
                             type="button"
-                            variant="outline"
+                            variant="cancel"
                             onClick={() => onOpenChange(false)}
                             disabled={processing}
                         >
                             {t('dialog.cancel')}
                         </Button>
-                        <Button type="submit" disabled={processing}>
+                        <Button type="submit" variant="save" disabled={processing}>
                             {processing ? t('dialog.edit.submitting') : t('dialog.edit.submit')}
                         </Button>
                     </DialogFooter>

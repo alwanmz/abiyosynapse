@@ -1,0 +1,39 @@
+{
+    "nav": {
+        "ar": "売掛金"
+    },
+    "common": {
+        "cancel": "キャンセル",
+        "save": "保存",
+        "saving": "保存中..."
+    },
+    "ar_receipt": {
+        "title": "売掛金入金",
+        "breadcrumb": "売掛金入金",
+        "description": "顧客からの入金を未回収の請求書に対して記録します。",
+        "list_title": "入金一覧",
+        "add": "入金を追加",
+        "add_title": "新しい売掛金入金を追加",
+        "add_description": "顧客を選択し、1件または複数の請求書に入金を割り当てます。",
+        "customer": "顧客",
+        "customer_placeholder": "顧客を選択",
+        "bank_account": "口座",
+        "bank_account_placeholder": "口座を選択",
+        "receipt_date": "入金日",
+        "reference": "参照番号",
+        "reference_placeholder": "例：銀行振込番号",
+        "invoices": "入金対象の請求書",
+        "no_outstanding_invoices": "この顧客に未回収の請求書はありません。",
+        "outstanding": "未回収残高",
+        "total_applied": "割当合計",
+        "empty": "まだ売掛金入金はありません。",
+        "table": {
+            "number": "番号",
+            "customer": "顧客",
+            "bank_account": "口座",
+            "date": "日付",
+            "invoices": "請求書",
+            "amount": "金額"
+        }
+    }
+}

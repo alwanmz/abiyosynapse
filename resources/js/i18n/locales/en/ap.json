@@ -1,0 +1,39 @@
+{
+    "nav": {
+        "ap": "Payables (AP)"
+    },
+    "common": {
+        "cancel": "Cancel",
+        "save": "Save",
+        "saving": "Saving..."
+    },
+    "ap_payment": {
+        "title": "AP Payments",
+        "breadcrumb": "AP Payments",
+        "description": "Record payments made to suppliers against matched invoices.",
+        "list_title": "AP Payment List",
+        "add": "Add Payment",
+        "add_title": "Add New AP Payment",
+        "add_description": "Pick a supplier, then apply the payment to one or more invoices.",
+        "supplier": "Supplier",
+        "supplier_placeholder": "Select a supplier",
+        "bank_account": "Bank Account",
+        "bank_account_placeholder": "Select a bank account",
+        "payment_date": "Payment Date",
+        "reference": "Reference",
+        "reference_placeholder": "e.g. bank transfer number",
+        "invoices": "Invoices Being Paid",
+        "no_payable_invoices": "This supplier has no payable invoices.",
+        "outstanding": "Outstanding",
+        "total_applied": "Total Applied",
+        "empty": "No AP payments yet.",
+        "table": {
+            "number": "Number",
+            "supplier": "Supplier",
+            "bank_account": "Bank Account",
+            "date": "Date",
+            "invoices": "Invoices",
+            "amount": "Amount"
+        }
+    }
+}

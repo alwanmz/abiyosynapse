@@ -66,6 +66,7 @@ interface PageProps {
     customers: Option[];
     warehouses: Option[];
     taxCodes: TaxCodeOption[];
+    currencies: { currency_code: string; currency: { code: string; name: string } }[];
 }
 
 interface LineForm {
@@ -86,7 +87,7 @@ const STATUS_VARIANT: Record<SalesOrder['status'], 'default' | 'outline' | 'seco
     closed: 'outline',
 };
 
-function SalesOrdersPage({ orders, products, customers, warehouses, taxCodes }: PageProps) {
+function SalesOrdersPage({ orders, products, customers, warehouses, taxCodes, currencies }: PageProps) {
     const { t } = useTranslation('sales');
     const { locale } = usePage().props as { locale?: string };
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -106,11 +107,13 @@ function SalesOrdersPage({ orders, products, customers, warehouses, taxCodes }: 
     const { data, setData, post, processing, errors, clearErrors, reset } = useForm<{
         customer_id: string | number;
         warehouse_id: string | number;
+        currency_code: string;
         requested_delivery_date: string;
         lines: LineForm[];
     }>({
         customer_id: '',
         warehouse_id: '',
+        currency_code: 'IDR',
         requested_delivery_date: '',
         lines: [{ ...emptyLine }],
     });
@@ -249,6 +252,14 @@ function SalesOrdersPage({ orders, products, customers, warehouses, taxCodes }: 
                                 </Select>
                                 {errors.customer_id && <p className="text-sm text-destructive">{errors.customer_id}</p>}
                             </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="currency_code">Mata Uang</Label>
+                                <Select value={data.currency_code} onValueChange={(value) => setData('currency_code', value)}>
+                                    <SelectTrigger id="currency_code"><SelectValue /></SelectTrigger>
+                                    <SelectContent>{currencies.map((item) => <SelectItem key={item.currency_code} value={item.currency_code}>{item.currency_code} - {item.currency.name}</SelectItem>)}</SelectContent>
+                                </Select>
+                                {errors.currency_code && <p className="text-sm text-destructive">{errors.currency_code}</p>}
+                            </div>
 
                             <div className="grid gap-2">
                                 <Label htmlFor="warehouse_id">{t('sales_order.warehouse')}</Label>
@@ -290,7 +301,7 @@ function SalesOrdersPage({ orders, products, customers, warehouses, taxCodes }: 
                         <div className="space-y-3">
                             <div className="flex items-center justify-between">
                                 <Label className="text-base">{t('sales_order.lines')}</Label>
-                                <Button type="button" variant="outline" size="sm" onClick={addLine}>
+                                <Button type="button" variant="default" size="sm" onClick={addLine}>
                                     <IconPlus className="mr-1 h-3.5 w-3.5" />
                                     {t('sales_order.add_line')}
                                 </Button>
@@ -370,7 +381,7 @@ function SalesOrdersPage({ orders, products, customers, warehouses, taxCodes }: 
                     </form>
 
                     <DialogFooter className="mt-2 border-t pt-4">
-                        <Button type="button" variant="outline" onClick={() => setDialogOpen(false)} disabled={processing}>
+                        <Button type="button" variant="cancel" onClick={() => setDialogOpen(false)} disabled={processing}>
                             Batal
                         </Button>
                         <Button type="submit" form="so-form" disabled={processing}>

@@ -10,6 +10,7 @@ use App\Models\SupplierInvoice;
 use App\Models\User;
 use App\Services\Accounting\JournalPostingService;
 use App\Services\CurrentCompany;
+use App\Services\CurrencyDocumentService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -36,12 +37,18 @@ class SupplierInvoiceService
     public function __construct(
         private readonly CurrentCompany $currentCompany,
         private readonly JournalPostingService $posting,
+        private readonly CurrencyDocumentService $currencyDocuments,
     ) {
     }
 
     public function create(PurchaseOrder $order, array $input, array $lineInputs, ?User $creator = null): SupplierInvoice
     {
         return DB::transaction(function () use ($order, $input, $lineInputs, $creator) {
+            $currencyCode = $order->currency_code ?: $this->currentCompany->get()?->currency ?? 'IDR';
+            $exchangeRate = $order->exchange_rate ?: '1';
+            if (! $order->currency_code || ! $order->exchange_rate) {
+                $order->forceFill(['currency_code' => $currencyCode, 'exchange_rate' => $exchangeRate])->save();
+            }
             $invoice = SupplierInvoice::create([
                 'number' => $this->nextNumber(),
                 'supplier_reference' => $input['supplier_reference'] ?? null,
@@ -49,6 +56,8 @@ class SupplierInvoiceService
                 'supplier_id' => $order->supplier_id,
                 'invoice_date' => $input['invoice_date'],
                 'due_date' => $input['due_date'],
+                'currency_code' => $currencyCode,
+                'exchange_rate' => $exchangeRate,
                 'status' => 'pending_match',
                 'created_by' => $creator?->id,
             ]);
@@ -78,7 +87,17 @@ class SupplierInvoiceService
                     'product_id' => $poLine->product_id,
                     'quantity' => $quantity,
                     'unit_price' => $unitPrice,
+                    'unit_price_base' => $this->currencyDocuments->baseAmount((string) $unitPrice, [
+                        'currency_code' => $currencyCode,
+                        'exchange_rate' => $exchangeRate,
+                        'effective_date' => $input['invoice_date'],
+                    ]),
                     'tax_amount' => $taxAmount,
+                    'tax_amount_base' => $this->currencyDocuments->baseAmount((string) $taxAmount, [
+                        'currency_code' => $currencyCode,
+                        'exchange_rate' => $exchangeRate,
+                        'effective_date' => $input['invoice_date'],
+                    ]),
                 ]);
 
                 $poLine->increment('invoiced_quantity', $quantity);
@@ -91,6 +110,21 @@ class SupplierInvoiceService
                 'subtotal' => $subtotal,
                 'tax_total' => $taxTotal,
                 'total' => $subtotal + $taxTotal,
+                'subtotal_base' => $this->currencyDocuments->baseAmount((string) $subtotal, [
+                    'currency_code' => $currencyCode,
+                    'exchange_rate' => $exchangeRate,
+                    'effective_date' => $input['invoice_date'],
+                ]),
+                'tax_total_base' => $this->currencyDocuments->baseAmount((string) $taxTotal, [
+                    'currency_code' => $currencyCode,
+                    'exchange_rate' => $exchangeRate,
+                    'effective_date' => $input['invoice_date'],
+                ]),
+                'total_base' => $this->currencyDocuments->baseAmount((string) ($subtotal + $taxTotal), [
+                    'currency_code' => $currencyCode,
+                    'exchange_rate' => $exchangeRate,
+                    'effective_date' => $input['invoice_date'],
+                ]),
             ]);
 
             return $this->match($invoice->fresh('lines.purchaseOrderLine'));
@@ -133,15 +167,16 @@ class SupplierInvoiceService
         }
 
         return DB::transaction(function () use ($invoice) {
+            $currency = $invoice->currency_code;
             $lines = [
-                ['account_id' => $this->accountId(self::GRNI_ACCOUNT_CODE), 'debit' => (float) $invoice->subtotal],
+                ['account_id' => $this->accountId(self::GRNI_ACCOUNT_CODE), 'debit' => (float) $invoice->subtotal_base, 'amount_currency' => (float) $invoice->subtotal, 'currency_code' => $currency, 'exchange_rate' => $invoice->exchange_rate],
             ];
 
             if ((float) $invoice->tax_total > 0) {
-                $lines[] = ['account_id' => $this->accountId(self::INPUT_TAX_ACCOUNT_CODE), 'debit' => (float) $invoice->tax_total];
+                $lines[] = ['account_id' => $this->accountId(self::INPUT_TAX_ACCOUNT_CODE), 'debit' => (float) $invoice->tax_total_base, 'amount_currency' => (float) $invoice->tax_total, 'currency_code' => $currency, 'exchange_rate' => $invoice->exchange_rate];
             }
 
-            $lines[] = ['account_id' => $this->accountId(self::AP_ACCOUNT_CODE), 'credit' => (float) $invoice->total];
+            $lines[] = ['account_id' => $this->accountId(self::AP_ACCOUNT_CODE), 'credit' => (float) $invoice->total_base, 'amount_currency' => -(float) $invoice->total, 'currency_code' => $currency, 'exchange_rate' => $invoice->exchange_rate];
 
             $this->posting->post(
                 description: "Supplier invoice {$invoice->number}",

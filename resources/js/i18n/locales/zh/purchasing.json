@@ -33,7 +33,13 @@
         "status_converted": "已转换",
         "submit": "提交",
         "approve": "批准",
-        "reject": "拒绝"
+        "reject": "拒绝",
+        "reject_title": "拒绝采购申请",
+        "reject_description": "记录原因以便追踪审批决定。",
+        "rejection_reason": "拒绝原因",
+        "rejection_reason_placeholder": "说明拒绝原因（可选）",
+        "cancel": "取消",
+        "rejecting": "拒绝中..."
     },
     "purchase_order": {
         "title": "采购订单",

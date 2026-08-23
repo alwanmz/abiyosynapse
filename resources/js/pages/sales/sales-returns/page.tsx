@@ -247,7 +247,7 @@ function SalesReturnsPage({ returns, returnableInvoices, warehouses }: PageProps
                     </div>
 
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setPickerOpen(false)}>
+                        <Button type="button" variant="cancel" onClick={() => setPickerOpen(false)}>
                             Batal
                         </Button>
                     </DialogFooter>
@@ -340,7 +340,7 @@ function SalesReturnsPage({ returns, returnableInvoices, warehouses }: PageProps
                     </form>
 
                     <DialogFooter className="mt-2 border-t pt-4">
-                        <Button type="button" variant="outline" onClick={() => setDialogOpen(false)} disabled={processing}>
+                        <Button type="button" variant="cancel" onClick={() => setDialogOpen(false)} disabled={processing}>
                             Batal
                         </Button>
                         <Button type="submit" form="sr-form" disabled={processing}>

@@ -130,6 +130,7 @@
         "delete_title": "Hapus produk?",
         "delete_confirm_prefix": "Apakah Anda yakin ingin menghapus"
     },
+    "currency": { "title": "Mata Uang" },
     "account": {
         "title": "Bagan Akun",
         "description": "Kelola struktur akun keuangan (Aset, Kewajiban, Modal, Pendapatan, Beban).",

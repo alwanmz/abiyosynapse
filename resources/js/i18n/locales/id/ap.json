@@ -1,0 +1,39 @@
+{
+    "nav": {
+        "ap": "Hutang (AP)"
+    },
+    "common": {
+        "cancel": "Batal",
+        "save": "Simpan",
+        "saving": "Menyimpan..."
+    },
+    "ap_payment": {
+        "title": "Pembayaran Hutang",
+        "breadcrumb": "Pembayaran Hutang",
+        "description": "Catat pelunasan hutang ke supplier.",
+        "list_title": "Daftar Pembayaran Hutang",
+        "add": "Tambah Pembayaran",
+        "add_title": "Tambah Pembayaran Hutang Baru",
+        "add_description": "Pilih supplier lalu alokasikan pembayaran ke satu atau beberapa invoice.",
+        "supplier": "Supplier",
+        "supplier_placeholder": "Pilih supplier",
+        "bank_account": "Rekening",
+        "bank_account_placeholder": "Pilih rekening",
+        "payment_date": "Tanggal Pembayaran",
+        "reference": "Referensi",
+        "reference_placeholder": "Contoh: No. transfer bank",
+        "invoices": "Invoice yang Dilunasi",
+        "no_payable_invoices": "Supplier ini tidak punya invoice yang bisa dibayar.",
+        "outstanding": "Sisa tagihan",
+        "total_applied": "Total Dialokasikan",
+        "empty": "Belum ada pembayaran hutang.",
+        "table": {
+            "number": "Nomor",
+            "supplier": "Supplier",
+            "bank_account": "Rekening",
+            "date": "Tanggal",
+            "invoices": "Invoice",
+            "amount": "Jumlah"
+        }
+    }
+}

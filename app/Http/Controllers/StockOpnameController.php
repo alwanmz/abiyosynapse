@@ -40,12 +40,7 @@ class StockOpnameController extends Controller
 
             $opname = StockOpname::create([
                 ...$validated,
-                'number' => 'OPN-' . now()->format('Y') . '-' . str_pad(
-                    (string) (StockOpname::withoutGlobalScopes()->where('company_id', $companyId)->count() + 1),
-                    5,
-                    '0',
-                    STR_PAD_LEFT,
-                ),
+                'number' => $this->nextNumber($companyId),
                 'status' => 'draft',
                 'created_by' => $request->user()->id,
             ]);
@@ -126,5 +121,20 @@ class StockOpnameController extends Controller
         });
 
         return redirect()->route('inventory.stock-opnames.show', $stockOpname)->with('success', __('messages.stock_opname.completed'));
+    }
+
+    private function nextNumber(int $companyId): string
+    {
+        $prefix = 'OPN-' . now()->format('Y') . '-';
+
+        $lastNumber = StockOpname::withoutGlobalScopes()
+            ->where('company_id', $companyId)
+            ->where('number', 'like', $prefix . '%')
+            ->orderByRaw('CAST(SUBSTR(number, ' . (strlen($prefix) + 1) . ') AS INTEGER) DESC')
+            ->value('number');
+
+        $nextSequence = $lastNumber ? ((int) substr($lastNumber, strlen($prefix))) + 1 : 1;
+
+        return $prefix . str_pad((string) $nextSequence, 5, '0', STR_PAD_LEFT);
     }
 }

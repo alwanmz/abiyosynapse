@@ -1,8 +1,15 @@
 {
-    "breadcrumb": "首页",
-    "head_title": "仪表盘",
-    "welcome": "欢迎回来！",
-    "placeholder_description": "ERP 模块开始运行后，此仪表盘将自动填充数据。",
-    "empty_title": "暂无数据",
-    "empty_description": "待现金银行、应收账款、应付账款、销售、采购等交易模块开始过账到总账后，将提供高管摘要。"
+  "breadcrumb": "仪表盘",
+  "head_title": "经营仪表盘",
+  "welcome": "业务概览",
+  "description": "在一个页面监控财务、运营、现金和质量状况。",
+  "filters": { "from": "开始日期", "to": "结束日期", "apply": "应用" },
+  "comparison": { "vs_previous": "较上期", "new": "新产生数据", "no_data": "无对比数据" },
+  "financial": { "title": "财务", "revenue": "收入", "cogs": "销售成本", "gross_profit": "毛利", "gross_margin": "毛利率", "net_profit": "净利润", "cash_balance": "现金及银行余额", "ar_outstanding": "应收账款余额", "ap_outstanding": "应付账款余额" },
+  "operations": { "title": "运营", "inventory_value": "库存价值", "production_output": "生产产出", "production_planned": "计划生产", "production_rejected": "不合格产出", "production_completed": "已完成订单", "yield_rate": "生产良率", "otd_rate": "按时交付" },
+  "quality": { "title": "质量", "inspection_count": "检验次数", "pass_rate": "合格率", "failed_quantity": "不合格数量", "open_ncrs": "未关闭 NCR" },
+  "maintenance": { "title": "维护", "description": "设备风险、预防维护逾期、停机时间和数据质量。", "high_risk_equipment": "高风险设备", "overdue_preventive": "预防维护逾期", "downtime_minutes": "停机时间（分钟）", "cost_base": "维护成本", "insufficient_data": "数据不足" },
+  "trend": { "title": "期间趋势", "description": "收入、费用和生产产出的比较。", "revenue": "收入", "expenses": "费用", "output": "产出", "rejected": "不合格" },
+  "attention": { "title": "需要关注", "empty": "当前没有关键事项。", "overdue_ar": "逾期应收账款", "overdue_ap": "逾期应付账款", "open_ncr": "未关闭 NCR", "late_production": "延期生产订单", "open": "打开" },
+  "empty": "该期间暂无数据。"
 }

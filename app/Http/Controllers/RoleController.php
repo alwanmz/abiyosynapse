@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\CompanyUser;
 use App\Models\Permission;
 use App\Models\Role;
+use App\Services\CurrentCompany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class RoleController extends Controller
@@ -39,7 +42,13 @@ class RoleController extends Controller
 
     public function index()
     {
-        $roles = Role::with('permissions:id,name')->get();
+        $companyId = app(CurrentCompany::class)->id();
+        $roles = Role::query()
+            ->availableToCompany($companyId)
+            ->with('permissions:id,name')
+            ->orderByDesc('company_id')
+            ->orderBy('display_name')
+            ->get();
         $permissions = Permission::select('id', 'name', 'display_name', 'description')->get();
 
         return Inertia::render('roles/page', [
@@ -50,8 +59,18 @@ class RoleController extends Controller
 
     public function store(Request $request)
     {
+        $companyId = app(CurrentCompany::class)->id();
+        abort_unless($companyId !== null, 404);
+
+        $request->merge(['name' => Str::lower(trim((string) $request->input('name')))]);
         $validated = $request->validate([
-            'name' => 'required|string|unique:roles,name|max:255',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::notIn(['admin', 'super_admin']),
+                Rule::unique('roles', 'name')->where(fn ($query) => $query->where('company_id', $companyId)),
+            ],
             'display_name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'permissions' => 'nullable|array',
@@ -59,6 +78,7 @@ class RoleController extends Controller
         ]);
 
         $role = Role::create([
+            'company_id' => $companyId,
             'name' => $validated['name'],
             'display_name' => $validated['display_name'],
             'description' => $validated['description'],
@@ -72,6 +92,12 @@ class RoleController extends Controller
 
     public function update(Request $request, Role $role)
     {
+        $this->ensureRoleBelongsToCurrentContext($role);
+
+        if ($role->isSystem()) {
+            return redirect()->route('roles.index')->with('error', __('messages.role.cannot_edit_system'));
+        }
+
         $validated = $request->validate([
             'display_name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -92,7 +118,9 @@ class RoleController extends Controller
 
     public function destroy(Role $role)
     {
-        if (in_array($role->name, ['admin', 'super_admin'])) {
+        $this->ensureRoleBelongsToCurrentContext($role);
+
+        if ($role->isSystem() || in_array($role->name, ['admin', 'super_admin'], true)) {
             return redirect()->route('roles.index')->with('error', __('messages.role.cannot_delete_locked', ['name' => $role->display_name]));
         }
 
@@ -138,5 +166,12 @@ class RoleController extends Controller
         Cache::forget('users.for-teams');
         Cache::forget('users.for-tickets');
         Cache::forget('projects.index');
+    }
+
+    private function ensureRoleBelongsToCurrentContext(Role $role): void
+    {
+        $companyId = app(CurrentCompany::class)->id();
+
+        abort_unless($role->company_id === null || $role->company_id === $companyId, 404);
     }
 }

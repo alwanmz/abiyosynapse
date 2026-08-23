@@ -74,6 +74,7 @@ interface PageProps {
     suppliers: Option[];
     warehouses: Option[];
     taxCodes: TaxCodeOption[];
+    currencies: { currency_code: string; currency: { code: string; name: string } }[];
 }
 
 interface LineForm {
@@ -93,7 +94,7 @@ const STATUS_VARIANT: Record<PurchaseOrder['status'], 'default' | 'outline' | 's
     closed: 'outline',
 };
 
-function PurchaseOrdersPage({ orders, approvedRequests, suppliers, warehouses, taxCodes }: PageProps) {
+function PurchaseOrdersPage({ orders, approvedRequests, suppliers, warehouses, taxCodes, currencies }: PageProps) {
     const { t } = useTranslation('purchasing');
     const { locale } = usePage().props as { locale?: string };
     const [pickerOpen, setPickerOpen] = useState(false);
@@ -119,10 +120,12 @@ function PurchaseOrdersPage({ orders, approvedRequests, suppliers, warehouses, t
     const { data, setData, post, processing, errors, clearErrors, reset } = useForm<{
         supplier_id: string | number;
         warehouse_id: string | number;
+        currency_code: string;
         lines: LineForm[];
     }>({
         supplier_id: '',
         warehouse_id: '',
+        currency_code: 'IDR',
         lines: [],
     });
 
@@ -140,6 +143,7 @@ function PurchaseOrdersPage({ orders, approvedRequests, suppliers, warehouses, t
         setData({
             supplier_id: '',
             warehouse_id: '',
+            currency_code: 'IDR',
             lines: remainingLines.map((line) => ({
                 purchase_request_line_id: line.id,
                 quantity: (parseFloat(line.quantity) - parseFloat(line.converted_quantity)).toString(),
@@ -273,7 +277,7 @@ function PurchaseOrdersPage({ orders, approvedRequests, suppliers, warehouses, t
                     </div>
 
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setPickerOpen(false)}>
+                        <Button type="button" variant="cancel" onClick={() => setPickerOpen(false)}>
                             Batal
                         </Button>
                     </DialogFooter>
@@ -333,6 +337,14 @@ function PurchaseOrdersPage({ orders, approvedRequests, suppliers, warehouses, t
                                     </SelectContent>
                                 </Select>
                                 {errors.warehouse_id && <p className="text-sm text-destructive">{errors.warehouse_id}</p>}
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="currency_code">Mata Uang</Label>
+                                <Select value={data.currency_code} onValueChange={(value) => setData('currency_code', value)}>
+                                    <SelectTrigger id="currency_code"><SelectValue /></SelectTrigger>
+                                    <SelectContent>{currencies.map((item) => <SelectItem key={item.currency_code} value={item.currency_code}>{item.currency_code} - {item.currency.name}</SelectItem>)}</SelectContent>
+                                </Select>
+                                {errors.currency_code && <p className="text-sm text-destructive">{errors.currency_code}</p>}
                             </div>
                         </div>
 
@@ -394,7 +406,7 @@ function PurchaseOrdersPage({ orders, approvedRequests, suppliers, warehouses, t
                     </form>
 
                     <DialogFooter className="mt-2 border-t pt-4">
-                        <Button type="button" variant="outline" onClick={() => setDialogOpen(false)} disabled={processing}>
+                        <Button type="button" variant="cancel" onClick={() => setDialogOpen(false)} disabled={processing}>
                             Batal
                         </Button>
                         <Button type="submit" form="po-form" disabled={processing}>

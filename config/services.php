@@ -78,6 +78,15 @@ return [
         'timeout'     => (int) env('GROQ_TIMEOUT', 60),
     ],
 
+    /* Gemini Vision is limited to development/demo while using free tier. */
+    'gemini' => [
+        'api_key' => env('GEMINI_API_KEY'),
+        'base_url' => env('GEMINI_BASE_URL', 'https://generativelanguage.googleapis.com/v1beta'),
+        'vision_model' => env('GEMINI_VISION_MODEL'),
+        'timeout' => (int) env('GEMINI_TIMEOUT', 120),
+        'allow_production' => (bool) env('GEMINI_ALLOW_PRODUCTION', false),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Telegram Bot  (client ticket intake)

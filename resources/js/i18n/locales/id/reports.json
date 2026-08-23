@@ -1,0 +1,12 @@
+{
+  "nav": { "gl_reports": "Laporan GL" },
+  "title": "Laporan Keuangan",
+  "description": "Baca posisi keuangan dari jurnal yang sudah diposting.",
+  "filters": { "report": "Jenis laporan", "from": "Dari tanggal", "to": "Sampai tanggal", "account": "Akun", "account_placeholder": "Pilih akun untuk buku besar", "apply": "Tampilkan laporan", "loading": "Memuat..." },
+  "report": { "trial_balance": "Neraca saldo", "general_ledger": "Buku besar", "profit_loss": "Laba rugi", "balance_sheet": "Neraca" },
+  "common": { "account": "Akun", "code": "Kode", "name": "Nama", "debit": "Debit", "credit": "Kredit", "amount": "Jumlah", "date": "Tanggal", "number": "Nomor", "description_label": "Keterangan", "total": "Total", "empty": "Belum ada data pada periode ini." },
+  "trial_balance": { "title": "Neraca Saldo", "as_of": "Saldo sampai", "balanced": "Seimbang", "not_balanced": "Belum seimbang" },
+  "general_ledger": { "title": "Buku Besar", "opening": "Saldo awal", "closing": "Saldo akhir", "empty": "Belum ada mutasi akun pada periode ini." },
+  "profit_loss": { "title": "Laporan Laba Rugi", "revenue": "Pendapatan", "expenses": "Beban", "total_revenue": "Total pendapatan", "total_expenses": "Total beban", "net_profit": "Laba / (rugi) bersih" },
+  "balance_sheet": { "title": "Neraca", "assets": "Aset", "liabilities": "Liabilitas", "equity": "Ekuitas", "current_earnings": "Laba / (rugi) berjalan", "total_assets": "Total aset", "total_liabilities_equity": "Total liabilitas + ekuitas", "balanced": "Neraca seimbang", "not_balanced": "Periksa selisih neraca" }
+}

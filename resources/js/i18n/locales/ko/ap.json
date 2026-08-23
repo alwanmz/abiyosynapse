@@ -1,0 +1,39 @@
+{
+    "nav": {
+        "ap": "매입채무"
+    },
+    "common": {
+        "cancel": "취소",
+        "save": "저장",
+        "saving": "저장 중..."
+    },
+    "ap_payment": {
+        "title": "매입채무 지급",
+        "breadcrumb": "매입채무 지급",
+        "description": "매칭된 인보이스에 대한 공급업체 지급을 기록합니다.",
+        "list_title": "지급 목록",
+        "add": "지급 추가",
+        "add_title": "새 매입채무 지급 추가",
+        "add_description": "공급업체를 선택한 후 하나 이상의 인보이스에 지급을 적용하세요.",
+        "supplier": "공급업체",
+        "supplier_placeholder": "공급업체 선택",
+        "bank_account": "계좌",
+        "bank_account_placeholder": "계좌 선택",
+        "payment_date": "지급일",
+        "reference": "참조번호",
+        "reference_placeholder": "예: 은행 이체 번호",
+        "invoices": "지급할 인보이스",
+        "no_payable_invoices": "이 공급업체는 지급 가능한 인보이스가 없습니다.",
+        "outstanding": "미지급 잔액",
+        "total_applied": "적용 합계",
+        "empty": "아직 매입채무 지급이 없습니다.",
+        "table": {
+            "number": "번호",
+            "supplier": "공급업체",
+            "bank_account": "계좌",
+            "date": "날짜",
+            "invoices": "인보이스",
+            "amount": "금액"
+        }
+    }
+}

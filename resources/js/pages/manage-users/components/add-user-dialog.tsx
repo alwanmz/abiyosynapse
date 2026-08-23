@@ -315,7 +315,7 @@ export function AddUserDialog({
                         <DialogFooter className="border-t px-6 py-4">
                             <Button
                                 type="button"
-                                variant="outline"
+                                variant="cancel"
                                 onClick={() => handleClose(false)}
                                 disabled={createForm.processing}
                             >
@@ -406,7 +406,7 @@ export function AddUserDialog({
                         <DialogFooter className="border-t px-6 py-4">
                             <Button
                                 type="button"
-                                variant="outline"
+                                variant="cancel"
                                 onClick={() => handleClose(false)}
                                 disabled={inviteForm.processing}
                             >

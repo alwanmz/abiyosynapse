@@ -47,7 +47,10 @@
         "no_permissions": "権限なし",
         "more_others": "件その他",
         "manage": "管理",
-        "empty": "まだロールがありません。"
+        "empty": "まだロールがありません。",
+        "system_role": "システムロール",
+        "company_role": "会社ロール",
+        "system_locked": "システム管理"
     },
     "delete": {
         "title": "ロールを削除しますか？",

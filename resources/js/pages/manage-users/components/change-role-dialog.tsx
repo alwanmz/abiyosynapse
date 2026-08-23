@@ -122,13 +122,13 @@ export function ChangeRoleDialog({
                     <DialogFooter>
                         <Button
                             type="button"
-                            variant="outline"
+                            variant="cancel"
                             onClick={() => onOpenChange(false)}
                             disabled={processing}
                         >
                             {t('dialog.cancel')}
                         </Button>
-                        <Button type="submit" disabled={processing}>
+                        <Button type="submit" variant="save" disabled={processing}>
                             {processing ? t('dialog.change_role.submitting') : t('dialog.change_role.submit')}
                         </Button>
                     </DialogFooter>

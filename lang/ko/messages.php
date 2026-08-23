@@ -16,6 +16,7 @@ return [
         'updated' => '역할이 수정되었습니다.',
         'deleted' => '역할이 삭제되었습니다.',
         'cannot_delete_locked' => '":name" 역할은 삭제할 수 없습니다.',
+        'cannot_edit_system' => '시스템 역할은 애플리케이션에서 관리되므로 변경할 수 없습니다.',
         'cannot_delete_in_use' => '이 역할은 :count개의 회사 구성원에서 사용 중이므로 삭제할 수 없습니다.',
     ],
 
@@ -105,6 +106,9 @@ return [
         'updated' => 'BOM이 수정되었습니다.',
         'deleted' => 'BOM이 삭제되었습니다.',
         'cannot_delete_in_use' => '이 BOM은 제품에서 활성 사용 중이므로 삭제할 수 없습니다.',
+        'cannot_edit_immutable' => '승인되었거나 활성화된 BOM은 수정할 수 없습니다. 새 개정을 생성하세요.',
+        'cannot_delete_immutable' => '승인되었거나 활성화된 BOM은 삭제할 수 없습니다.',
+        'new_version_created' => 'BOM 개정 초안이 생성되었습니다.',
     ],
 
     'routing' => [
@@ -123,6 +127,7 @@ return [
         'operation_completed' => '공정이 완료되었습니다.',
         'completed' => '제조 지시서가 완료되어 완제품이 입고되었습니다.',
         'submitted_for_qc' => '제조 지시서가 품질 검사로 제출되었습니다.',
+        'costed' => '제조 지시서 원가 계산이 완료되었습니다.',
     ],
 
     'quality' => [
@@ -179,5 +184,49 @@ return [
 
     'sales_return' => [
         'created' => '판매 반품이 기록되었으며, 재고와 전표가 조정되었습니다.',
+    ],
+
+    'bank_account' => [
+        'created' => '현금/은행 계좌가 생성되었습니다.',
+        'updated' => '현금/은행 계좌가 수정되었습니다.',
+    ],
+
+    'cash_transaction' => [
+        'created' => '현금 거래가 기록되었습니다.',
+    ],
+
+    'bank_reconciliation' => [
+        'created' => '은행 대사가 생성되었습니다.',
+        'lines_updated' => '대사 상태가 업데이트되었습니다.',
+        'completed' => '은행 대사가 완료되었습니다.',
+    ],
+
+    'ar_receipt' => [
+        'created' => '매출채권 입금이 기록되었습니다.',
+    ],
+
+    'ap_payment' => [
+        'created' => '매입채무 지급이 기록되었습니다.',
+    ],
+
+    'fixed_asset' => [
+        'created' => '고정자산이 초안으로 등록되었습니다.',
+        'activated' => '고정자산이 자본화되었습니다.',
+        'depreciated' => '고정자산 감가상각이 전표에 반영되었습니다.',
+        'disposed' => '고정자산 처분이 전표에 반영되었습니다.',
+    ],
+
+    'currency' => [
+        'enabled' => '회사에서 통화를 활성화했습니다.',
+        'disabled' => '통화를 비활성화했습니다.',
+        'rate_saved' => '환율이 저장되고 승인되었습니다.',
+        'base_always_active' => '회사 기준 통화는 항상 활성화됩니다.',
+        'enable_both_first' => '환율 저장 전에 두 통화를 활성화하세요.',
+        'revaluation_completed' => '통화 재평가가 완료되었습니다.',
+        'revaluation_reversed' => '통화 재평가가 취소되었습니다.',
+    ],
+
+    'company' => [
+        'currency_locked' => '전표가 등록된 후에는 기준 통화를 변경할 수 없습니다.',
     ],
 ];

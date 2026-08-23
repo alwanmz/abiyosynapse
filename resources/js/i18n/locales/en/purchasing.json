@@ -33,7 +33,13 @@
         "status_converted": "Converted",
         "submit": "Submit",
         "approve": "Approve",
-        "reject": "Reject"
+        "reject": "Reject",
+        "reject_title": "Reject Purchase Request",
+        "reject_description": "Record a reason so the decision can be traced.",
+        "rejection_reason": "Rejection reason",
+        "rejection_reason_placeholder": "Explain the rejection reason (optional)",
+        "cancel": "Cancel",
+        "rejecting": "Rejecting..."
     },
     "purchase_order": {
         "title": "Purchase Orders",

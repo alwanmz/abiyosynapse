@@ -1,15 +1,29 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AiCopilotController;
+use App\Http\Controllers\AiDocumentController;
+use App\Http\Controllers\AiVoiceController;
+use App\Http\Controllers\ApPaymentController;
+use App\Http\Controllers\ArReceiptController;
+use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Auth\EmailOtpController;
+use App\Http\Controllers\BankAccountController;
+use App\Http\Controllers\BankReconciliationController;
 use App\Http\Controllers\BomController;
+use App\Http\Controllers\CashTransactionController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CompanySwitchController;
+use App\Http\Controllers\CurrencyController;
+use App\Http\Controllers\ExchangeRevaluationController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeliveryOrderController;
 use App\Http\Controllers\GoodsReceiptController;
+use App\Http\Controllers\FixedAssetController;
+use App\Http\Controllers\FinancialReportController;
 use App\Http\Controllers\MrpController;
+use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\NonConformanceReportController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProductCategoryController;
@@ -56,6 +70,31 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    Route::middleware('permission:ai.use')->group(function () {
+        Route::get('/ai/copilot', [AiCopilotController::class, 'index'])->name('ai.copilot.index');
+        Route::post('/ai/copilot/chat', [AiCopilotController::class, 'chat'])->name('ai.copilot.chat');
+        Route::post('/ai/voice/transcribe', [AiVoiceController::class, 'transcribe'])->name('ai.voice.transcribe');
+    });
+    Route::middleware('permission:ai.documents.view,ai.documents.manage')->group(function () {
+        Route::get('/ai/documents', [AiDocumentController::class, 'index'])->name('ai.documents.index');
+    });
+    Route::middleware('permission:ai.documents.view,ai.documents.manage')->group(function () {
+        Route::get('/ai/documents/{document}/file', [AiDocumentController::class, 'file'])->name('ai.documents.file');
+        Route::get('/ai/documents/{document}', [AiDocumentController::class, 'show'])->name('ai.documents.show');
+    });
+    Route::middleware('permission:ai.documents.manage')->group(function () {
+        Route::post('/ai/documents', [AiDocumentController::class, 'store'])->name('ai.documents.store');
+        Route::post('/ai/documents/{document}/process', [AiDocumentController::class, 'process'])->name('ai.documents.process');
+        Route::post('/ai/documents/{document}/accept', [AiDocumentController::class, 'accept'])->name('ai.documents.accept');
+        Route::post('/ai/documents/{document}/reject', [AiDocumentController::class, 'reject'])->name('ai.documents.reject');
+    });
+    Route::post('/ai/copilot/actions/{aiActionRun}/confirm', [AiCopilotController::class, 'confirm'])
+        ->middleware('permission:ai.execute')
+        ->name('ai.copilot.confirm');
+    Route::post('/ai/copilot/actions/{aiActionRun}/reject', [AiCopilotController::class, 'reject'])
+        ->middleware('permission:ai.execute')
+        ->name('ai.copilot.reject');
+
     // Reachable even without a company membership yet — EnsureCompanyContext
     // redirects users with zero memberships here, so these two must stay
     // free of any permission: gate.
@@ -84,6 +123,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::middleware('permission:accounts.view,accounts.manage')->group(function () {
         Route::get('master/accounts', [AccountController::class, 'index'])->name('master.accounts.index');
+    });
+
+    Route::middleware('permission:currencies.view,currencies.manage')->group(function () {
+        Route::get('master/currencies', [CurrencyController::class, 'index'])->name('master.currencies.index');
+    });
+    Route::middleware('permission:currencies.manage')->group(function () {
+        Route::post('master/currencies/enable', [CurrencyController::class, 'enable'])->name('master.currencies.enable');
+        Route::delete('master/currencies/{currency}/disable', [CurrencyController::class, 'disable'])->name('master.currencies.disable');
+        Route::post('master/currency-rates', [CurrencyController::class, 'storeRate'])->name('master.currency-rates.store');
+        Route::post('master/currency-revaluations', [ExchangeRevaluationController::class, 'store'])->name('master.currency-revaluations.store');
+        Route::delete('master/currency-revaluations/{run}', [ExchangeRevaluationController::class, 'destroy'])->name('master.currency-revaluations.destroy');
     });
     Route::middleware('permission:accounts.create,accounts.manage')->post('master/accounts', [AccountController::class, 'store'])->name('master.accounts.store');
     Route::middleware('permission:accounts.edit,accounts.manage')->put('master/accounts/{account}', [AccountController::class, 'update'])->name('master.accounts.update');
@@ -152,9 +202,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('manufacturing/work-centers/{workCenter}', [WorkCenterController::class, 'update'])->name('manufacturing.work-centers.update');
         Route::delete('manufacturing/work-centers/{workCenter}', [WorkCenterController::class, 'destroy'])->name('manufacturing.work-centers.destroy');
 
-        Route::post('manufacturing/boms', [BomController::class, 'store'])->name('manufacturing.boms.store');
-        Route::put('manufacturing/boms/{bom}', [BomController::class, 'update'])->name('manufacturing.boms.update');
-        Route::delete('manufacturing/boms/{bom}', [BomController::class, 'destroy'])->name('manufacturing.boms.destroy');
+Route::post('manufacturing/boms', [BomController::class, 'store'])->name('manufacturing.boms.store');
+Route::put('manufacturing/boms/{bom}', [BomController::class, 'update'])->name('manufacturing.boms.update');
+Route::post('manufacturing/boms/{bom}/new-version', [BomController::class, 'newVersion'])->name('manufacturing.boms.new-version');
+Route::delete('manufacturing/boms/{bom}', [BomController::class, 'destroy'])->name('manufacturing.boms.destroy');
 
         Route::post('manufacturing/routings', [RoutingController::class, 'store'])->name('manufacturing.routings.store');
         Route::put('manufacturing/routings/{routing}', [RoutingController::class, 'update'])->name('manufacturing.routings.update');
@@ -163,7 +214,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('manufacturing/production-orders', [ProductionOrderController::class, 'store'])->name('manufacturing.production-orders.store');
         Route::post('manufacturing/production-orders/{productionOrder}/release', [ProductionOrderController::class, 'release'])->name('manufacturing.production-orders.release');
         Route::post('manufacturing/production-orders/{productionOrder}/issue-materials', [ProductionOrderController::class, 'issueMaterials'])->name('manufacturing.production-orders.issue-materials');
-        Route::post('manufacturing/production-orders/{productionOrder}/complete', [ProductionOrderController::class, 'complete'])->name('manufacturing.production-orders.complete');
+Route::post('manufacturing/production-orders/{productionOrder}/complete', [ProductionOrderController::class, 'complete'])->name('manufacturing.production-orders.complete');
+Route::post('manufacturing/production-orders/{productionOrder}/cost', [ProductionOrderController::class, 'cost'])->name('manufacturing.production-orders.cost');
         Route::post('manufacturing/production-orders/{productionOrder}/submit-for-qc', [ProductionOrderController::class, 'submitForQc'])->name('manufacturing.production-orders.submit-for-qc');
         Route::post('manufacturing/operations/{operation}/start', [ProductionOrderController::class, 'startOperation'])->name('manufacturing.operations.start');
         Route::post('manufacturing/operations/{operation}/complete', [ProductionOrderController::class, 'completeOperation'])->name('manufacturing.operations.complete');
@@ -229,6 +281,75 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('sales/sales-orders/{salesOrder}/sales-invoices', [SalesInvoiceController::class, 'store'])->name('sales.sales-invoices.store');
 
         Route::post('sales/sales-invoices/{salesInvoice}/sales-returns', [SalesReturnController::class, 'store'])->name('sales.sales-returns.store');
+    });
+
+    Route::middleware('permission:cash-bank.view,cash-bank.manage')->group(function () {
+        Route::get('cash-bank/bank-accounts', [BankAccountController::class, 'index'])->name('cash-bank.bank-accounts.index');
+        Route::get('cash-bank/cash-transactions', [CashTransactionController::class, 'index'])->name('cash-bank.cash-transactions.index');
+        Route::get('cash-bank/bank-reconciliations', [BankReconciliationController::class, 'index'])->name('cash-bank.bank-reconciliations.index');
+        Route::get('cash-bank/bank-reconciliations/{bankReconciliation}', [BankReconciliationController::class, 'show'])->name('cash-bank.bank-reconciliations.show');
+    });
+    Route::middleware('permission:cash-bank.manage')->group(function () {
+        Route::post('cash-bank/bank-accounts', [BankAccountController::class, 'store'])->name('cash-bank.bank-accounts.store');
+        Route::put('cash-bank/bank-accounts/{bankAccount}', [BankAccountController::class, 'update'])->name('cash-bank.bank-accounts.update');
+
+        Route::post('cash-bank/cash-transactions', [CashTransactionController::class, 'store'])->name('cash-bank.cash-transactions.store');
+
+        Route::post('cash-bank/bank-reconciliations', [BankReconciliationController::class, 'store'])->name('cash-bank.bank-reconciliations.store');
+        Route::put('cash-bank/bank-reconciliations/{bankReconciliation}/lines', [BankReconciliationController::class, 'updateLines'])->name('cash-bank.bank-reconciliations.update-lines');
+        Route::post('cash-bank/bank-reconciliations/{bankReconciliation}/complete', [BankReconciliationController::class, 'complete'])->name('cash-bank.bank-reconciliations.complete');
+    });
+
+    Route::middleware('permission:ar.view,ar.manage')->group(function () {
+        Route::get('ar/ar-receipts', [ArReceiptController::class, 'index'])->name('ar.ar-receipts.index');
+    });
+    Route::middleware('permission:ar.manage')->group(function () {
+        Route::post('ar/ar-receipts', [ArReceiptController::class, 'store'])->name('ar.ar-receipts.store');
+    });
+
+    Route::middleware('permission:ap.view,ap.manage')->group(function () {
+        Route::get('ap/ap-payments', [ApPaymentController::class, 'index'])->name('ap.ap-payments.index');
+    });
+    Route::middleware('permission:ap.manage')->group(function () {
+        Route::post('ap/ap-payments', [ApPaymentController::class, 'store'])->name('ap.ap-payments.store');
+    });
+
+    Route::middleware('permission:fixed-assets.view,fixed-assets.manage')->group(function () {
+        Route::get('fixed-assets', [FixedAssetController::class, 'index'])->name('fixed-assets.index');
+    });
+    Route::middleware('permission:fixed-assets.manage')->group(function () {
+        Route::post('fixed-assets', [FixedAssetController::class, 'store'])->name('fixed-assets.store');
+        Route::post('fixed-assets/{fixedAsset}/activate', [FixedAssetController::class, 'activate'])->name('fixed-assets.activate');
+        Route::post('fixed-assets/{fixedAsset}/depreciate', [FixedAssetController::class, 'depreciate'])->name('fixed-assets.depreciate');
+        Route::post('fixed-assets/{fixedAsset}/dispose', [FixedAssetController::class, 'dispose'])->name('fixed-assets.dispose');
+    });
+
+    Route::middleware('permission:maintenance.view,maintenance.manage')->group(function () {
+        Route::get('maintenance/equipment', [MaintenanceController::class, 'equipment'])->name('maintenance.equipment.index');
+        Route::get('maintenance/work-orders', [MaintenanceController::class, 'workOrders'])->name('maintenance.work-orders.index');
+        Route::get('maintenance/schedules', [MaintenanceController::class, 'schedules'])->name('maintenance.schedules.index');
+        Route::get('maintenance/readings', [MaintenanceController::class, 'readings'])->name('maintenance.readings.index');
+    });
+    Route::middleware('permission:maintenance.manage')->group(function () {
+        Route::post('maintenance/equipment', [MaintenanceController::class, 'storeEquipment'])->name('maintenance.equipment.store');
+        Route::post('maintenance/work-orders', [MaintenanceController::class, 'storeWorkOrder'])->name('maintenance.work-orders.store');
+        Route::post('maintenance/schedules', [MaintenanceController::class, 'storeSchedule'])->name('maintenance.schedules.store');
+        Route::post('maintenance/readings', [MaintenanceController::class, 'storeReading'])->name('maintenance.readings.store');
+        Route::post('maintenance/equipment/{equipment}/predict', [MaintenanceController::class, 'predict'])->name('maintenance.equipment.predict');
+    });
+    Route::middleware('permission:maintenance.execute')->group(function () {
+        Route::post('maintenance/work-orders/{workOrder}/open', [MaintenanceController::class, 'open'])->name('maintenance.work-orders.open');
+        Route::post('maintenance/work-orders/{workOrder}/start', [MaintenanceController::class, 'start'])->name('maintenance.work-orders.start');
+        Route::post('maintenance/work-orders/{workOrder}/complete', [MaintenanceController::class, 'complete'])->name('maintenance.work-orders.complete');
+        Route::post('maintenance/work-orders/{workOrder}/cancel', [MaintenanceController::class, 'cancel'])->name('maintenance.work-orders.cancel');
+    });
+
+    Route::middleware('permission:reports.view')->group(function () {
+        Route::get('reports/gl', [FinancialReportController::class, 'index'])->name('reports.gl.index');
+    });
+
+    Route::middleware('permission:audit.view')->group(function () {
+        Route::get('audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
     });
 
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications');

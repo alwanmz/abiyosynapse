@@ -13,7 +13,9 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        $superAdminId = Role::where('name', 'super_admin')->value('id');
+        $superAdminId = Role::whereNull('company_id')
+            ->where('name', 'super_admin')
+            ->value('id');
         $company = Company::where('code', 'default')->first();
 
         $user = User::updateOrCreate(

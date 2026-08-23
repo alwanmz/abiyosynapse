@@ -16,6 +16,7 @@ return [
         'updated' => '角色更新成功。',
         'deleted' => '角色删除成功。',
         'cannot_delete_locked' => '角色 ":name" 无法删除。',
+        'cannot_edit_system' => '系统角色由应用程序管理，无法更改。',
         'cannot_delete_in_use' => '该角色仍被 :count 个公司成员使用，无法删除。',
     ],
 
@@ -105,6 +106,9 @@ return [
         'updated' => '物料清单更新成功。',
         'deleted' => '物料清单删除成功。',
         'cannot_delete_in_use' => '该物料清单正被产品使用中，无法删除。',
+        'cannot_edit_immutable' => '已批准或已启用的 BOM 不可编辑，请创建新修订版本。',
+        'cannot_delete_immutable' => '已批准或已启用的 BOM 不可删除。',
+        'new_version_created' => 'BOM 修订草稿已创建。',
     ],
 
     'routing' => [
@@ -123,6 +127,7 @@ return [
         'operation_completed' => '工序已完成。',
         'completed' => '生产工单已完成，成品已入库。',
         'submitted_for_qc' => '生产工单已提交质检。',
+        'costed' => '生产工单成本计算已完成。',
     ],
 
     'quality' => [
@@ -179,5 +184,49 @@ return [
 
     'sales_return' => [
         'created' => '销售退货记录成功，库存与分录已调整。',
+    ],
+
+    'bank_account' => [
+        'created' => '现金/银行账户创建成功。',
+        'updated' => '现金/银行账户更新成功。',
+    ],
+
+    'cash_transaction' => [
+        'created' => '现金交易记录成功。',
+    ],
+
+    'bank_reconciliation' => [
+        'created' => '银行对账创建成功。',
+        'lines_updated' => '核对状态更新成功。',
+        'completed' => '银行对账已完成。',
+    ],
+
+    'ar_receipt' => [
+        'created' => '应收账款收款记录成功。',
+    ],
+
+    'ap_payment' => [
+        'created' => '应付账款付款记录成功。',
+    ],
+
+    'fixed_asset' => [
+        'created' => '固定资产已成功登记为草稿。',
+        'activated' => '固定资产资本化成功。',
+        'depreciated' => '固定资产折旧已成功过账。',
+        'disposed' => '固定资产处置已成功过账。',
+    ],
+
+    'currency' => [
+        'enabled' => '已为公司启用货币。',
+        'disabled' => '货币已停用。',
+        'rate_saved' => '汇率已保存并批准。',
+        'base_always_active' => '公司的本位币始终保持启用。',
+        'enable_both_first' => '保存汇率前请先启用两种货币。',
+        'revaluation_completed' => '货币重估已完成。',
+        'revaluation_reversed' => '货币重估已冲销。',
+    ],
+
+    'company' => [
+        'currency_locked' => '公司已有日记账后不能更改本位币。',
     ],
 ];

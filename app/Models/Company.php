@@ -64,4 +64,14 @@ class Company extends Model
     {
         return $this->hasMany(JournalEntry::class);
     }
+
+    public function currencies(): HasMany
+    {
+        return $this->hasMany(CompanyCurrency::class);
+    }
+
+    public function currencyRates(): HasMany
+    {
+        return $this->hasMany(CurrencyRate::class);
+    }
 }

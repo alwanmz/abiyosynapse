@@ -130,6 +130,7 @@
         "delete_title": "製品を削除しますか？",
         "delete_confirm_prefix": "本当に削除しますか："
     },
+    "currency": { "title": "通貨" },
     "account": {
         "title": "勘定科目表",
         "description": "財務科目の構造（資産、負債、資本、収益、費用）を管理します。",

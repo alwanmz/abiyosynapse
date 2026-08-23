@@ -28,7 +28,7 @@ export function NotificationHeader({
             </div>
             <div className="flex items-center gap-2">
                 <Button
-                    variant="outline"
+                    variant="default"
                     size="sm"
                     onClick={onMarkAllAsRead}
                     disabled={unreadCount === 0 || isProcessing}
@@ -37,7 +37,7 @@ export function NotificationHeader({
                     Tandai semua sudah dibaca
                 </Button>
                 <Button
-                    variant="outline"
+                    variant="destructive"
                     size="sm"
                     onClick={onClearAll}
                     disabled={totalCount === 0 || isProcessing}

@@ -158,7 +158,7 @@ function NcrsPage({ ncrs }: PageProps) {
                                                 <div className="flex justify-end gap-2">
                                                     {ncr.status !== 'closed' && !ncr.disposition && (
                                                         <Button
-                                                            variant="outline"
+                                                            variant="default"
                                                             size="sm"
                                                             onClick={() => setDispositionTarget(ncr)}
                                                         >
@@ -167,7 +167,7 @@ function NcrsPage({ ncrs }: PageProps) {
                                                     )}
                                                     {ncr.disposition && ncr.status !== 'closed' && ncr.status !== 'corrective_action' && (
                                                         <Button
-                                                            variant="outline"
+                                                            variant="default"
                                                             size="sm"
                                                             onClick={() => setCorrectiveActionTarget(ncr)}
                                                         >
@@ -175,7 +175,7 @@ function NcrsPage({ ncrs }: PageProps) {
                                                         </Button>
                                                     )}
                                                     {ncr.disposition && ncr.status !== 'closed' && (
-                                                        <Button variant="outline" size="sm" onClick={() => setCloseTarget(ncr)}>
+                                                        <Button variant="default" size="sm" onClick={() => setCloseTarget(ncr)}>
                                                             {t('ncr.close_ncr')}
                                                         </Button>
                                                     )}
@@ -230,7 +230,7 @@ function NcrsPage({ ncrs }: PageProps) {
                         <DialogFooter>
                             <Button
                                 type="button"
-                                variant="outline"
+                                variant="cancel"
                                 onClick={() => setDispositionTarget(null)}
                                 disabled={dispositionForm.processing}
                             >
@@ -267,7 +267,7 @@ function NcrsPage({ ncrs }: PageProps) {
                         <DialogFooter>
                             <Button
                                 type="button"
-                                variant="outline"
+                                variant="cancel"
                                 onClick={() => setCorrectiveActionTarget(null)}
                                 disabled={correctiveActionForm.processing}
                             >

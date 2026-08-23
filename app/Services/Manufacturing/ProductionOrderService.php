@@ -4,6 +4,7 @@ namespace App\Services\Manufacturing;
 
 use App\Models\Account;
 use App\Models\Bom;
+use App\Models\Product;
 use App\Models\ProductionOrder;
 use App\Models\ProductionOrderOperation;
 use App\Models\Routing;
@@ -66,22 +67,29 @@ class ProductionOrderService
         return DB::transaction(function () use ($order) {
             /** @var Bom $bom */
             $bom = $order->bom()->with('lines')->first();
+            $componentIds = collect($bom->lines)->pluck('component_id')->unique()->values();
+            $standardCosts = Product::whereIn('id', $componentIds)->pluck('standard_cost', 'id');
+
             foreach ($bom->explode((float) $order->planned_quantity) as $component) {
                 $order->components()->create([
                     'component_id' => $component['component_id'],
                     'required_quantity' => $component['quantity'],
+                    'standard_unit_cost' => (float) ($standardCosts[$component['component_id']] ?? 0),
                 ]);
             }
 
             /** @var Routing $routing */
-            $routing = $order->routing()->with('operations')->first();
+            $routing = $order->routing()->with('operations.workCenter')->first();
             foreach ($routing->operations as $operation) {
+                $plannedMinutes = (float) $operation->setup_minutes
+                    + (float) $operation->run_minutes_per_unit * (float) $order->planned_quantity;
+
                 $order->operations()->create([
                     'sequence' => $operation->sequence,
                     'name' => $operation->name,
                     'work_center_id' => $operation->work_center_id,
-                    'planned_minutes' => (float) $operation->setup_minutes
-                        + (float) $operation->run_minutes_per_unit * (float) $order->planned_quantity,
+                    'planned_minutes' => $plannedMinutes,
+                    'planned_cost' => $plannedMinutes * (float) $operation->workCenter->cost_rate_per_minute,
                     'status' => 'pending',
                 ]);
             }
@@ -124,6 +132,7 @@ class ProductionOrderService
                 );
 
                 $component->increment('issued_quantity', $remaining);
+                $component->increment('actual_material_cost', $result['total_cost']);
                 $totalCost += $result['total_cost'];
             }
 
@@ -159,9 +168,12 @@ class ProductionOrderService
             throw new RuntimeException('Only an in-progress operation can be completed.');
         }
 
+        $operation->loadMissing('workCenter');
+
         $operation->update([
             'status' => 'complete',
             'actual_minutes' => $actualMinutes,
+            'actual_cost' => $actualMinutes * (float) $operation->workCenter->cost_rate_per_minute,
             'output_quantity' => $outputQuantity,
             'completed_at' => now(),
         ]);

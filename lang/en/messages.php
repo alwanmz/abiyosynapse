@@ -16,6 +16,7 @@ return [
         'updated' => 'Role updated successfully.',
         'deleted' => 'Role deleted successfully.',
         'cannot_delete_locked' => 'Role ":name" cannot be deleted.',
+        'cannot_edit_system' => 'System roles are managed by the application and cannot be changed.',
         'cannot_delete_in_use' => 'This role cannot be deleted because it is still used by :count company membership(s).',
     ],
 
@@ -105,6 +106,9 @@ return [
         'updated' => 'BOM updated successfully.',
         'deleted' => 'BOM deleted successfully.',
         'cannot_delete_in_use' => 'This BOM cannot be deleted because it is actively used by a product.',
+        'cannot_edit_immutable' => 'An approved or active BOM cannot be edited. Create a new revision instead.',
+        'cannot_delete_immutable' => 'An approved or active BOM cannot be deleted.',
+        'new_version_created' => 'BOM revision draft created successfully.',
     ],
 
     'routing' => [
@@ -123,6 +127,7 @@ return [
         'operation_completed' => 'Operation completed successfully.',
         'completed' => 'Production order completed, finished goods added to stock.',
         'submitted_for_qc' => 'Production order submitted for QC inspection successfully.',
+        'costed' => 'Production order costing calculated successfully.',
     ],
 
     'quality' => [
@@ -179,5 +184,49 @@ return [
 
     'sales_return' => [
         'created' => 'Sales return recorded successfully, stock and journal adjusted.',
+    ],
+
+    'bank_account' => [
+        'created' => 'Bank account created successfully.',
+        'updated' => 'Bank account updated successfully.',
+    ],
+
+    'cash_transaction' => [
+        'created' => 'Cash transaction recorded successfully.',
+    ],
+
+    'bank_reconciliation' => [
+        'created' => 'Bank reconciliation created successfully.',
+        'lines_updated' => 'Cleared status updated successfully.',
+        'completed' => 'Bank reconciliation completed successfully.',
+    ],
+
+    'ar_receipt' => [
+        'created' => 'AR receipt recorded successfully.',
+    ],
+
+    'ap_payment' => [
+        'created' => 'AP payment recorded successfully.',
+    ],
+
+    'fixed_asset' => [
+        'created' => 'Fixed asset registered as a draft successfully.',
+        'activated' => 'Fixed asset capitalized successfully.',
+        'depreciated' => 'Fixed asset depreciation posted successfully.',
+        'disposed' => 'Fixed asset disposal posted successfully.',
+    ],
+
+    'currency' => [
+        'enabled' => 'Currency enabled for the company.',
+        'disabled' => 'Currency disabled.',
+        'rate_saved' => 'Exchange rate saved and approved.',
+        'base_always_active' => 'The company base currency is always active.',
+        'enable_both_first' => 'Enable both currencies before saving a rate.',
+        'revaluation_completed' => 'Currency revaluation completed.',
+        'revaluation_reversed' => 'Currency revaluation reversed.',
+    ],
+
+    'company' => [
+        'currency_locked' => 'The base currency cannot change after the company has journal entries.',
     ],
 ];

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\BelongsToCompany;
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 class ProductionOrder extends Model
 {
     /** @use HasFactory<\Database\Factories\ProductionOrderFactory> */
-    use HasFactory, BelongsToCompany;
+    use HasFactory, BelongsToCompany, Auditable;
 
     protected $fillable = [
         'company_id',
@@ -22,8 +23,22 @@ class ProductionOrder extends Model
         'routing_id',
         'warehouse_id',
         'planned_quantity',
+        'cost_currency_code',
+        'cost_exchange_rate',
         'produced_quantity',
         'rejected_quantity',
+        'standard_material_cost',
+        'actual_material_cost',
+        'standard_conversion_cost',
+        'actual_conversion_cost',
+        'standard_total_cost',
+        'standard_total_cost_base',
+        'actual_total_cost',
+        'actual_total_cost_base',
+        'variance_amount',
+        'variance_amount_base',
+        'variance_percentage',
+        'costed_at',
         'start_date',
         'due_date',
         'status',
@@ -38,10 +53,23 @@ class ProductionOrder extends Model
             'planned_quantity' => 'decimal:4',
             'produced_quantity' => 'decimal:4',
             'rejected_quantity' => 'decimal:4',
+            'standard_material_cost' => 'decimal:2',
+            'actual_material_cost' => 'decimal:2',
+            'standard_conversion_cost' => 'decimal:2',
+            'actual_conversion_cost' => 'decimal:2',
+            'standard_total_cost' => 'decimal:2',
+            'standard_total_cost_base' => 'decimal:6',
+            'actual_total_cost' => 'decimal:2',
+            'actual_total_cost_base' => 'decimal:6',
+            'variance_amount' => 'decimal:2',
+            'variance_amount_base' => 'decimal:6',
+            'cost_exchange_rate' => 'decimal:12',
+            'variance_percentage' => 'decimal:4',
             'start_date' => 'date',
             'due_date' => 'date',
             'released_at' => 'datetime',
             'completed_at' => 'datetime',
+            'costed_at' => 'datetime',
         ];
     }
 

@@ -102,6 +102,13 @@
     --color-nx-andon-idle-bg: var(--nx-andon-idle-bg);
     --color-nx-andon-info: var(--nx-andon-info);
     --color-nx-andon-info-bg: var(--nx-andon-info-bg);
+    --color-nx-action: var(--nx-action);
+    --color-nx-save: var(--nx-save);
+    --color-nx-save-bg: var(--nx-save-bg);
+    --color-nx-print: var(--nx-print);
+    --color-nx-print-bg: var(--nx-print-bg);
+    --color-nx-cancel: var(--nx-cancel);
+    --color-nx-cancel-bg: var(--nx-cancel-bg);
 }
 
 :root {
@@ -156,6 +163,15 @@
   --nx-andon-idle-bg: #EEF1F3;
   --nx-andon-info: #0B7F88;
   --nx-andon-info-bg: #EDFAFB;
+
+  /* Semantic action colors shared by every module. */
+  --nx-action: var(--nx-navy-700);
+  --nx-save: var(--nx-andon-run);
+  --nx-save-bg: var(--nx-andon-run-bg);
+  --nx-print: var(--nx-andon-caution);
+  --nx-print-bg: var(--nx-andon-caution-bg);
+  --nx-cancel: var(--nx-hanko-500);
+  --nx-cancel-bg: var(--nx-hanko-50);
 
   /* Motion — cheap to declare now even though most components don't
      consume these yet; new components should reach for these instead of
@@ -270,6 +286,14 @@
   --nx-andon-idle-bg: #1C2836;
   --nx-andon-info: #4FD8E3;
   --nx-andon-info-bg: #093237;
+
+  --nx-action: var(--nx-navy-500);
+  --nx-save: var(--nx-andon-run);
+  --nx-save-bg: var(--nx-andon-run-bg);
+  --nx-print: var(--nx-andon-caution);
+  --nx-print-bg: var(--nx-andon-caution-bg);
+  --nx-cancel: var(--nx-hanko-500);
+  --nx-cancel-bg: var(--nx-hanko-50);
 
   --background: var(--nx-n-0);
   --foreground: var(--nx-n-900);

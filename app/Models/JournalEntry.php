@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\BelongsToCompany;
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,18 +13,22 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 class JournalEntry extends Model
 {
     /** @use HasFactory<\Database\Factories\JournalEntryFactory> */
-    use HasFactory, BelongsToCompany;
+    use HasFactory, BelongsToCompany, Auditable;
 
     protected $fillable = [
         'company_id',
         'number',
         'entry_date',
         'description',
+        'currency_code',
+        'exchange_rate',
         'sourceable_type',
         'sourceable_id',
         'status',
         'total_debit',
         'total_credit',
+        'total_debit_base',
+        'total_credit_base',
         'posted_at',
         'created_by',
     ];
@@ -34,6 +39,9 @@ class JournalEntry extends Model
             'entry_date' => 'date',
             'total_debit' => 'decimal:2',
             'total_credit' => 'decimal:2',
+            'total_debit_base' => 'decimal:6',
+            'total_credit_base' => 'decimal:6',
+            'exchange_rate' => 'decimal:12',
             'posted_at' => 'datetime',
         ];
     }

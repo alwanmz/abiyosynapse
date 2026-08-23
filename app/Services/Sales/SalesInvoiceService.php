@@ -10,6 +10,7 @@ use App\Models\SalesOrderLine;
 use App\Models\User;
 use App\Services\Accounting\JournalPostingService;
 use App\Services\CurrentCompany;
+use App\Services\CurrencyDocumentService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -36,18 +37,26 @@ class SalesInvoiceService
     public function __construct(
         private readonly CurrentCompany $currentCompany,
         private readonly JournalPostingService $posting,
+        private readonly CurrencyDocumentService $currencyDocuments,
     ) {
     }
 
     public function create(SalesOrder $order, array $input, array $lineInputs, ?User $creator = null): SalesInvoice
     {
         return DB::transaction(function () use ($order, $input, $lineInputs, $creator) {
+            $currencyCode = $order->currency_code ?: $this->currentCompany->get()?->currency ?? 'IDR';
+            $exchangeRate = $order->exchange_rate ?: '1';
+            if (! $order->currency_code || ! $order->exchange_rate) {
+                $order->forceFill(['currency_code' => $currencyCode, 'exchange_rate' => $exchangeRate])->save();
+            }
             $invoice = SalesInvoice::create([
                 'number' => $this->nextNumber(),
                 'sales_order_id' => $order->id,
                 'customer_id' => $order->customer_id,
                 'invoice_date' => $input['invoice_date'],
                 'due_date' => $input['due_date'],
+                'currency_code' => $currencyCode,
+                'exchange_rate' => $exchangeRate,
                 'status' => 'posted',
                 'created_by' => $creator?->id,
             ]);
@@ -79,8 +88,19 @@ class SalesInvoiceService
                     'product_id' => $soLine->product_id,
                     'quantity' => $quantity,
                     'unit_price' => $unitPrice,
+                    'unit_price_base' => $this->currencyDocuments->baseAmount((string) $unitPrice, [
+                        'currency_code' => $currencyCode,
+                        'exchange_rate' => $exchangeRate,
+                        'effective_date' => $input['invoice_date'],
+                    ]),
                     'tax_amount' => $taxAmount,
+                    'tax_amount_base' => $this->currencyDocuments->baseAmount((string) $taxAmount, [
+                        'currency_code' => $currencyCode,
+                        'exchange_rate' => $exchangeRate,
+                        'effective_date' => $input['invoice_date'],
+                    ]),
                     'unit_cost' => $unitCost,
+                    'unit_cost_base' => $unitCost,
                 ]);
 
                 $soLine->increment('invoiced_quantity', $quantity);
@@ -94,15 +114,31 @@ class SalesInvoiceService
                 'subtotal' => $subtotal,
                 'tax_total' => $taxTotal,
                 'total' => $subtotal + $taxTotal,
+                'subtotal_base' => $this->currencyDocuments->baseAmount((string) $subtotal, [
+                    'currency_code' => $currencyCode,
+                    'exchange_rate' => $exchangeRate,
+                    'effective_date' => $input['invoice_date'],
+                ]),
+                'tax_total_base' => $this->currencyDocuments->baseAmount((string) $taxTotal, [
+                    'currency_code' => $currencyCode,
+                    'exchange_rate' => $exchangeRate,
+                    'effective_date' => $input['invoice_date'],
+                ]),
+                'total_base' => $this->currencyDocuments->baseAmount((string) ($subtotal + $taxTotal), [
+                    'currency_code' => $currencyCode,
+                    'exchange_rate' => $exchangeRate,
+                    'effective_date' => $input['invoice_date'],
+                ]),
             ]);
 
+            $currency = $invoice->currency_code;
             $lines = [
-                ['account_id' => $this->accountId(self::AR_ACCOUNT_CODE), 'debit' => $subtotal + $taxTotal],
-                ['account_id' => $this->accountId(self::REVENUE_ACCOUNT_CODE), 'credit' => $subtotal],
+                ['account_id' => $this->accountId(self::AR_ACCOUNT_CODE), 'debit' => (float) $invoice->total_base, 'amount_currency' => (float) $invoice->total, 'currency_code' => $currency, 'exchange_rate' => $invoice->exchange_rate],
+                ['account_id' => $this->accountId(self::REVENUE_ACCOUNT_CODE), 'credit' => (float) $invoice->subtotal_base, 'amount_currency' => -(float) $invoice->subtotal, 'currency_code' => $currency, 'exchange_rate' => $invoice->exchange_rate],
             ];
 
             if ($taxTotal > 0) {
-                $lines[] = ['account_id' => $this->accountId(self::OUTPUT_TAX_ACCOUNT_CODE), 'credit' => $taxTotal];
+                $lines[] = ['account_id' => $this->accountId(self::OUTPUT_TAX_ACCOUNT_CODE), 'credit' => (float) $invoice->tax_total_base, 'amount_currency' => -(float) $invoice->tax_total, 'currency_code' => $currency, 'exchange_rate' => $invoice->exchange_rate];
             }
 
             $this->posting->post(
@@ -112,11 +148,12 @@ class SalesInvoiceService
             );
 
             if ($totalCost > 0) {
+                $baseCurrency = $this->currentCompany->get()?->currency ?? 'IDR';
                 $this->posting->post(
                     description: "COGS for sales invoice {$invoice->number}",
                     lines: [
-                        ['account_id' => $this->accountId(self::COGS_ACCOUNT_CODE), 'debit' => $totalCost],
-                        ['account_id' => $this->accountId(self::FINISHED_GOODS_ACCOUNT_CODE), 'credit' => $totalCost],
+                        ['account_id' => $this->accountId(self::COGS_ACCOUNT_CODE), 'debit' => $totalCost, 'amount_currency' => $totalCost, 'currency_code' => $baseCurrency],
+                        ['account_id' => $this->accountId(self::FINISHED_GOODS_ACCOUNT_CODE), 'credit' => $totalCost, 'amount_currency' => -$totalCost, 'currency_code' => $baseCurrency],
                     ],
                     sourceable: $invoice,
                 );

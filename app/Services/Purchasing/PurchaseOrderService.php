@@ -4,7 +4,11 @@ namespace App\Services\Purchasing;
 
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseRequestLine;
+use App\Models\Supplier;
 use App\Models\User;
+use App\Services\ApprovalWorkflowService;
+use App\Services\CurrencyDocumentService;
+use App\Services\CurrentCompany;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -29,18 +33,28 @@ class PurchaseOrderService
         int $warehouseId,
         array $lineInputs,
         ?User $creator = null,
+        array $options = [],
     ): PurchaseOrder {
         if (! $request->isApproved()) {
             throw new RuntimeException("Purchase request {$request->number} must be approved before it can be converted to a PO.");
         }
 
-        return DB::transaction(function () use ($request, $supplierId, $warehouseId, $lineInputs, $creator) {
+        $supplier = Supplier::findOrFail($supplierId);
+        $currency = app(CurrencyDocumentService::class)->resolve(
+            $options['currency_code'] ?? null,
+            now()->toDateString(),
+            $supplier->currency_code,
+        );
+
+        return DB::transaction(function () use ($request, $supplierId, $warehouseId, $lineInputs, $creator, $currency) {
             $order = PurchaseOrder::create([
                 'number' => $this->nextNumber(),
                 'supplier_id' => $supplierId,
                 'warehouse_id' => $warehouseId,
                 'purchase_request_id' => $request->id,
                 'order_date' => now()->toDateString(),
+                'currency_code' => $currency['currency_code'],
+                'exchange_rate' => $currency['exchange_rate'],
                 'status' => 'draft',
                 'created_by' => $creator?->id,
             ]);
@@ -62,6 +76,7 @@ class PurchaseOrderService
                     'tax_code_id' => $input['tax_code_id'] ?? null,
                     'quantity' => $quantity,
                     'unit_price' => (float) $input['unit_price'],
+                    'unit_price_base' => app(CurrencyDocumentService::class)->baseAmount((string) $input['unit_price'], $currency),
                 ]);
 
                 $prLine->increment('converted_quantity', $quantity);
@@ -95,7 +110,9 @@ class PurchaseOrderService
             throw new RuntimeException("Purchase order {$order->number} must be pending approval before it can be approved.");
         }
 
-        $order->update([
+        app(ApprovalWorkflowService::class)->assertCanApprove($order, $approver);
+
+        $order->auditAs($approver)->update([
             'status' => 'approved',
             'approved_by' => $approver->id,
             'approved_at' => now(),
@@ -139,10 +156,29 @@ class PurchaseOrderService
             $taxTotal += $lineSubtotal * ((float) ($line->taxCode->rate ?? 0) / 100);
         }
 
+        $currencyCode = $order->currency_code ?: app(CurrentCompany::class)->get()?->currency ?? 'IDR';
+        $exchangeRate = $order->exchange_rate ?: '1';
         $order->update([
+            'currency_code' => $currencyCode,
+            'exchange_rate' => $exchangeRate,
             'subtotal' => $subtotal,
             'tax_total' => $taxTotal,
             'total' => $subtotal + $taxTotal,
+            'subtotal_base' => app(CurrencyDocumentService::class)->baseAmount((string) $subtotal, [
+                'currency_code' => $currencyCode,
+                'exchange_rate' => $exchangeRate,
+                'effective_date' => $order->order_date?->toDateString() ?? now()->toDateString(),
+            ]),
+            'tax_total_base' => app(CurrencyDocumentService::class)->baseAmount((string) $taxTotal, [
+                'currency_code' => $currencyCode,
+                'exchange_rate' => $exchangeRate,
+                'effective_date' => $order->order_date?->toDateString() ?? now()->toDateString(),
+            ]),
+            'total_base' => app(CurrencyDocumentService::class)->baseAmount((string) ($subtotal + $taxTotal), [
+                'currency_code' => $currencyCode,
+                'exchange_rate' => $exchangeRate,
+                'effective_date' => $order->order_date?->toDateString() ?? now()->toDateString(),
+            ]),
         ]);
     }
 

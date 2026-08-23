@@ -221,13 +221,13 @@ function WarehousesPage({ warehouses }: PageProps) {
                         <DialogFooter>
                             <Button
                                 type="button"
-                                variant="outline"
+                                variant="cancel"
                                 onClick={() => setDialogOpen(false)}
                                 disabled={processing}
                             >
                                 {t('common.cancel')}
                             </Button>
-                            <Button type="submit" disabled={processing}>
+                            <Button type="submit" variant="save" disabled={processing}>
                                 {processing ? t('common.saving') : t('common.save')}
                             </Button>
                         </DialogFooter>

@@ -428,13 +428,13 @@ function ProductsPage({ products, categories, unitOfMeasures, warehouses }: Page
                     <DialogFooter className="mt-2 border-t pt-4">
                         <Button
                             type="button"
-                            variant="outline"
+                            variant="cancel"
                             onClick={() => setDialogOpen(false)}
                             disabled={processing}
                         >
                             {t('common.cancel')}
                         </Button>
-                        <Button type="submit" form="product-form" disabled={processing}>
+                        <Button type="submit" form="product-form" variant="save" disabled={processing}>
                             {processing ? t('common.saving') : t('common.save')}
                         </Button>
                     </DialogFooter>

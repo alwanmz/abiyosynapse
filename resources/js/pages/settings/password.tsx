@@ -120,6 +120,7 @@ function Password() {
 
                                 <div className="flex items-center gap-4">
                                     <Button
+                                        variant="save"
                                         disabled={processing}
                                         data-test="update-password-button"
                                     >

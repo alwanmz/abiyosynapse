@@ -233,7 +233,7 @@ function PurchaseOrderShowPage({ order }: PageProps) {
                             </Button>
                         )}
                         {canClose && (
-                            <Button variant="outline" onClick={handleClose} disabled={closing}>
+                            <Button variant="default" onClick={handleClose} disabled={closing}>
                                 {t('purchase_order.close')}
                             </Button>
                         )}

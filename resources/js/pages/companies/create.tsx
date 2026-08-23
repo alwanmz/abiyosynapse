@@ -112,12 +112,15 @@ function CreateCompanyPage() {
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="grid gap-2">
                                     <Label htmlFor="currency">{t('form.currency')}</Label>
-                                    <Input
-                                        id="currency"
-                                        value={data.currency}
-                                        maxLength={3}
-                                        onChange={(e) => setData('currency', e.target.value.toUpperCase())}
-                                    />
+                                    <Select value={data.currency} onValueChange={(value) => setData('currency', value)}>
+                                        <SelectTrigger id="currency"><SelectValue /></SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="IDR">IDR - Rupiah</SelectItem>
+                                            <SelectItem value="USD">USD - US Dollar</SelectItem>
+                                            <SelectItem value="JPY">JPY - Japanese Yen</SelectItem>
+                                            <SelectItem value="CNY">CNY - Chinese Yuan</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                     {errors.currency && (
                                         <p className="text-sm text-destructive">{errors.currency}</p>
                                     )}

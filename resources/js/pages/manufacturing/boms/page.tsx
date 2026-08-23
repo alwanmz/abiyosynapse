@@ -31,9 +31,9 @@ import {
 } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { useBreadcrumbs } from '@/hooks/use-breadcrumbs';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 import { IconPlus } from '@tabler/icons-react';
-import { Pencil, Trash2, X } from 'lucide-react';
+import { CopyPlus, Pencil, Trash2, X } from 'lucide-react';
 import { type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -54,6 +54,9 @@ interface Bom {
     batch_quantity: string;
     status: 'draft' | 'approved' | 'active' | 'obsolete';
     notes: string | null;
+    effective_from: string | null;
+    effective_until: string | null;
+    revision_reason: string | null;
     product: { id: number; code: string; name: string };
     lines: BomLine[];
 }
@@ -102,6 +105,9 @@ function BomsPage({ boms, products, unitOfMeasures }: PageProps) {
         code: string;
         batch_quantity: string;
         status: Bom['status'];
+        effective_from: string;
+        effective_until: string;
+        revision_reason: string;
         notes: string;
         lines: LineForm[];
     }>({
@@ -109,6 +115,9 @@ function BomsPage({ boms, products, unitOfMeasures }: PageProps) {
         code: '',
         batch_quantity: '1',
         status: 'draft',
+        effective_from: '',
+        effective_until: '',
+        revision_reason: '',
         notes: '',
         lines: [{ ...emptyLine }],
     });
@@ -129,6 +138,9 @@ function BomsPage({ boms, products, unitOfMeasures }: PageProps) {
             code: bom.code,
             batch_quantity: bom.batch_quantity,
             status: bom.status,
+            effective_from: bom.effective_from?.slice(0, 10) ?? '',
+            effective_until: bom.effective_until?.slice(0, 10) ?? '',
+            revision_reason: bom.revision_reason ?? '',
             notes: bom.notes ?? '',
             lines: bom.lines.map((l) => ({
                 component_id: l.component_id,
@@ -170,6 +182,10 @@ function BomsPage({ boms, products, unitOfMeasures }: PageProps) {
             onSuccess: () => setDeleting(null),
             onError: () => setDeleting(null),
         });
+    };
+
+    const handleNewVersion = (bom: Bom) => {
+        router.post(`/manufacturing/boms/${bom.id}/new-version`, {}, { preserveScroll: true });
     };
 
     return (
@@ -216,7 +232,14 @@ function BomsPage({ boms, products, unitOfMeasures }: PageProps) {
                                                 <div className="font-medium">{bom.product.name}</div>
                                                 <div className="font-mono text-xs text-muted-foreground">{bom.product.code}</div>
                                             </TableCell>
-                                            <TableCell className="font-mono text-sm">{bom.code}</TableCell>
+                                            <TableCell>
+                                                <div className="font-mono text-sm">{bom.code}</div>
+                                                {bom.revision_reason && (
+                                                    <div className="mt-1 max-w-56 truncate text-xs text-muted-foreground" title={bom.revision_reason}>
+                                                        {bom.revision_reason}
+                                                    </div>
+                                                )}
+                                            </TableCell>
                                             <TableCell className="tabular-nums">v{bom.version}</TableCell>
                                             <TableCell className="tabular-nums">{bom.lines.length}</TableCell>
                                             <TableCell>
@@ -226,17 +249,32 @@ function BomsPage({ boms, products, unitOfMeasures }: PageProps) {
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex items-center justify-end gap-1">
-                                                    <Button variant="ghost" size="icon" onClick={() => openEdit(bom)}>
-                                                        <Pencil className="h-4 w-4" />
-                                                    </Button>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="text-destructive hover:text-destructive"
-                                                        onClick={() => setDeleting(bom)}
-                                                    >
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </Button>
+                                                    {bom.status === 'draft' ? (
+                                                        <>
+                                                            <Button variant="ghost" size="icon" onClick={() => openEdit(bom)} title={t('bom.edit_title')}>
+                                                                <Pencil className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="text-destructive hover:text-destructive"
+                                                                onClick={() => setDeleting(bom)}
+                                                                title={t('bom.delete_title')}
+                                                            >
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </>
+                                                    ) : (
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={() => handleNewVersion(bom)}
+                                                            title={t('bom.new_version')}
+                                                            aria-label={t('bom.new_version')}
+                                                        >
+                                                            <CopyPlus className="h-4 w-4" />
+                                                        </Button>
+                                                    )}
                                                 </div>
                                             </TableCell>
                                         </TableRow>
@@ -256,7 +294,7 @@ function BomsPage({ boms, products, unitOfMeasures }: PageProps) {
                     </DialogHeader>
 
                     <form id="bom-form" onSubmit={handleSubmit} className="flex-1 space-y-4 overflow-y-auto pr-2">
-                        <div className="grid gap-4 md:grid-cols-2">
+                            <div className="grid gap-4 md:grid-cols-2">
                             <div className="grid gap-2">
                                 <Label htmlFor="product_id">{t('bom.product')}</Label>
                                 <Select
@@ -277,6 +315,39 @@ function BomsPage({ boms, products, unitOfMeasures }: PageProps) {
                                 </Select>
                                 {errors.product_id && <p className="text-sm text-destructive">{errors.product_id}</p>}
                             </div>
+
+                        <div className="grid gap-4 md:grid-cols-3">
+                            <div className="grid gap-2">
+                                <Label htmlFor="effective_from">{t('bom.effective_from')}</Label>
+                                <Input
+                                    id="effective_from"
+                                    type="date"
+                                    value={data.effective_from}
+                                    onChange={(e) => setData('effective_from', e.target.value)}
+                                />
+                                {errors.effective_from && <p className="text-sm text-destructive">{errors.effective_from}</p>}
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="effective_until">{t('bom.effective_until')}</Label>
+                                <Input
+                                    id="effective_until"
+                                    type="date"
+                                    value={data.effective_until}
+                                    onChange={(e) => setData('effective_until', e.target.value)}
+                                />
+                                {errors.effective_until && <p className="text-sm text-destructive">{errors.effective_until}</p>}
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="revision_reason">{t('bom.revision_reason')}</Label>
+                                <Input
+                                    id="revision_reason"
+                                    placeholder={t('bom.revision_reason_placeholder')}
+                                    value={data.revision_reason}
+                                    onChange={(e) => setData('revision_reason', e.target.value)}
+                                />
+                                {errors.revision_reason && <p className="text-sm text-destructive">{errors.revision_reason}</p>}
+                            </div>
+                        </div>
 
                             <div className="grid gap-2">
                                 <Label htmlFor="code">Kode</Label>
@@ -327,7 +398,7 @@ function BomsPage({ boms, products, unitOfMeasures }: PageProps) {
                         <div className="space-y-3">
                             <div className="flex items-center justify-between">
                                 <Label className="text-base">{t('bom.components')}</Label>
-                                <Button type="button" variant="outline" size="sm" onClick={addLine}>
+                                <Button type="button" variant="default" size="sm" onClick={addLine}>
                                     <IconPlus className="mr-1 h-3.5 w-3.5" />
                                     {t('bom.add_component')}
                                 </Button>
@@ -405,10 +476,10 @@ function BomsPage({ boms, products, unitOfMeasures }: PageProps) {
                     </form>
 
                     <DialogFooter className="mt-2 border-t pt-4">
-                        <Button type="button" variant="outline" onClick={() => setDialogOpen(false)} disabled={processing}>
+                        <Button type="button" variant="cancel" onClick={() => setDialogOpen(false)} disabled={processing}>
                             Batal
                         </Button>
-                        <Button type="submit" form="bom-form" disabled={processing}>
+                        <Button type="submit" form="bom-form" variant="save" disabled={processing}>
                             {processing ? 'Menyimpan...' : 'Simpan'}
                         </Button>
                     </DialogFooter>

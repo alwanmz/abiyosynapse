@@ -47,7 +47,10 @@
         "no_permissions": "无权限",
         "more_others": "更多",
         "manage": "管理",
-        "empty": "暂无角色。"
+        "empty": "暂无角色。",
+        "system_role": "系统角色",
+        "company_role": "公司角色",
+        "system_locked": "系统管理"
     },
     "delete": {
         "title": "删除角色？",

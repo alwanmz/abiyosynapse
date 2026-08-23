@@ -9,6 +9,7 @@ use App\Models\ProductionOrderOperation;
 use App\Models\Routing;
 use App\Models\Warehouse;
 use App\Services\CurrentCompany;
+use App\Services\Manufacturing\ProductionCostingService;
 use App\Services\Manufacturing\ProductionOrderService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -155,6 +156,17 @@ class ProductionOrderController extends Controller
         }
 
         return redirect()->back()->with('success', __('messages.production_order.completed'));
+    }
+
+    public function cost(ProductionOrder $productionOrder, ProductionCostingService $service): RedirectResponse
+    {
+        try {
+            $service->cost($productionOrder);
+        } catch (RuntimeException $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+
+        return redirect()->back()->with('success', __('messages.production_order.costed'));
     }
 
     private function nextNumber(): string

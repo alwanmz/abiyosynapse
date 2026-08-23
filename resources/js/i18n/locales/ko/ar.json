@@ -1,0 +1,39 @@
+{
+    "nav": {
+        "ar": "매출채권"
+    },
+    "common": {
+        "cancel": "취소",
+        "save": "저장",
+        "saving": "저장 중..."
+    },
+    "ar_receipt": {
+        "title": "매출채권 입금",
+        "breadcrumb": "매출채권 입금",
+        "description": "미수 인보이스에 대한 고객 입금을 기록합니다.",
+        "list_title": "입금 목록",
+        "add": "입금 추가",
+        "add_title": "새 매출채권 입금 추가",
+        "add_description": "고객을 선택한 후 하나 이상의 인보이스에 입금을 적용하세요.",
+        "customer": "고객",
+        "customer_placeholder": "고객 선택",
+        "bank_account": "계좌",
+        "bank_account_placeholder": "계좌 선택",
+        "receipt_date": "입금일",
+        "reference": "참조번호",
+        "reference_placeholder": "예: 은행 이체 번호",
+        "invoices": "정산할 인보이스",
+        "no_outstanding_invoices": "이 고객은 미수 인보이스가 없습니다.",
+        "outstanding": "미수 잔액",
+        "total_applied": "적용 합계",
+        "empty": "아직 매출채권 입금이 없습니다.",
+        "table": {
+            "number": "번호",
+            "customer": "고객",
+            "bank_account": "계좌",
+            "date": "날짜",
+            "invoices": "인보이스",
+            "amount": "금액"
+        }
+    }
+}

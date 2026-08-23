@@ -16,6 +16,7 @@ return [
         'updated' => 'Role berhasil diperbarui.',
         'deleted' => 'Role berhasil dihapus.',
         'cannot_delete_locked' => 'Role ":name" tidak dapat dihapus.',
+        'cannot_edit_system' => 'Role sistem dikelola oleh aplikasi dan tidak dapat diubah.',
         'cannot_delete_in_use' => 'Role tidak dapat dihapus karena masih digunakan di :count keanggotaan perusahaan.',
     ],
 
@@ -105,6 +106,9 @@ return [
         'updated' => 'BOM berhasil diperbarui.',
         'deleted' => 'BOM berhasil dihapus.',
         'cannot_delete_in_use' => 'BOM tidak dapat dihapus karena sedang aktif digunakan produk.',
+        'cannot_edit_immutable' => 'BOM yang sudah disetujui atau aktif tidak dapat diedit. Buat revisi baru.',
+        'cannot_delete_immutable' => 'BOM yang sudah disetujui atau aktif tidak dapat dihapus.',
+        'new_version_created' => 'Draft revisi BOM berhasil dibuat.',
     ],
 
     'routing' => [
@@ -123,6 +127,7 @@ return [
         'operation_completed' => 'Operasi berhasil diselesaikan.',
         'completed' => 'Production order berhasil diselesaikan, barang jadi masuk stok.',
         'submitted_for_qc' => 'Production order berhasil dikirim untuk inspeksi QC.',
+        'costed' => 'Costing production order berhasil dihitung.',
     ],
 
     'quality' => [
@@ -179,5 +184,49 @@ return [
 
     'sales_return' => [
         'created' => 'Retur penjualan berhasil dicatat, stok dan jurnal telah disesuaikan.',
+    ],
+
+    'bank_account' => [
+        'created' => 'Rekening kas/bank berhasil ditambahkan.',
+        'updated' => 'Rekening kas/bank berhasil diperbarui.',
+    ],
+
+    'cash_transaction' => [
+        'created' => 'Transaksi kas berhasil dicatat.',
+    ],
+
+    'bank_reconciliation' => [
+        'created' => 'Rekonsiliasi bank berhasil dibuat.',
+        'lines_updated' => 'Status kliring transaksi berhasil diperbarui.',
+        'completed' => 'Rekonsiliasi bank berhasil diselesaikan.',
+    ],
+
+    'ar_receipt' => [
+        'created' => 'Penerimaan piutang berhasil dicatat.',
+    ],
+
+    'ap_payment' => [
+        'created' => 'Pembayaran hutang berhasil dicatat.',
+    ],
+
+    'fixed_asset' => [
+        'created' => 'Aset tetap berhasil didaftarkan sebagai draft.',
+        'activated' => 'Aset tetap berhasil dikapitalisasi.',
+        'depreciated' => 'Penyusutan aset tetap berhasil diposting.',
+        'disposed' => 'Pelepasan aset tetap berhasil diposting.',
+    ],
+
+    'currency' => [
+        'enabled' => 'Currency berhasil diaktifkan untuk perusahaan.',
+        'disabled' => 'Currency berhasil dinonaktifkan.',
+        'rate_saved' => 'Kurs berhasil disimpan dan disetujui.',
+        'base_always_active' => 'Base currency perusahaan selalu aktif.',
+        'enable_both_first' => 'Aktifkan kedua currency sebelum menyimpan kurs.',
+        'revaluation_completed' => 'Revaluasi kurs berhasil dijalankan.',
+        'revaluation_reversed' => 'Revaluasi kurs berhasil dibalik.',
+    ],
+
+    'company' => [
+        'currency_locked' => 'Base currency tidak dapat diubah setelah perusahaan memiliki jurnal.',
     ],
 ];

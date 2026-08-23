@@ -62,7 +62,9 @@ class CreateNewUser implements CreatesNewUsers
                 'trial_ends_at' => now()->addDays(7),
             ]);
 
-            $superAdminRoleId = Role::where('name', 'super_admin')->value('id');
+            $superAdminRoleId = Role::whereNull('company_id')
+                ->where('name', 'super_admin')
+                ->value('id');
 
             CompanyUser::create([
                 'company_id' => $company->id,

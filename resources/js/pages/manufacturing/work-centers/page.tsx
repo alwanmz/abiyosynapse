@@ -252,13 +252,13 @@ function WorkCentersPage({ workCenters }: PageProps) {
                         <DialogFooter>
                             <Button
                                 type="button"
-                                variant="outline"
+                                variant="cancel"
                                 onClick={() => setDialogOpen(false)}
                                 disabled={processing}
                             >
                                 Batal
                             </Button>
-                            <Button type="submit" disabled={processing}>
+                            <Button type="submit" variant="save" disabled={processing}>
                                 {processing ? 'Menyimpan...' : 'Simpan'}
                             </Button>
                         </DialogFooter>

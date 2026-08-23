@@ -1,0 +1,9 @@
+{
+  "nav": { "audit_trail": "Audit Trail" },
+  "title": "Audit Trail",
+  "description": "Riwayat perubahan data dan keputusan persetujuan di perusahaan aktif.",
+  "filters": { "search": "Cari dokumen", "search_placeholder": "Nomor, keterangan, atau tipe dokumen", "event": "Jenis aktivitas", "all_events": "Semua aktivitas", "apply": "Terapkan" },
+  "table": { "date": "Waktu", "user": "Pengguna", "event": "Aktivitas", "document": "Dokumen", "description": "Keterangan", "details": "Detail", "empty": "Belum ada aktivitas audit." },
+  "events": { "created": "Dibuat", "updated": "Diubah", "submitted": "Diajukan", "approved": "Disetujui", "rejected": "Ditolak", "status_changed": "Status berubah", "closed": "Ditutup", "deleted": "Dihapus" },
+  "detail": { "title": "Detail audit", "document": "Dokumen", "actor": "Dilakukan oleh", "old_values": "Nilai sebelumnya", "new_values": "Nilai terbaru", "no_changes": "Tidak ada rincian perubahan.", "close": "Tutup", "empty": "Kosong" }
+}

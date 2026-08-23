@@ -1,0 +1,39 @@
+{
+    "nav": {
+        "ar": "Piutang (AR)"
+    },
+    "common": {
+        "cancel": "Batal",
+        "save": "Simpan",
+        "saving": "Menyimpan..."
+    },
+    "ar_receipt": {
+        "title": "Penerimaan Piutang",
+        "breadcrumb": "Penerimaan Piutang",
+        "description": "Catat pelunasan piutang dari pelanggan.",
+        "list_title": "Daftar Penerimaan Piutang",
+        "add": "Tambah Penerimaan",
+        "add_title": "Tambah Penerimaan Piutang Baru",
+        "add_description": "Pilih pelanggan lalu alokasikan pembayaran ke satu atau beberapa invoice.",
+        "customer": "Pelanggan",
+        "customer_placeholder": "Pilih pelanggan",
+        "bank_account": "Rekening",
+        "bank_account_placeholder": "Pilih rekening",
+        "receipt_date": "Tanggal Penerimaan",
+        "reference": "Referensi",
+        "reference_placeholder": "Contoh: No. transfer bank",
+        "invoices": "Invoice yang Dilunasi",
+        "no_outstanding_invoices": "Pelanggan ini tidak punya invoice yang belum lunas.",
+        "outstanding": "Sisa tagihan",
+        "total_applied": "Total Dialokasikan",
+        "empty": "Belum ada penerimaan piutang.",
+        "table": {
+            "number": "Nomor",
+            "customer": "Pelanggan",
+            "bank_account": "Rekening",
+            "date": "Tanggal",
+            "invoices": "Invoice",
+            "amount": "Jumlah"
+        }
+    }
+}

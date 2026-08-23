@@ -16,6 +16,7 @@ return [
         'updated' => 'ロールを更新しました。',
         'deleted' => 'ロールを削除しました。',
         'cannot_delete_locked' => 'ロール「:name」は削除できません。',
+        'cannot_edit_system' => 'システムロールはアプリケーションで管理されているため変更できません。',
         'cannot_delete_in_use' => 'このロールは :count 件の会社メンバーシップで使用されているため削除できません。',
     ],
 
@@ -105,6 +106,9 @@ return [
         'updated' => 'BOMを更新しました。',
         'deleted' => 'BOMを削除しました。',
         'cannot_delete_in_use' => 'このBOMは製品で有効に使用されているため削除できません。',
+        'cannot_edit_immutable' => '承認済みまたは有効なBOMは編集できません。新しい改訂を作成してください。',
+        'cannot_delete_immutable' => '承認済みまたは有効なBOMは削除できません。',
+        'new_version_created' => 'BOM改訂の下書きを作成しました。',
     ],
 
     'routing' => [
@@ -123,6 +127,7 @@ return [
         'operation_completed' => '工程を完了しました。',
         'completed' => '製造指図が完了し、完成品が入庫されました。',
         'submitted_for_qc' => '製造指図をQC検査に提出しました。',
+        'costed' => '製造指図の原価計算を完了しました。',
     ],
 
     'quality' => [
@@ -179,5 +184,49 @@ return [
 
     'sales_return' => [
         'created' => '返品を記録しました。在庫と仕訳が調整されました。',
+    ],
+
+    'bank_account' => [
+        'created' => '現金/銀行口座を作成しました。',
+        'updated' => '現金/銀行口座を更新しました。',
+    ],
+
+    'cash_transaction' => [
+        'created' => '現金取引を記録しました。',
+    ],
+
+    'bank_reconciliation' => [
+        'created' => '銀行照合を作成しました。',
+        'lines_updated' => '消込状況を更新しました。',
+        'completed' => '銀行照合が完了しました。',
+    ],
+
+    'ar_receipt' => [
+        'created' => '売掛金入金を記録しました。',
+    ],
+
+    'ap_payment' => [
+        'created' => '買掛金支払を記録しました。',
+    ],
+
+    'fixed_asset' => [
+        'created' => '固定資産を下書きとして登録しました。',
+        'activated' => '固定資産を資産計上しました。',
+        'depreciated' => '固定資産の減価償却を計上しました。',
+        'disposed' => '固定資産の除却を計上しました。',
+    ],
+
+    'currency' => [
+        'enabled' => '通貨を会社で有効化しました。',
+        'disabled' => '通貨を無効化しました。',
+        'rate_saved' => '為替レートを保存し承認しました。',
+        'base_always_active' => '会社の基準通貨は常に有効です。',
+        'enable_both_first' => 'レートを保存する前に両方の通貨を有効化してください。',
+        'revaluation_completed' => '為替再評価が完了しました。',
+        'revaluation_reversed' => '為替再評価を取り消しました。',
+    ],
+
+    'company' => [
+        'currency_locked' => '仕訳登録後は基準通貨を変更できません。',
     ],
 ];

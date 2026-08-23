@@ -33,7 +33,13 @@
         "status_converted": "変換済み",
         "submit": "提出",
         "approve": "承認",
-        "reject": "却下"
+        "reject": "却下",
+        "reject_title": "購買申請を却下",
+        "reject_description": "判断を追跡できるよう理由を記録します。",
+        "rejection_reason": "却下理由",
+        "rejection_reason_placeholder": "却下理由を入力（任意）",
+        "cancel": "キャンセル",
+        "rejecting": "却下中..."
     },
     "purchase_order": {
         "title": "発注書",

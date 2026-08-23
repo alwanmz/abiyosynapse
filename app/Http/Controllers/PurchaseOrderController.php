@@ -8,6 +8,7 @@ use App\Models\PurchaseRequest;
 use App\Models\Supplier;
 use App\Models\TaxCode;
 use App\Models\Warehouse;
+use App\Models\CompanyCurrency;
 use App\Services\Purchasing\PurchaseOrderService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -31,6 +32,7 @@ class PurchaseOrderController extends Controller
             'suppliers' => Supplier::where('is_active', true)->orderBy('code')->get(['id', 'code', 'name']),
             'warehouses' => Warehouse::where('is_active', true)->orderBy('code')->get(['id', 'code', 'name']),
             'taxCodes' => TaxCode::where('is_active', true)->orderBy('code')->get(['id', 'code', 'name', 'rate']),
+            'currencies' => CompanyCurrency::with('currency:code,name')->where('is_active', true)->get(),
         ]);
     }
 
@@ -39,6 +41,7 @@ class PurchaseOrderController extends Controller
         $validated = $request->validate([
             'supplier_id' => 'required|exists:suppliers,id',
             'warehouse_id' => 'required|exists:warehouses,id',
+            'currency_code' => 'nullable|string|size:3|exists:currencies,code',
             'lines' => 'required|array|min:1',
             'lines.*.purchase_request_line_id' => 'required|exists:purchase_request_lines,id',
             'lines.*.quantity' => 'required|numeric|min:0.0001',
@@ -53,6 +56,7 @@ class PurchaseOrderController extends Controller
                 (int) $validated['warehouse_id'],
                 $validated['lines'],
                 $request->user(),
+                ['currency_code' => $validated['currency_code'] ?? null],
             );
         } catch (RuntimeException $e) {
             return redirect()->back()->with('error', $e->getMessage());

@@ -1,0 +1,39 @@
+{
+    "nav": {
+        "ap": "買掛金"
+    },
+    "common": {
+        "cancel": "キャンセル",
+        "save": "保存",
+        "saving": "保存中..."
+    },
+    "ap_payment": {
+        "title": "買掛金支払",
+        "breadcrumb": "買掛金支払",
+        "description": "サプライヤーへの支払を照合済みの請求書に対して記録します。",
+        "list_title": "支払一覧",
+        "add": "支払を追加",
+        "add_title": "新しい買掛金支払を追加",
+        "add_description": "サプライヤーを選択し、1件または複数の請求書に支払を割り当てます。",
+        "supplier": "サプライヤー",
+        "supplier_placeholder": "サプライヤーを選択",
+        "bank_account": "口座",
+        "bank_account_placeholder": "口座を選択",
+        "payment_date": "支払日",
+        "reference": "参照番号",
+        "reference_placeholder": "例：銀行振込番号",
+        "invoices": "支払対象の請求書",
+        "no_payable_invoices": "このサプライヤーに支払可能な請求書はありません。",
+        "outstanding": "未払残高",
+        "total_applied": "割当合計",
+        "empty": "まだ買掛金支払はありません。",
+        "table": {
+            "number": "番号",
+            "supplier": "サプライヤー",
+            "bank_account": "口座",
+            "date": "日付",
+            "invoices": "請求書",
+            "amount": "金額"
+        }
+    }
+}

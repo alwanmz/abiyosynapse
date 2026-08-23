@@ -1,0 +1,39 @@
+{
+    "nav": {
+        "ar": "Receivables (AR)"
+    },
+    "common": {
+        "cancel": "Cancel",
+        "save": "Save",
+        "saving": "Saving..."
+    },
+    "ar_receipt": {
+        "title": "AR Receipts",
+        "breadcrumb": "AR Receipts",
+        "description": "Record customer payments collected against outstanding invoices.",
+        "list_title": "AR Receipt List",
+        "add": "Add Receipt",
+        "add_title": "Add New AR Receipt",
+        "add_description": "Pick a customer, then apply the payment to one or more invoices.",
+        "customer": "Customer",
+        "customer_placeholder": "Select a customer",
+        "bank_account": "Bank Account",
+        "bank_account_placeholder": "Select a bank account",
+        "receipt_date": "Receipt Date",
+        "reference": "Reference",
+        "reference_placeholder": "e.g. bank transfer number",
+        "invoices": "Invoices Being Paid",
+        "no_outstanding_invoices": "This customer has no outstanding invoices.",
+        "outstanding": "Outstanding",
+        "total_applied": "Total Applied",
+        "empty": "No AR receipts yet.",
+        "table": {
+            "number": "Number",
+            "customer": "Customer",
+            "bank_account": "Bank Account",
+            "date": "Date",
+            "invoices": "Invoices",
+            "amount": "Amount"
+        }
+    }
+}

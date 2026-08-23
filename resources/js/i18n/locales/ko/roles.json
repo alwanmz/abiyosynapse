@@ -47,7 +47,10 @@
         "no_permissions": "권한 없음",
         "more_others": "개 더보기",
         "manage": "관리",
-        "empty": "아직 역할이 없습니다."
+        "empty": "아직 역할이 없습니다.",
+        "system_role": "시스템 역할",
+        "company_role": "회사 역할",
+        "system_locked": "시스템 관리"
     },
     "delete": {
         "title": "역할을 삭제하시겠습니까?",

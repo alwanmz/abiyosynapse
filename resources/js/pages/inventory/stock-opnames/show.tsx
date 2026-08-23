@@ -108,7 +108,7 @@ function StockOpnameShowPage({ opname }: PageProps) {
 
                     {isDraft && (
                         <div className="flex items-center gap-2">
-                            <Button variant="outline" onClick={handleSaveCounts} disabled={savingCounts}>
+                            <Button variant="save" onClick={handleSaveCounts} disabled={savingCounts}>
                                 {t('stock_opname.save_counts')}
                             </Button>
                             <Button onClick={() => setCompleteDialogOpen(true)} disabled={completing}>
