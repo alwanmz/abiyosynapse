@@ -16,7 +16,8 @@
         "back": "Back",
         "search": "Search",
         "confirm": "Confirm",
-        "close": "Close"
+        "close": "Close",
+        "print": "Print"
     },
     "status": {
         "active": "Active",

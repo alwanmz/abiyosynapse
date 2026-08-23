@@ -1,9 +1,10 @@
 {
-  "nav": { "gl_reports": "GL Reports" },
+  "nav": { "reports": "Reports", "gl_reports": "GL Reports" },
   "title": "Financial Reports",
   "description": "Read the financial position from posted journals.",
-  "filters": { "report": "Report type", "from": "From date", "to": "To date", "account": "Account", "account_placeholder": "Select an account for the ledger", "apply": "Show report", "loading": "Loading..." },
-  "report": { "trial_balance": "Trial balance", "general_ledger": "General ledger", "profit_loss": "Profit and loss", "balance_sheet": "Balance sheet" },
+  "filters": { "report": "Report type", "from": "From date", "to": "To date", "account": "Account", "account_placeholder": "Select an account for the ledger", "standard": "Framework", "currency": "Presentation currency", "language": "Output language", "comparative": "Show comparative period", "apply": "Show report", "loading": "Loading..." },
+  "report": { "trial_balance": "Trial balance", "general_ledger": "General ledger", "profit_loss": "Profit and loss", "balance_sheet": "Balance sheet", "cash_flow": "Cash flow", "equity": "Changes in equity", "notes": "Notes to financial statements", "financial_statements": "Financial statements package" },
+  "actions": { "pdf": "PDF", "excel": "Excel", "warnings": "Reporting warnings", "no_comparative": "Comparative period unavailable" },
   "common": { "account": "Account", "code": "Code", "name": "Name", "debit": "Debit", "credit": "Credit", "amount": "Amount", "date": "Date", "number": "Number", "description_label": "Description", "total": "Total", "empty": "No data exists for this period." },
   "trial_balance": { "title": "Trial Balance", "as_of": "Balance through", "balanced": "Balanced", "not_balanced": "Not balanced" },
   "general_ledger": { "title": "General Ledger", "opening": "Opening balance", "closing": "Closing balance", "empty": "No account movements exist for this period." },

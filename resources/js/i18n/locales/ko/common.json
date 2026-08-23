@@ -16,7 +16,8 @@
         "back": "뒤로",
         "search": "검색",
         "confirm": "확인",
-        "close": "닫기"
+        "close": "닫기",
+        "print": "인쇄"
     },
     "status": {
         "active": "활성",

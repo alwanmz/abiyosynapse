@@ -19,6 +19,10 @@ class Company extends Model
         'address',
         'logo_path',
         'currency',
+        'reporting_standard',
+        'reporting_language',
+        'presentation_currency',
+        'comparative_period_enabled',
         'fiscal_year_start_month',
         'is_active',
         'trial_ends_at',
@@ -30,6 +34,7 @@ class Company extends Model
             'is_active' => 'boolean',
             'fiscal_year_start_month' => 'integer',
             'trial_ends_at' => 'datetime',
+            'comparative_period_enabled' => 'boolean',
         ];
     }
 
@@ -73,5 +78,15 @@ class Company extends Model
     public function currencyRates(): HasMany
     {
         return $this->hasMany(CurrencyRate::class);
+    }
+
+    public function reportingMappings(): HasMany
+    {
+        return $this->hasMany(ReportingAccountMapping::class);
+    }
+
+    public function presentationCurrencyCode(): string
+    {
+        return strtoupper((string) ($this->presentation_currency ?: $this->currency));
     }
 }

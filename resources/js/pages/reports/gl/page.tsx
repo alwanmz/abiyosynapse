@@ -19,7 +19,7 @@ import { IconRefresh } from '@tabler/icons-react';
 import { type FormEvent, type ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type ReportKey = 'trial_balance' | 'general_ledger' | 'profit_loss' | 'balance_sheet';
+type ReportKey = 'trial_balance' | 'general_ledger' | 'profit_loss' | 'balance_sheet' | 'cash_flow' | 'equity' | 'notes' | 'financial_statements';
 
 interface Account {
     id: number;
@@ -79,12 +79,39 @@ interface BalanceSheet {
     };
 }
 
+interface Snapshot {
+    meta: {
+        report: ReportKey;
+        reporting_standard: 'sak_ep' | 'psak_umum';
+        language: string;
+        from_date: string;
+        to_date: string;
+        functional_currency: string;
+        presentation_currency: string;
+        presentation_rate: string;
+        rate_effective_date: string;
+        comparative_available: boolean;
+        generated_at: string;
+    };
+    data: Record<string, unknown>;
+    previous: { from: string; to: string; data: Record<string, unknown> } | null;
+    warnings: string[];
+}
+
+interface CurrencyOption {
+    code: string;
+    name: string;
+    minor_unit: number;
+}
+
 interface PageProps {
     report: ReportKey;
     fromDate: string;
     toDate: string;
     selectedAccountId: number | null;
     accounts: Account[];
+    currencies: CurrencyOption[];
+    snapshot: Snapshot;
     trialBalance?: TrialBalance;
     generalLedger?: GeneralLedger;
     profitLoss?: ProfitLoss;
@@ -98,6 +125,10 @@ function FinancialReportsPage(props: PageProps) {
     const [fromDate, setFromDate] = useState(props.fromDate);
     const [toDate, setToDate] = useState(props.toDate);
     const [accountId, setAccountId] = useState(props.selectedAccountId?.toString() ?? '');
+    const [standard, setStandard] = useState(props.snapshot.meta.reporting_standard);
+    const [presentationCurrency, setPresentationCurrency] = useState(props.snapshot.meta.presentation_currency);
+    const [language, setLanguage] = useState(props.snapshot.meta.language);
+    const [comparative, setComparative] = useState(true);
 
     useBreadcrumbs([
         { title: t('nav.gl_reports'), href: '#' },
@@ -109,13 +140,16 @@ function FinancialReportsPage(props: PageProps) {
         setFromDate(props.fromDate);
         setToDate(props.toDate);
         setAccountId(props.selectedAccountId?.toString() ?? '');
+        setStandard(props.snapshot.meta.reporting_standard);
+        setPresentationCurrency(props.snapshot.meta.presentation_currency);
+        setLanguage(props.snapshot.meta.language);
     }, [props.report, props.fromDate, props.toDate, props.selectedAccountId]);
 
     const formatCurrency = (value: number) =>
         new Intl.NumberFormat(locale ?? 'id-ID', {
             style: 'currency',
-            currency: currentCompany?.currency ?? 'IDR',
-            maximumFractionDigits: 0,
+            currency: props.snapshot.meta.presentation_currency || currentCompany?.currency || 'IDR',
+            maximumFractionDigits: props.currencies.find((currency) => currency.code === props.snapshot.meta.presentation_currency)?.minor_unit ?? 2,
         }).format(value);
 
     const formatDate = (value: string) => {
@@ -135,6 +169,10 @@ function FinancialReportsPage(props: PageProps) {
                 report,
                 from_date: fromDate,
                 to_date: toDate,
+                reporting_standard: standard,
+                presentation_currency: presentationCurrency,
+                language,
+                comparative: comparative ? '1' : '0',
                 ...(report === 'general_ledger' && accountId ? { account_id: accountId } : {}),
             },
             { preserveState: true, preserveScroll: true, replace: true },
@@ -165,6 +203,10 @@ function FinancialReportsPage(props: PageProps) {
                                         <SelectItem value="general_ledger">{t('report.general_ledger')}</SelectItem>
                                         <SelectItem value="profit_loss">{t('report.profit_loss')}</SelectItem>
                                         <SelectItem value="balance_sheet">{t('report.balance_sheet')}</SelectItem>
+                                        <SelectItem value="cash_flow">{t('report.cash_flow')}</SelectItem>
+                                        <SelectItem value="equity">{t('report.equity')}</SelectItem>
+                                        <SelectItem value="notes">{t('report.notes')}</SelectItem>
+                                        <SelectItem value="financial_statements">{t('report.financial_statements')}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -191,6 +233,42 @@ function FinancialReportsPage(props: PageProps) {
                                     </Select>
                                 </div>
                             ) : <div className="hidden md:block" />}
+                            <div className="grid gap-2">
+                                <Label htmlFor="standard">{t('filters.standard')}</Label>
+                                <Select value={standard} onValueChange={(value) => setStandard(value as 'sak_ep' | 'psak_umum')}>
+                                    <SelectTrigger id="standard"><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="sak_ep">SAK EP</SelectItem>
+                                        <SelectItem value="psak_umum">PSAK Umum</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="presentation_currency">{t('filters.currency')}</Label>
+                                <Select value={presentationCurrency} onValueChange={setPresentationCurrency}>
+                                    <SelectTrigger id="presentation_currency"><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        {props.currencies.map((currency) => <SelectItem key={currency.code} value={currency.code}>{currency.code} — {currency.name}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="language">{t('filters.language')}</Label>
+                                <Select value={language} onValueChange={setLanguage}>
+                                    <SelectTrigger id="language"><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="id">Bahasa Indonesia</SelectItem>
+                                        <SelectItem value="en">English</SelectItem>
+                                        <SelectItem value="zh">中文</SelectItem>
+                                        <SelectItem value="ja">日本語</SelectItem>
+                                        <SelectItem value="ko">한국어</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <label className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <input type="checkbox" checked={comparative} onChange={(event) => setComparative(event.target.checked)} />
+                                {t('filters.comparative')}
+                            </label>
                             <Button type="submit">
                                 <IconRefresh className="size-4" />
                                 {t('filters.apply')}
@@ -198,6 +276,24 @@ function FinancialReportsPage(props: PageProps) {
                         </form>
                     </CardContent>
                 </Card>
+
+                <div className="flex flex-wrap items-center gap-2">
+                    <Button type="button" variant="print" onClick={() => window.open(`/reports/${report}/pdf?report=${report}&from_date=${fromDate}&to_date=${toDate}${report === 'general_ledger' && accountId ? `&account_id=${accountId}` : ''}&presentation_currency=${presentationCurrency}&language=${language}&reporting_standard=${standard}&comparative=${comparative ? '1' : '0'}`, '_blank')}>
+                        {t('actions.pdf')}
+                    </Button>
+                    <Button type="button" variant="print" onClick={() => window.open(`/reports/${report}/xlsx?report=${report}&from_date=${fromDate}&to_date=${toDate}${report === 'general_ledger' && accountId ? `&account_id=${accountId}` : ''}&presentation_currency=${presentationCurrency}&language=${language}&reporting_standard=${standard}&comparative=${comparative ? '1' : '0'}`, '_blank')}>
+                        {t('actions.excel')}
+                    </Button>
+                    <Badge variant="outline">{props.snapshot.meta.presentation_currency} · {props.snapshot.meta.reporting_standard.toUpperCase()}</Badge>
+                    {!props.snapshot.meta.comparative_available && <Badge variant="secondary">{t('actions.no_comparative')}</Badge>}
+                </div>
+
+                {props.snapshot.warnings.length > 0 && (
+                    <Card className="border-nx-andon-caution/50 bg-nx-andon-caution-bg/40 p-4 text-sm">
+                        <p className="font-medium">{t('actions.warnings')}</p>
+                        <ul className="mt-2 list-disc space-y-1 pl-5">{props.snapshot.warnings.map((warning) => <li key={warning}>{warning}</li>)}</ul>
+                    </Card>
+                )}
 
                 {report === 'trial_balance' && props.trialBalance && (
                     <Card className="overflow-hidden p-0">
@@ -319,6 +415,10 @@ function FinancialReportsPage(props: PageProps) {
                         </CardContent>
                     </Card>
                 )}
+
+                {(['cash_flow', 'equity', 'notes', 'financial_statements'] as ReportKey[]).includes(report) && (
+                    <GenericReport report={report} data={props.snapshot.data} formatCurrency={formatCurrency} t={t} />
+                )}
             </div>
         </>
     );
@@ -330,6 +430,59 @@ function ReportHeading({ title, subtitle }: { title: string; subtitle?: string }
             <h2 className="font-display text-sm font-semibold tracking-tight">{title}</h2>
             {subtitle && <p className="mt-1 text-xs text-muted-foreground">{subtitle}</p>}
         </div>
+    );
+}
+
+function GenericReport({
+    report,
+    data,
+    formatCurrency,
+    t,
+}: {
+    report: ReportKey;
+    data: Record<string, unknown>;
+    formatCurrency: (value: number) => string;
+    t: (key: string) => string;
+}) {
+    const contentKey = report === 'cash_flow' ? 'cashFlow' : report === 'equity' ? 'equityChanges' : report === 'profit_loss' ? 'profitLoss' : report === 'balance_sheet' ? 'balanceSheet' : report === 'trial_balance' ? 'trialBalance' : report === 'general_ledger' ? 'generalLedger' : report;
+    const content = (data[contentKey] ?? data) as Record<string, unknown>;
+    const packageData = content.package as Record<string, { data?: Record<string, unknown> }> | undefined;
+
+    if (packageData) {
+        return (
+            <div className="space-y-6">
+                {Object.entries(packageData).map(([key, child]) => (
+                    <GenericReport key={key} report={key as ReportKey} data={child.data ?? {}} formatCurrency={formatCurrency} t={t} />
+                ))}
+            </div>
+        );
+    }
+
+    const rows = Array.isArray(content.rows) ? content.rows as Array<Record<string, unknown>> : [];
+    const scalarEntries = Object.entries(content).filter(([key, value]) => typeof value !== 'object' && key !== 'reconciles');
+    return (
+        <Card className="overflow-hidden p-0">
+            <ReportHeading title={t(`report.${report}`)} subtitle={`${String(content.from ?? content.as_of ?? '')} ${content.to ? `— ${String(content.to)}` : ''}`} />
+            <CardContent className="p-5">
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {scalarEntries.map(([key, value]) => (
+                        <div key={key} className="border-b pb-2">
+                            <p className="text-xs text-muted-foreground">{key.replaceAll('_', ' ')}</p>
+                            <p className="mt-1 font-semibold tabular-nums">{typeof value === 'number' ? formatCurrency(value) : String(value)}</p>
+                        </div>
+                    ))}
+                </div>
+                {rows.length > 0 && (
+                    <div className="mt-6 overflow-x-auto">
+                        <Table>
+                            <TableHeader><TableRow><TableHead>{t('common.code')}</TableHead><TableHead>{t('common.name')}</TableHead><TableHead className="text-right">{t('common.amount')}</TableHead><TableHead className="text-right">{t('common.debit')}</TableHead><TableHead className="text-right">{t('common.credit')}</TableHead></TableRow></TableHeader>
+                            <TableBody>{rows.map((row, index) => <TableRow key={String(row.id ?? index)}><TableCell className="font-mono text-xs">{String(row.code ?? '')}</TableCell><TableCell>{String(row.name ?? '')}</TableCell><TableCell className="text-right tabular-nums">{typeof row.amount === 'number' ? formatCurrency(row.amount) : typeof row.closing === 'number' ? formatCurrency(row.closing) : '—'}</TableCell><TableCell className="text-right tabular-nums">{typeof row.debit === 'number' ? formatCurrency(row.debit) : '—'}</TableCell><TableCell className="text-right tabular-nums">{typeof row.credit === 'number' ? formatCurrency(row.credit) : '—'}</TableCell></TableRow>)}</TableBody>
+                        </Table>
+                    </div>
+                )}
+                {report === 'notes' && Array.isArray(content.disclosure_warnings) && <div className="mt-5 space-y-2 text-sm text-muted-foreground">{(content.disclosure_warnings as unknown[]).map((warning) => <p key={String(warning)}>{String(warning)}</p>)}</div>}
+            </CardContent>
+        </Card>
     );
 }
 

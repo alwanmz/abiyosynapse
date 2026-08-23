@@ -1,5 +1,6 @@
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { ListHeader } from '@/components/list-header';
+import { PrintDocumentButton } from '@/components/print-document-button';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -87,11 +88,14 @@ function DeliveryOrderShowPage({ delivery }: PageProps) {
                         </p>
                     </div>
 
-                    {isDraft && (
+                    <div className="flex items-center gap-2">
+                        <PrintDocumentButton type="delivery_order" documentId={delivery.id} />
+                        {isDraft && (
                         <Button onClick={() => setShipDialogOpen(true)} disabled={shipping}>
                             {t('delivery_order.ship')}
                         </Button>
-                    )}
+                        )}
+                    </div>
                 </div>
 
                 <Card className="overflow-hidden p-0">

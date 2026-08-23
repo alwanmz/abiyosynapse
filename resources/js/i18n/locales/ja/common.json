@@ -16,7 +16,8 @@
         "back": "戻る",
         "search": "検索",
         "confirm": "確認",
-        "close": "閉じる"
+        "close": "閉じる",
+        "print": "印刷"
     },
     "status": {
         "active": "有効",

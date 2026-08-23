@@ -1,4 +1,5 @@
 import { ListHeader } from '@/components/list-header';
+import { PrintDocumentButton } from '@/components/print-document-button';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -203,6 +204,7 @@ function SalesOrderShowPage({ order }: PageProps) {
                     </div>
 
                     <div className="flex items-center gap-2">
+                        <PrintDocumentButton type="sales_order" documentId={order.id} />
                         {canSubmitForApproval && (
                             <Button onClick={handleSubmitForApproval} disabled={submitting}>
                                 {t('sales_order.submit_for_approval')}

@@ -1,9 +1,10 @@
 {
-  "nav": { "gl_reports": "Laporan GL" },
+  "nav": { "reports": "Laporan", "gl_reports": "Laporan GL" },
   "title": "Laporan Keuangan",
   "description": "Baca posisi keuangan dari jurnal yang sudah diposting.",
-  "filters": { "report": "Jenis laporan", "from": "Dari tanggal", "to": "Sampai tanggal", "account": "Akun", "account_placeholder": "Pilih akun untuk buku besar", "apply": "Tampilkan laporan", "loading": "Memuat..." },
-  "report": { "trial_balance": "Neraca saldo", "general_ledger": "Buku besar", "profit_loss": "Laba rugi", "balance_sheet": "Neraca" },
+  "filters": { "report": "Jenis laporan", "from": "Dari tanggal", "to": "Sampai tanggal", "account": "Akun", "account_placeholder": "Pilih akun untuk buku besar", "standard": "Standar", "currency": "Mata uang penyajian", "language": "Bahasa output", "comparative": "Tampilkan periode pembanding", "apply": "Tampilkan laporan", "loading": "Memuat..." },
+  "report": { "trial_balance": "Neraca saldo", "general_ledger": "Buku besar", "profit_loss": "Laba rugi", "balance_sheet": "Neraca", "cash_flow": "Arus kas", "equity": "Perubahan ekuitas", "notes": "Catatan laporan keuangan", "financial_statements": "Paket laporan keuangan" },
+  "actions": { "pdf": "PDF", "excel": "Excel", "warnings": "Peringatan pelaporan", "no_comparative": "Periode pembanding belum tersedia" },
   "common": { "account": "Akun", "code": "Kode", "name": "Nama", "debit": "Debit", "credit": "Kredit", "amount": "Jumlah", "date": "Tanggal", "number": "Nomor", "description_label": "Keterangan", "total": "Total", "empty": "Belum ada data pada periode ini." },
   "trial_balance": { "title": "Neraca Saldo", "as_of": "Saldo sampai", "balanced": "Seimbang", "not_balanced": "Belum seimbang" },
   "general_ledger": { "title": "Buku Besar", "opening": "Saldo awal", "closing": "Saldo akhir", "empty": "Belum ada mutasi akun pada periode ini." },

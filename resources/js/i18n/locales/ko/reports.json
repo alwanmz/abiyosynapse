@@ -1,9 +1,10 @@
 {
-  "nav": { "gl_reports": "총계정원장 보고서" },
+  "nav": { "reports": "보고서", "gl_reports": "총계정원장 보고서" },
   "title": "재무 보고서",
   "description": "전기된 분개에서 재무 상태를 확인합니다.",
-  "filters": { "report": "보고서 유형", "from": "시작일", "to": "종료일", "account": "계정", "account_placeholder": "원장 계정 선택", "apply": "보고서 표시", "loading": "로드 중..." },
-  "report": { "trial_balance": "합계잔액시산표", "general_ledger": "총계정원장", "profit_loss": "손익계산서", "balance_sheet": "재무상태표" },
+  "filters": { "report": "보고서 유형", "from": "시작일", "to": "종료일", "account": "계정", "account_placeholder": "원장 계정 선택", "standard": "회계 기준", "currency": "표시 통화", "language": "출력 언어", "comparative": "비교 기간 표시", "apply": "보고서 표시", "loading": "로드 중..." },
+  "report": { "trial_balance": "합계잔액시산표", "general_ledger": "총계정원장", "profit_loss": "손익계산서", "balance_sheet": "재무상태표", "cash_flow": "현금흐름표", "equity": "자본변동표", "notes": "재무제표 주석", "financial_statements": "재무제표 패키지" },
+  "actions": { "pdf": "PDF", "excel": "Excel", "warnings": "보고서 경고", "no_comparative": "비교 기간 데이터 없음" },
   "common": { "account": "계정", "code": "코드", "name": "이름", "debit": "차변", "credit": "대변", "amount": "금액", "date": "날짜", "number": "번호", "description_label": "적요", "total": "합계", "empty": "해당 기간에 데이터가 없습니다." },
   "trial_balance": { "title": "합계잔액시산표", "as_of": "잔액 기준일", "balanced": "일치", "not_balanced": "불일치" },
   "general_ledger": { "title": "총계정원장", "opening": "기초 잔액", "closing": "기말 잔액", "empty": "해당 기간에 계정 변동이 없습니다." },

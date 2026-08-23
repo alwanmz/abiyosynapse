@@ -1,4 +1,5 @@
 import { ListHeader } from '@/components/list-header';
+import { PrintDocumentButton } from '@/components/print-document-button';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -115,6 +116,7 @@ function GoodsReceiptShowPage({ receipt }: PageProps) {
                             {receipt.purchase_order.number} · {receipt.purchase_order.supplier.name} · {receipt.warehouse.code}
                         </p>
                     </div>
+                    <PrintDocumentButton type="goods_receipt" documentId={receipt.id} />
                 </div>
 
                 <Card className="mb-6 overflow-hidden p-0">

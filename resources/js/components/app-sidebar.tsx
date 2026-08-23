@@ -324,7 +324,7 @@ export function AppSidebar() {
 
     const reportsNavItems: NavItem[] = [
         {
-            title: t('reports:nav.gl_reports'),
+            title: t('reports:nav.reports'),
             permission: 'reports.view',
             href: '/reports/gl',
             icon: BookOpen,
@@ -393,7 +393,7 @@ export function AppSidebar() {
                 <NavMain items={filterByPermission(arNavItems)} label={t('ar:nav.ar')} />
                 <NavMain items={filterByPermission(apNavItems)} label={t('ap:nav.ap')} />
                 <NavMain items={filterByPermission(fixedAssetNavItems)} label={t('fixed-assets:nav.fixed_assets')} />
-                <NavMain items={filterByPermission(reportsNavItems)} label={t('reports:nav.gl_reports')} />
+                <NavMain items={filterByPermission(reportsNavItems)} label={t('reports:nav.reports')} />
                 <NavMain items={filterByPermission(aiNavItems)} label={t('ai:nav.group')} />
                 <NavMain items={filterByPermission(auditNavItems)} label={t('audit:nav.audit_trail')} />
                 <NavMain items={filterByPermission(masterNavItems)} label={t('nav.group_master')} />

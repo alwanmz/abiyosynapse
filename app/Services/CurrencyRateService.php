@@ -30,6 +30,7 @@ class CurrencyRateService
         string $to,
         CarbonInterface|string|null $date = null,
         ?Company $company = null,
+        bool $enforceFreshness = true,
     ): array {
         $from = strtoupper($from);
         $to = strtoupper($to);
@@ -79,7 +80,7 @@ class CurrencyRateService
         }
 
         $effectiveDate = $rate->effective_date;
-        if ($effectiveDate->diffInDays($date) > self::MAX_RATE_AGE_DAYS) {
+        if ($enforceFreshness && $effectiveDate->diffInDays($date) > self::MAX_RATE_AGE_DAYS) {
             throw new RuntimeException(
                 "The approved exchange rate for {$from}/{$to} is older than " . self::MAX_RATE_AGE_DAYS . ' days.',
             );

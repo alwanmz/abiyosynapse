@@ -1,4 +1,5 @@
 import { ListHeader } from '@/components/list-header';
+import { PrintDocumentButton } from '@/components/print-document-button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
     Table,
@@ -75,6 +76,7 @@ function SalesReturnShowPage({ return: salesReturn }: PageProps) {
                             <span className="font-medium text-foreground">{t('sales_return.reason_label')}:</span> {salesReturn.reason}
                         </p>
                     )}
+                    <div className="mt-3"><PrintDocumentButton type="sales_return" documentId={salesReturn.id} /></div>
                 </div>
 
                 <Card className="overflow-hidden p-0">

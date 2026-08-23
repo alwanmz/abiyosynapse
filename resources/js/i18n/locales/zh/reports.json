@@ -1,9 +1,10 @@
 {
-  "nav": { "gl_reports": "总账报表" },
+  "nav": { "reports": "报表", "gl_reports": "总账报表" },
   "title": "财务报表",
   "description": "读取已过账日记账中的财务状况。",
-  "filters": { "report": "报表类型", "from": "开始日期", "to": "结束日期", "account": "科目", "account_placeholder": "选择总账科目", "apply": "显示报表", "loading": "加载中..." },
-  "report": { "trial_balance": "试算平衡表", "general_ledger": "总账", "profit_loss": "损益表", "balance_sheet": "资产负债表" },
+  "filters": { "report": "报表类型", "from": "开始日期", "to": "结束日期", "account": "科目", "account_placeholder": "选择总账科目", "standard": "会计框架", "currency": "列报货币", "language": "输出语言", "comparative": "显示比较期间", "apply": "显示报表", "loading": "加载中..." },
+  "report": { "trial_balance": "试算平衡表", "general_ledger": "总账", "profit_loss": "损益表", "balance_sheet": "资产负债表", "cash_flow": "现金流量表", "equity": "所有者权益变动表", "notes": "财务报表附注", "financial_statements": "财务报表套件" },
+  "actions": { "pdf": "PDF", "excel": "Excel", "warnings": "报表警告", "no_comparative": "比较期间暂无数据" },
   "common": { "account": "科目", "code": "代码", "name": "名称", "debit": "借方", "credit": "贷方", "amount": "金额", "date": "日期", "number": "编号", "description_label": "说明", "total": "合计", "empty": "该期间没有数据。" },
   "trial_balance": { "title": "试算平衡表", "as_of": "余额截至", "balanced": "平衡", "not_balanced": "不平衡" },
   "general_ledger": { "title": "总账", "opening": "期初余额", "closing": "期末余额", "empty": "该期间没有科目变动。" },

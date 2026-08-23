@@ -1,5 +1,6 @@
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { ListHeader } from '@/components/list-header';
+import { PrintDocumentButton } from '@/components/print-document-button';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -183,7 +184,8 @@ function ProductionOrderShowPage({ order }: PageProps) {
                         </p>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2">
+                            <PrintDocumentButton type="production_order" documentId={order.id} />
                         {canRelease && (
                             <Button onClick={handleRelease} disabled={releasing}>
                                 {t('production_order.release')}

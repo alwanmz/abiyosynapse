@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             RolePermissionSeeder::class,
             ChartOfAccountsSeeder::class,
+            ReportingMappingSeeder::class,
             MasterDataDemoSeeder::class,
             InventoryDemoSeeder::class,
             ManufacturingDemoSeeder::class,

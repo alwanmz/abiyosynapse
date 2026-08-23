@@ -1,4 +1,5 @@
 import { ListHeader } from '@/components/list-header';
+import { PrintDocumentButton } from '@/components/print-document-button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -81,6 +82,7 @@ function SupplierInvoiceShowPage({ invoice }: PageProps) {
                     {invoice.status === 'disputed' && invoice.dispute_notes && (
                         <p className="mt-2 text-sm text-destructive">{invoice.dispute_notes}</p>
                     )}
+                    <div className="mt-3"><PrintDocumentButton type="supplier_invoice" documentId={invoice.id} /></div>
                 </div>
 
                 <Card className="overflow-hidden p-0">

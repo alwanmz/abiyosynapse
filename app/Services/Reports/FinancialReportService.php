@@ -3,7 +3,9 @@
 namespace App\Services\Reports;
 
 use App\Models\Account;
+use App\Models\JournalEntry;
 use App\Models\JournalLine;
+use App\Models\ReportingAccountMapping;
 use App\Services\CurrentCompany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -25,7 +27,7 @@ class FinancialReportService
     /**
      * @return array<string, mixed>
      */
-    public function build(string $report, string $fromDate, string $toDate, ?int $accountId = null): array
+    public function build(string $report, string $fromDate, string $toDate, ?int $accountId = null, ?string $reportingStandard = null): array
     {
         $companyId = $this->currentCompany->id();
 
@@ -36,8 +38,11 @@ class FinancialReportService
         return match ($report) {
             'trial_balance' => ['trialBalance' => $this->trialBalance($companyId, $toDate)],
             'general_ledger' => ['generalLedger' => $this->generalLedger($companyId, $fromDate, $toDate, $accountId)],
-            'profit_loss' => ['profitLoss' => $this->profitLoss($companyId, $fromDate, $toDate)],
-            'balance_sheet' => ['balanceSheet' => $this->balanceSheet($companyId, $toDate)],
+            'profit_loss' => ['profitLoss' => $this->profitLoss($companyId, $fromDate, $toDate, $reportingStandard)],
+            'balance_sheet' => ['balanceSheet' => $this->balanceSheet($companyId, $toDate, $reportingStandard)],
+            'cash_flow' => ['cashFlow' => $this->cashFlow($companyId, $fromDate, $toDate)],
+            'equity' => ['equityChanges' => $this->equityChanges($companyId, $fromDate, $toDate, $reportingStandard)],
+            'notes' => ['notes' => $this->notes($companyId, $fromDate, $toDate, $reportingStandard)],
             default => throw new RuntimeException("Unknown financial report [{$report}]."),
         };
     }
@@ -172,9 +177,9 @@ class FinancialReportService
     /**
      * @return array{from: string, to: string, revenue: array<int, array<string, mixed>>, expenses: array<int, array<string, mixed>>, totals: array<string, float>}
      */
-    private function profitLoss(int $companyId, string $fromDate, string $toDate): array
+    private function profitLoss(int $companyId, string $fromDate, string $toDate, ?string $reportingStandard = null): array
     {
-        $rows = $this->accountTotals($companyId, ['revenue', 'expense'], $fromDate, $toDate);
+        $rows = $this->accountTotals($companyId, ['revenue', 'expense'], $fromDate, $toDate, 'profit_loss', $reportingStandard);
         $revenue = [];
         $expenses = [];
 
@@ -214,9 +219,9 @@ class FinancialReportService
     /**
      * @return array{as_of: string, assets: array<int, array<string, mixed>>, liabilities: array<int, array<string, mixed>>, equity: array<int, array<string, mixed>>, totals: array<string, float>}
      */
-    private function balanceSheet(int $companyId, string $toDate): array
+    private function balanceSheet(int $companyId, string $toDate, ?string $reportingStandard = null): array
     {
-        $rows = $this->accountTotals($companyId, ['asset', 'liability', 'equity'], null, $toDate);
+        $rows = $this->accountTotals($companyId, ['asset', 'liability', 'equity'], null, $toDate, 'balance_sheet', $reportingStandard);
         $assets = [];
         $liabilities = [];
         $equity = [];
@@ -238,7 +243,7 @@ class FinancialReportService
             };
         }
 
-        $earnings = $this->accountTotals($companyId, ['revenue', 'expense'], null, $toDate);
+        $earnings = $this->accountTotals($companyId, ['revenue', 'expense'], null, $toDate, 'profit_loss', $reportingStandard);
         $currentEarnings = 0.0;
         foreach ($earnings as $row) {
             $currentEarnings += $row['type'] === 'revenue'
@@ -267,10 +272,156 @@ class FinancialReportService
     }
 
     /**
+     * Derives a traceable indirect cash-flow view from posted entries that
+     * touch the company's cash or bank accounts. It deliberately exposes the
+     * beginning/ending cash reconciliation so an accountant can review the
+     * classification instead of receiving an unexplained total.
+     *
+     * @return array<string, mixed>
+     */
+    private function cashFlow(int $companyId, string $fromDate, string $toDate): array
+    {
+        $cashAccountIds = Account::query()
+            ->where('company_id', $companyId)
+            ->where(function ($query): void {
+                $query->where('code', '1.1.1')
+                    ->orWhere('code', 'like', '1.1.1.%')
+                    ->orWhere('code', '1.1.2')
+                    ->orWhere('code', 'like', '1.1.2.%');
+            })
+            ->pluck('id');
+
+        $opening = $this->cashBalance($companyId, $cashAccountIds->all(), '<', $fromDate);
+        $closing = $this->cashBalance($companyId, $cashAccountIds->all(), '<=', $toDate);
+        $categories = ['operating' => 0.0, 'investing' => 0.0, 'financing' => 0.0];
+
+        JournalEntry::query()
+            ->where('company_id', $companyId)
+            ->where('status', 'posted')
+            ->whereBetween('entry_date', [$fromDate, $toDate])
+            ->with('lines.account:id,code,type')
+            ->get()
+            ->each(function (JournalEntry $entry) use ($cashAccountIds, &$categories): void {
+                $cashNet = $entry->lines
+                    ->whereIn('account_id', $cashAccountIds)
+                    ->sum(fn (JournalLine $line): float => (float) $line->debit_base - (float) $line->credit_base);
+
+                if (abs($cashNet) < 0.005) {
+                    return;
+                }
+
+                $counterparts = $entry->lines->reject(fn (JournalLine $line): bool => $cashAccountIds->contains($line->account_id));
+                $category = $counterparts->contains(fn (JournalLine $line): bool => str_starts_with((string) $line->account?->code, '1.2'))
+                    ? 'investing'
+                    : ($counterparts->contains(fn (JournalLine $line): bool => $line->account?->type === 'equity' || str_starts_with((string) $line->account?->code, '2.2'))
+                        ? 'financing'
+                        : 'operating');
+
+                $categories[$category] += $cashNet;
+            });
+
+        $netChange = round($closing - $opening, 2);
+
+        return [
+            'from' => $fromDate,
+            'to' => $toDate,
+            'opening_cash' => round($opening, 2),
+            'operating' => round($categories['operating'], 2),
+            'investing' => round($categories['investing'], 2),
+            'financing' => round($categories['financing'], 2),
+            'net_change' => $netChange,
+            'closing_cash' => round($closing, 2),
+            'reconciles' => abs($netChange - array_sum($categories)) < 0.01,
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function equityChanges(int $companyId, string $fromDate, string $toDate, ?string $reportingStandard = null): array
+    {
+        $openingDate = now()->parse($fromDate)->subDay()->toDateString();
+        $openingRows = collect($this->accountTotals($companyId, ['equity'], null, $openingDate, 'balance_sheet', $reportingStandard))
+            ->keyBy('id');
+        $closingRows = collect($this->accountTotals($companyId, ['equity'], null, $toDate, 'balance_sheet', $reportingStandard))
+            ->keyBy('id');
+        $rows = $closingRows->map(function (array $row) use ($openingRows): array {
+            $opening = (float) ($openingRows->get($row['id'])['credit'] ?? 0) - (float) ($openingRows->get($row['id'])['debit'] ?? 0);
+            $closing = (float) $row['credit'] - (float) $row['debit'];
+
+            return [
+                'id' => $row['id'], 'code' => $row['code'], 'name' => $row['name'],
+                'opening' => round($opening, 2), 'change' => round($closing - $opening, 2),
+                'closing' => round($closing, 2),
+            ];
+        })->values()->all();
+        $profitLoss = $this->profitLoss($companyId, $fromDate, $toDate, $reportingStandard);
+
+        return [
+            'from' => $fromDate,
+            'to' => $toDate,
+            'rows' => $rows,
+            'profit_loss' => $profitLoss['totals']['net_profit'],
+            'total_opening' => round(array_sum(array_column($rows, 'opening')), 2),
+            'total_change' => round(array_sum(array_column($rows, 'change')), 2),
+            'total_closing' => round(array_sum(array_column($rows, 'closing')), 2),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function notes(int $companyId, string $fromDate, string $toDate, ?string $reportingStandard = null): array
+    {
+        $company = $this->currentCompany->get();
+        $balance = $this->balanceSheet($companyId, $toDate, $reportingStandard);
+        $profitLoss = $this->profitLoss($companyId, $fromDate, $toDate, $reportingStandard);
+
+        return [
+            'accounting_basis' => 'Accrual basis; posted double-entry journals are the source of financial statement balances.',
+            'reporting_standard' => $company?->reporting_standard ?: 'sak_ep',
+            'functional_currency' => strtoupper((string) ($company?->currency ?: 'IDR')),
+            'period' => ['from' => $fromDate, 'to' => $toDate],
+            'key_balances' => [
+                'total_assets' => $balance['totals']['assets'],
+                'total_liabilities' => $balance['totals']['liabilities'],
+                'total_equity' => $balance['totals']['equity'],
+                'net_profit' => $profitLoss['totals']['net_profit'],
+            ],
+            'disclosure_warnings' => [
+                'These notes are system-generated and require accountant review before statutory filing.',
+            ],
+        ];
+    }
+
+    /** @param array<int, int> $accountIds */
+    private function cashBalance(int $companyId, array $accountIds, string $operator, string $date): float
+    {
+        if ($accountIds === []) {
+            return 0.0;
+        }
+
+        $row = $this->postedLines($companyId)
+            ->whereIn('journal_lines.account_id', $accountIds)
+            ->whereDate('journal_entries.entry_date', $operator, $date)
+            ->selectRaw('COALESCE(SUM(journal_lines.debit_base - journal_lines.credit_base), 0) AS balance')
+            ->first();
+
+        return (float) ($row?->balance ?? 0);
+    }
+
+    /**
      * @param array<int, string> $types
      * @return array<int, array<string, mixed>>
      */
-    private function accountTotals(int $companyId, array $types, ?string $fromDate, string $toDate): array
+    private function accountTotals(
+        int $companyId,
+        array $types,
+        ?string $fromDate,
+        string $toDate,
+        ?string $reportCode = null,
+        ?string $reportingStandard = null,
+    ): array
     {
         $query = $this->postedLines($companyId)
             ->whereIn('accounts.type', $types)
@@ -290,7 +441,7 @@ class FinancialReportService
             $query->whereDate('journal_entries.entry_date', '>=', $fromDate);
         }
 
-        return $query->get()->map(fn ($row): array => [
+        $rows = $query->get()->map(fn ($row): array => [
             'id' => (int) $row->id,
             'code' => $row->code,
             'name' => $row->name,
@@ -298,6 +449,34 @@ class FinancialReportService
             'debit' => (float) $row->debit,
             'credit' => (float) $row->credit,
         ])->all();
+
+        if (! $reportCode || ! $reportingStandard) {
+            return $rows;
+        }
+
+        $mappings = ReportingAccountMapping::query()
+            ->where('company_id', $companyId)
+            ->where('reporting_standard', $reportingStandard)
+            ->where('report_code', $reportCode)
+            ->where('is_active', true)
+            ->get(['account_id', 'line_code', 'display_order', 'sign'])
+            ->keyBy('account_id');
+
+        foreach ($rows as &$row) {
+            $mapping = $mappings->get($row['id']);
+            $row['report_line_code'] = $mapping?->line_code;
+            $row['report_display_order'] = $mapping?->display_order;
+            $row['report_sign'] = $mapping?->sign;
+        }
+        unset($row);
+
+        usort($rows, static function (array $left, array $right): int {
+            $order = ($left['report_display_order'] ?? PHP_INT_MAX) <=> ($right['report_display_order'] ?? PHP_INT_MAX);
+
+            return $order !== 0 ? $order : strcmp((string) $left['code'], (string) $right['code']);
+        });
+
+        return $rows;
     }
 
     private function postedLines(int $companyId): \Illuminate\Database\Eloquent\Builder

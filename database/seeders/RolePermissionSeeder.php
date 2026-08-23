@@ -71,6 +71,9 @@ class RolePermissionSeeder extends Seeder
         'fixed-assets.manage' => 'Mengelola aset tetap, depresiasi, dan disposal',
 
         'reports.view' => 'Melihat laporan keuangan dan buku besar',
+        'reports.export' => 'Mengekspor laporan ke PDF dan Excel',
+        'reports.financial_statements' => 'Mengakses paket laporan keuangan standar',
+        'documents.print' => 'Mencetak dokumen operasional',
 
         'audit.view' => 'Melihat riwayat perubahan dan persetujuan dokumen',
 

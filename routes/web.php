@@ -19,9 +19,11 @@ use App\Http\Controllers\ExchangeRevaluationController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeliveryOrderController;
+use App\Http\Controllers\DocumentPrintController;
 use App\Http\Controllers\GoodsReceiptController;
 use App\Http\Controllers\FixedAssetController;
 use App\Http\Controllers\FinancialReportController;
+use App\Http\Controllers\ReportExportController;
 use App\Http\Controllers\MrpController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\NonConformanceReportController;
@@ -346,6 +348,20 @@ Route::post('manufacturing/production-orders/{productionOrder}/cost', [Productio
 
     Route::middleware('permission:reports.view')->group(function () {
         Route::get('reports/gl', [FinancialReportController::class, 'index'])->name('reports.gl.index');
+    });
+    Route::middleware('permission:reports.export')->group(function () {
+        Route::get('reports/{report}/pdf', [ReportExportController::class, 'pdf'])
+            ->whereIn('report', ['trial_balance', 'general_ledger', 'profit_loss', 'balance_sheet', 'cash_flow', 'equity', 'notes', 'financial_statements'])
+            ->name('reports.export.pdf');
+        Route::get('reports/{report}/xlsx', [ReportExportController::class, 'xlsx'])
+            ->whereIn('report', ['trial_balance', 'general_ledger', 'profit_loss', 'balance_sheet', 'cash_flow', 'equity', 'notes', 'financial_statements'])
+            ->name('reports.export.xlsx');
+    });
+    Route::middleware('permission:documents.print')->group(function () {
+        Route::get('documents/{type}/{document}/print', DocumentPrintController::class)
+            ->whereIn('type', ['purchase_request', 'purchase_order', 'goods_receipt', 'supplier_invoice', 'sales_order', 'delivery_order', 'sales_invoice', 'sales_return', 'ar_receipt', 'ap_payment', 'bank_reconciliation', 'production_order', 'bom', 'routing', 'qc_inspection', 'ncr', 'fixed_asset', 'maintenance_work_order'])
+            ->whereNumber('document')
+            ->name('documents.print');
     });
 
     Route::middleware('permission:audit.view')->group(function () {

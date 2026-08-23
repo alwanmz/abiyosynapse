@@ -1,5 +1,6 @@
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { ListHeader } from '@/components/list-header';
+import { PrintDocumentButton } from '@/components/print-document-button';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -137,6 +138,7 @@ function BankReconciliationShowPage({ reconciliation }: PageProps) {
 
                     {isDraft && (
                         <div className="flex items-center gap-2">
+                            <PrintDocumentButton type="bank_reconciliation" documentId={reconciliation.id} />
                             <Button variant="save" onClick={handleSave} disabled={saving}>
                                 {t('bank_reconciliation.save')}
                             </Button>

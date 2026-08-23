@@ -1,4 +1,5 @@
 import { ListHeader } from '@/components/list-header';
+import { PrintDocumentButton } from '@/components/print-document-button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -89,6 +90,7 @@ function SalesInvoiceShowPage({ invoice }: PageProps) {
                             {invoice.sales_order.number}
                         </Link>
                     </p>
+                    <div className="mt-3"><PrintDocumentButton type="sales_invoice" documentId={invoice.id} /></div>
                 </div>
 
                 <Card className="mb-6 overflow-hidden p-0">

@@ -16,7 +16,8 @@
         "back": "返回",
         "search": "搜索",
         "confirm": "确认",
-        "close": "关闭"
+        "close": "关闭",
+        "print": "打印"
     },
     "status": {
         "active": "启用",

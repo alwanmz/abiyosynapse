@@ -16,7 +16,8 @@
         "back": "Kembali",
         "search": "Cari",
         "confirm": "Konfirmasi",
-        "close": "Tutup"
+        "close": "Tutup",
+        "print": "Cetak"
     },
     "status": {
         "active": "Aktif",
