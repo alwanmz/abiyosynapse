@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\ReportingAccountMapping;
+use App\Services\CurrentCompany;
 use Illuminate\Database\Seeder;
 
 class ReportingMappingSeeder extends Seeder
@@ -34,39 +35,43 @@ class ReportingMappingSeeder extends Seeder
             return;
         }
 
-        foreach (['sak_ep', 'psak_umum'] as $standard) {
-            foreach (self::MAP as $reportCode => $accountMap) {
-                foreach (Account::where('company_id', $company->id)->where('is_postable', true)->get() as $account) {
-                    $accountCode = $account->code;
-                    $lineCode = $accountMap[$accountCode] ?? collect($accountMap)
-                        ->filter(fn (string $mappedLine, string $mappedCode): bool => str_starts_with($accountCode, $mappedCode . '.'))
-                        ->sortByDesc(fn (string $mappedLine, string $mappedCode): int => strlen($mappedCode))
-                        ->first();
+        $context = app(CurrentCompany::class);
+        $previousCompany = $context->get();
+        $context->set($company);
 
-                    if (! $lineCode) {
-                        continue;
+        try {
+            foreach (['sak_ep', 'psak_umum'] as $standard) {
+                foreach (self::MAP as $reportCode => $accountMap) {
+                    foreach (Account::where('company_id', $company->id)->where('is_postable', true)->get() as $account) {
+                        $accountCode = $account->code;
+                        $lineCode = $accountMap[$accountCode] ?? collect($accountMap)
+                            ->filter(fn (string $mappedLine, string $mappedCode): bool => str_starts_with($accountCode, $mappedCode . '.'))
+                            ->sortByDesc(fn (string $mappedLine, string $mappedCode): int => strlen($mappedCode))
+                            ->first();
+
+                        if (! $lineCode) {
+                            continue;
+                        }
+
+                        ReportingAccountMapping::updateOrCreate(
+                            [
+                                'company_id' => $company->id,
+                                'account_id' => $account->id,
+                                'reporting_standard' => $standard,
+                                'report_code' => $reportCode,
+                            ],
+                            [
+                                'line_code' => $lineCode,
+                                'display_order' => (int) str_replace('.', '', $accountCode),
+                                'sign' => 1,
+                                'is_active' => true,
+                            ],
+                        );
                     }
-
-                    if (! $account) {
-                        continue;
-                    }
-
-                    ReportingAccountMapping::updateOrCreate(
-                        [
-                            'company_id' => $company->id,
-                            'account_id' => $account->id,
-                            'reporting_standard' => $standard,
-                            'report_code' => $reportCode,
-                        ],
-                        [
-                            'line_code' => $lineCode,
-                            'display_order' => (int) str_replace('.', '', $accountCode),
-                            'sign' => 1,
-                            'is_active' => true,
-                        ],
-                    );
                 }
             }
+        } finally {
+            $context->set($previousCompany);
         }
     }
 }

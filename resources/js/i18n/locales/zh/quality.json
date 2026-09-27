@@ -8,6 +8,7 @@
         "description": "进料检验、过程检验和终检的历史记录。",
         "list_title": "检验列表",
         "empty": "暂无检验记录。",
+        "release": "质量放行",
         "type_incoming": "进料检验",
         "type_in_process": "过程检验",
         "type_final": "终检",
@@ -31,8 +32,10 @@
         "quantity_passed": "合格数量",
         "notes": "备注",
         "notes_placeholder": "选填",
-        "submit": "记录结果并完成工单",
-        "total_to_inspect": "待检验总数"
+        "submit": "记录质检结果",
+        "total_to_inspect": "待检验总数",
+        "result_summary": "合格：{{passed}} · 不合格：{{failed}}。产出将在质量放行前保持冻结。",
+        "release": "放行已批准库存"
     },
     "ncr": {
         "title": "不合格报告（NCR）",

@@ -27,7 +27,7 @@ class CustomerController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'code' => 'required|string|max:30|unique:customers,code',
+            'code' => ['required', 'string', 'max:30', $this->tenantUnique('customers', 'code')],
             'name' => 'required|string|max:255',
             'tax_id' => 'nullable|string|max:50',
             'email' => 'nullable|email|max:255',
@@ -47,7 +47,7 @@ class CustomerController extends Controller
     public function update(Request $request, Customer $customer): RedirectResponse
     {
         $validated = $request->validate([
-            'code' => 'required|string|max:30|unique:customers,code,' . $customer->id,
+            'code' => ['required', 'string', 'max:30', $this->tenantUnique('customers', 'code', $customer->id)],
             'name' => 'required|string|max:255',
             'tax_id' => 'nullable|string|max:50',
             'email' => 'nullable|email|max:255',

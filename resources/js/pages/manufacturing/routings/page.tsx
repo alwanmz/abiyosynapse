@@ -1,4 +1,5 @@
 import { ConfirmDialog } from '@/components/confirm-dialog';
+import { PrintDocumentButton } from '@/components/print-document-button';
 import { ListHeader } from '@/components/list-header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -233,6 +234,7 @@ function RoutingsPage({ routings, products, workCenters }: PageProps) {
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex items-center justify-end gap-1">
+                                                    <PrintDocumentButton type="routing" documentId={routing.id} compact />
                                                     <Button variant="ghost" size="icon" onClick={() => openEdit(routing)}>
                                                         <Pencil className="h-4 w-4" />
                                                     </Button>

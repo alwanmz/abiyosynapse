@@ -17,7 +17,9 @@
         "search": "搜索",
         "confirm": "确认",
         "close": "关闭",
-        "print": "打印"
+        "actions": "操作",
+        "print": "打印",
+        "export_excel": "导出 Excel"
     },
     "status": {
         "active": "启用",

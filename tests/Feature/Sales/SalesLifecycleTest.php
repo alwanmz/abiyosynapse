@@ -4,6 +4,7 @@ use App\Models\Company;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\SalesOrder;
+use App\Models\StockReservation;
 use App\Models\TaxCode;
 use App\Models\UnitOfMeasure;
 use App\Models\User;
@@ -166,6 +167,26 @@ test('delivering more than the remaining ordered quantity throws', function () {
         ['sales_order_line_id' => $soLine->id, 'quantity' => 15],
     ], $this->user);
 })->throws(RuntimeException::class);
+
+test('draft delivery reserves approved lots and cancelling it releases the reservation', function () {
+    $order = SalesOrder::factory()->for($this->company)->create([
+        'customer_id' => $this->customer->id,
+        'warehouse_id' => $this->warehouse->id,
+        'status' => 'approved',
+    ]);
+    $line = $order->lines()->create(['product_id' => $this->product->id, 'quantity' => 8, 'unit_price' => 1200000]);
+
+    $service = app(DeliveryOrderService::class);
+    $delivery = $service->create($order, [['sales_order_line_id' => $line->id, 'quantity' => 8]], $this->user);
+
+    expect((float) StockReservation::where('delivery_order_id', $delivery->id)->where('status', 'reserved')->sum('quantity'))->toBe(8.0);
+    expect(app(\App\Services\Inventory\StockQualityService::class)->availableForSale($this->product, $this->warehouse))->toBe(12.0);
+
+    $cancelled = $service->cancel($delivery, $this->user);
+    expect($cancelled->status)->toBe('cancelled');
+    expect(StockReservation::where('delivery_order_id', $delivery->id)->where('status', 'reserved')->count())->toBe(0);
+    expect(app(\App\Services\Inventory\StockQualityService::class)->availableForSale($this->product, $this->warehouse))->toBe(20.0);
+});
 
 test('shipping an already-shipped delivery order throws', function () {
     $order = SalesOrder::factory()->for($this->company)->create(['customer_id' => $this->customer->id, 'warehouse_id' => $this->warehouse->id, 'status' => 'approved']);

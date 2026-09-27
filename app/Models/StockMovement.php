@@ -17,7 +17,10 @@ class StockMovement extends Model
         'company_id',
         'product_id',
         'warehouse_id',
+        'stock_lot_id',
         'type',
+        'quality_state',
+        'quality_event',
         'quantity',
         'unit_cost',
         'total_cost',
@@ -47,6 +50,11 @@ class StockMovement extends Model
     public function warehouse(): BelongsTo
     {
         return $this->belongsTo(Warehouse::class);
+    }
+
+    public function lot(): BelongsTo
+    {
+        return $this->belongsTo(StockLot::class, 'stock_lot_id');
     }
 
     public function sourceable(): MorphTo

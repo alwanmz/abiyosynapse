@@ -44,7 +44,7 @@ export function ChangeRoleDialog({
         if (user) {
             setData('role_id', user.role?.id || '');
         }
-    }, [user]);
+    }, [user, setData]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

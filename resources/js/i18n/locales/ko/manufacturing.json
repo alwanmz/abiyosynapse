@@ -175,7 +175,12 @@
         "conversion_variance": "가공비 차이",
         "standard_total": "표준 합계",
         "actual_total": "실제 합계",
-        "variance": "총 차이"
+        "variance": "총 차이",
+        "bypass_reason": "품질 검사 우회 사유",
+        "cancel": "취소",
+        "output_title": "생산 결과 및 판매 준비",
+        "output_planned": "계획", "output_produced": "생산됨", "output_good": "합격", "output_rejected": "불합격", "output_hold": "품질 보류", "output_approved": "승인됨", "output_ready": "판매 가능",
+        "inspect_operation": "공정 QC", "in_process_inspection_title": "공정 검사", "quantity_inspected": "검사 수량", "quantity_passed": "합격 수량", "inspection_notes": "메모", "record_inspection": "검사 기록"
     },
     "mrp": {
         "title": "MRP (자재 소요량 계획)",

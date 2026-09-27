@@ -74,15 +74,18 @@
             "status": "ステータス",
             "product": "製品",
             "quantity": "数量",
-            "unit_cost": "単位原価"
+            "unit_cost": "単位原価",
+            "reserved": "引当済み"
         },
         "status_draft": "下書き",
         "status_shipped": "出荷済み",
+        "status_cancelled": "取消済み",
         "detail_title": "出荷指示詳細",
         "lines": "明細行",
         "ship": "出荷",
         "ship_confirm_title": "この出荷指示を出荷しますか？",
-        "ship_confirm_description": "製品在庫から在庫が引き落とされ、受注のステータスが更新されます。この操作は取り消せません。"
+        "ship_confirm_description": "製品在庫から在庫が引き落とされ、受注のステータスが更新されます。この操作は取り消せません。",
+        "cancel": "出荷指示を取り消す", "cancel_confirm_title": "この出荷指示を取り消しますか？", "cancel_confirm_description": "承認済み在庫の引当を解除し、この出荷は実行できなくなります。"
     },
     "sales_invoice": {
         "title": "売上請求書",

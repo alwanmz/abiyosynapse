@@ -7,12 +7,17 @@ use App\Models\Product;
 use App\Models\ProductionOrder;
 use App\Models\Routing;
 use App\Models\StockLevel;
+use App\Models\StockQualityBalance;
+use App\Models\TaxCode;
 use App\Models\UnitOfMeasure;
 use App\Models\Warehouse;
 use App\Models\WorkCenter;
 use App\Services\CurrentCompany;
 use App\Services\Inventory\InventoryValuationService;
 use App\Services\Manufacturing\ProductionOrderService;
+use App\Services\Manufacturing\ProductReadinessService;
+use App\Services\Quality\QualityInspectionService;
+use App\Services\Quality\QualityReleaseService;
 use Database\Seeders\ChartOfAccountsSeeder;
 use Database\Seeders\CompanySeeder;
 
@@ -27,6 +32,8 @@ beforeEach(function () {
     $this->company = Company::where('code', 'default')->first();
     app(CurrentCompany::class)->set($this->company);
     (new ChartOfAccountsSeeder())->run();
+    $this->user = \App\Models\User::factory()->create();
+    TaxCode::factory()->for($this->company)->create(['is_active' => true]);
 
     $uomKg = UnitOfMeasure::factory()->for($this->company)->create(['code' => 'KG']);
     $uomPcs = UnitOfMeasure::factory()->for($this->company)->create(['code' => 'PCS']);
@@ -100,35 +107,50 @@ test('submitForQc before in_production throws', function () {
     $service->submitForQc($planned);
 })->throws(RuntimeException::class);
 
-test('completeAfterQc receives only the passed quantity into finished goods stock', function () {
+test('final QC holds all output, then Quality Release makes only the passed quantity sellable', function () {
     $service = app(ProductionOrderService::class);
     $order = $service->submitForQc($this->order->fresh());
+    $inspection = app(QualityInspectionService::class)->inspect('final', $order, $this->chrX1, 100, 97);
 
-    $completed = $service->completeAfterQc($order, passedQuantity: 97, failedQuantity: 3);
+    $held = $service->completeAfterQc($order, passedQuantity: 97, failedQuantity: 3, inspection: $inspection);
 
-    expect($completed->status)->toBe('completed');
-    expect((float) $completed->produced_quantity)->toBe(97.0);
-    expect((float) $completed->rejected_quantity)->toBe(3.0);
+    expect($held->status)->toBe('qc');
+    expect((float) $held->produced_quantity)->toBe(100.0);
+    expect((float) $held->good_quantity)->toBe(97.0);
+    expect((float) $held->rejected_quantity)->toBe(3.0);
 
     $fgLevel = StockLevel::where('product_id', $this->chrX1->id)->where('warehouse_id', $this->warehouse->id)->first();
-    expect((float) $fgLevel->quantity_on_hand)->toBe(97.0); // NOT 100 — matches blueprint example exactly
+    expect((float) $fgLevel->quantity_on_hand)->toBe(100.0);
+    expect((float) StockQualityBalance::where('product_id', $this->chrX1->id)->where('quality_state', 'hold')->value('quantity'))->toBe(100.0);
+
+    $released = app(QualityReleaseService::class)->release($inspection->fresh(), $this->user);
+    expect($released->status)->toBe('completed');
+    expect((float) StockQualityBalance::where('product_id', $this->chrX1->id)->where('quality_state', 'approved')->value('quantity'))->toBe(97.0);
+    expect((float) StockQualityBalance::where('product_id', $this->chrX1->id)->where('quality_state', 'hold')->value('quantity'))->toBe(3.0);
+    $readiness = app(ProductReadinessService::class)->evaluate($this->chrX1, $this->warehouse);
+    expect($readiness->status)->toBe('ready_for_sale');
+    expect($readiness->availableForSale)->toBe(97.0);
 });
 
-test('completeAfterQc posts finished goods debit for the good quantity and scrap expense for the rejected quantity', function () {
+test('QC output posts all held finished goods and scrap is posted only after NCR disposition', function () {
     $service = app(ProductionOrderService::class);
     $order = $service->submitForQc($this->order->fresh());
+    $inspection = app(QualityInspectionService::class)->inspect('final', $order, $this->chrX1, 100, 97);
 
-    $completed = $service->completeAfterQc($order, passedQuantity: 97, failedQuantity: 3);
+    $held = $service->completeAfterQc($order, passedQuantity: 97, failedQuantity: 3, inspection: $inspection);
 
-    $fgEntry = JournalEntry::where('sourceable_type', $completed->getMorphClass())
-        ->where('sourceable_id', $completed->id)
-        ->where('description', 'like', '%completion%')
+    $fgEntry = JournalEntry::where('sourceable_type', $held->getMorphClass())
+        ->where('sourceable_id', $held->id)
+        ->where('description', 'like', '%Quality Release%')
         ->first();
-    expect((float) $fgEntry->total_debit)->toBe(7275000.0); // 97 * 75000
+    expect((float) $fgEntry->total_debit)->toBe(7500000.0); // 100 * 75000 is held in FG
     expect($fgEntry->lines()->where('debit', '>', 0)->first()->account->code)->toBe('1.1.6');
 
-    $scrapEntry = JournalEntry::where('sourceable_type', $completed->getMorphClass())
-        ->where('sourceable_id', $completed->id)
+    $ncr = \App\Models\NonConformanceReport::where('quality_inspection_id', $inspection->id)->firstOrFail();
+    app(QualityReleaseService::class)->disposition($ncr, 'scrap', 'Unrecoverable defects', $this->user);
+
+    $scrapEntry = JournalEntry::where('sourceable_type', $ncr->getMorphClass())
+        ->where('sourceable_id', $ncr->id)
         ->where('description', 'like', '%Scrap%')
         ->first();
     expect($scrapEntry)->not->toBeNull();
@@ -136,11 +158,30 @@ test('completeAfterQc posts finished goods debit for the good quantity and scrap
     expect($scrapEntry->lines()->where('debit', '>', 0)->first()->account->code)->toBe('5.4');
 });
 
+test('a rework disposition creates a child order and removes only the rejected quantity from finished goods', function () {
+    $service = app(ProductionOrderService::class);
+    $order = $service->submitForQc($this->order->fresh());
+    $inspection = app(QualityInspectionService::class)->inspect('final', $order, $this->chrX1, 100, 97);
+    $service->completeAfterQc($order, 97, 3, $inspection);
+
+    $ncr = \App\Models\NonConformanceReport::where('quality_inspection_id', $inspection->id)->firstOrFail();
+    $child = app(QualityReleaseService::class)->disposition($ncr, 'rework', 'Repair the three rejected chairs', $this->user);
+
+    expect($child)->not->toBeNull();
+    expect($child->parent_production_order_id)->toBe($order->id);
+    expect($child->source_ncr_id)->toBe($ncr->id);
+    expect($child->is_rework)->toBeTrue();
+    expect($child->status)->toBe('in_production');
+    expect((float) StockLevel::where('product_id', $this->chrX1->id)->where('warehouse_id', $this->warehouse->id)->value('quantity_on_hand'))->toBe(97.0);
+    expect((float) StockQualityBalance::where('product_id', $this->chrX1->id)->where('quality_state', 'rework')->value('quantity'))->toBe(0.0);
+});
+
 test('completeAfterQc with zero rejects behaves like a full pass', function () {
     $service = app(ProductionOrderService::class);
     $order = $service->submitForQc($this->order->fresh());
 
-    $completed = $service->completeAfterQc($order, passedQuantity: 100, failedQuantity: 0);
+    $inspection = app(QualityInspectionService::class)->inspect('final', $order, $this->chrX1, 100, 100);
+    $completed = $service->completeAfterQc($order, passedQuantity: 100, failedQuantity: 0, inspection: $inspection);
 
     expect((float) $completed->produced_quantity)->toBe(100.0);
     expect((float) $completed->rejected_quantity)->toBe(0.0);
@@ -149,6 +190,8 @@ test('completeAfterQc with zero rejects behaves like a full pass', function () {
         ->where('description', 'like', '%Scrap%')
         ->first();
     expect($scrapEntry)->toBeNull();
+    app(QualityReleaseService::class)->release($inspection->fresh(), $this->user);
+    expect((float) StockQualityBalance::where('product_id', $this->chrX1->id)->where('quality_state', 'approved')->value('quantity'))->toBe(100.0);
 });
 
 test('completeAfterQc before qc status throws', function () {
@@ -160,8 +203,9 @@ test('completeAfterQc before qc status throws', function () {
 test('the legacy complete() path without QC still works for orders that skip Fase 3.5', function () {
     $service = app(ProductionOrderService::class);
 
-    $completed = $service->complete($this->order->fresh(), 100);
+    $completed = $service->complete($this->order->fresh(), 100, 'Customer sample must ship before QC window', $this->user);
 
     expect($completed->status)->toBe('completed');
     expect((float) $completed->produced_quantity)->toBe(100.0);
+    expect((float) StockQualityBalance::where('product_id', $this->chrX1->id)->where('quality_state', 'approved')->value('quantity'))->toBe(100.0);
 });

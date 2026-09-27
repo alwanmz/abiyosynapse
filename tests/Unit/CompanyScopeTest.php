@@ -60,12 +60,19 @@ test('withoutGlobalScope bypasses the company filter', function () {
     expect(ScopedTestModel::withoutGlobalScope(CompanyScope::class)->count())->toBe(2);
 });
 
-test('scope applies no filter when no company is resolved', function () {
+test('scope fails closed when no company is resolved', function () {
     $company = Company::factory()->create();
     app(CurrentCompany::class)->set($company);
     ScopedTestModel::create(['company_id' => $company->id, 'name' => 'orphan row']);
 
     app(CurrentCompany::class)->set(null);
 
-    expect(ScopedTestModel::count())->toBe(1);
+    expect(ScopedTestModel::count())->toBe(0);
+});
+
+test('creating without a company context is rejected', function () {
+    app(CurrentCompany::class)->set(null);
+
+    expect(fn () => ScopedTestModel::create(['name' => 'orphan row']))
+        ->toThrow(RuntimeException::class);
 });

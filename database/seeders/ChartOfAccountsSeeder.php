@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Account;
 use App\Models\Company;
+use App\Services\CurrentCompany;
 use Illuminate\Database\Seeder;
 
 /**
@@ -70,22 +71,30 @@ class ChartOfAccountsSeeder extends Seeder
             return;
         }
 
-        $idsByCode = [];
+        $context = app(CurrentCompany::class);
+        $previousCompany = $context->get();
+        $context->set($company);
 
-        foreach (self::ACCOUNTS as [$code, $name, $type, $normalBalance, $isPostable, $parentCode]) {
-            $account = Account::updateOrCreate(
-                ['company_id' => $company->id, 'code' => $code],
-                [
-                    'name' => $name,
-                    'type' => $type,
-                    'normal_balance' => $normalBalance,
-                    'is_postable' => $isPostable,
-                    'parent_id' => $parentCode ? ($idsByCode[$parentCode] ?? null) : null,
-                    'is_active' => true,
-                ]
-            );
+        try {
+            $idsByCode = [];
 
-            $idsByCode[$code] = $account->id;
+            foreach (self::ACCOUNTS as [$code, $name, $type, $normalBalance, $isPostable, $parentCode]) {
+                $account = Account::updateOrCreate(
+                    ['company_id' => $company->id, 'code' => $code],
+                    [
+                        'name' => $name,
+                        'type' => $type,
+                        'normal_balance' => $normalBalance,
+                        'is_postable' => $isPostable,
+                        'parent_id' => $parentCode ? ($idsByCode[$parentCode] ?? null) : null,
+                        'is_active' => true,
+                    ]
+                );
+
+                $idsByCode[$code] = $account->id;
+            }
+        } finally {
+            $context->set($previousCompany);
         }
     }
 }

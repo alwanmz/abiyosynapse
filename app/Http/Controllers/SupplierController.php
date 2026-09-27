@@ -27,7 +27,7 @@ class SupplierController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'code' => 'required|string|max:30|unique:suppliers,code',
+            'code' => ['required', 'string', 'max:30', $this->tenantUnique('suppliers', 'code')],
             'name' => 'required|string|max:255',
             'tax_id' => 'nullable|string|max:50',
             'email' => 'nullable|email|max:255',
@@ -47,7 +47,7 @@ class SupplierController extends Controller
     public function update(Request $request, Supplier $supplier): RedirectResponse
     {
         $validated = $request->validate([
-            'code' => 'required|string|max:30|unique:suppliers,code,' . $supplier->id,
+            'code' => ['required', 'string', 'max:30', $this->tenantUnique('suppliers', 'code', $supplier->id)],
             'name' => 'required|string|max:255',
             'tax_id' => 'nullable|string|max:50',
             'email' => 'nullable|email|max:255',

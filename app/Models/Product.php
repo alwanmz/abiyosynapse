@@ -73,6 +73,16 @@ class Product extends Model
         return $this->hasMany(StockMovement::class);
     }
 
+    public function stockQualityBalances(): HasMany
+    {
+        return $this->hasMany(StockQualityBalance::class);
+    }
+
+    public function stockReservations(): HasMany
+    {
+        return $this->hasMany(StockReservation::class);
+    }
+
     public function bom(): BelongsTo
     {
         return $this->belongsTo(Bom::class);

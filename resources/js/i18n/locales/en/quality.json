@@ -8,6 +8,7 @@
         "description": "History of Incoming, In-Process, and Final inspections.",
         "list_title": "Inspection List",
         "empty": "No inspections yet.",
+        "release": "Quality Release",
         "type_incoming": "Incoming",
         "type_in_process": "In-Process",
         "type_final": "Final",
@@ -31,8 +32,10 @@
         "quantity_passed": "Passed Quantity",
         "notes": "Notes",
         "notes_placeholder": "Optional",
-        "submit": "Record Result & Complete Order",
-        "total_to_inspect": "Total to Inspect"
+        "submit": "Record QC results",
+        "total_to_inspect": "Total to Inspect",
+        "result_summary": "Passed: {{passed}} · Failed: {{failed}}. Output remains on hold until Quality Release.",
+        "release": "Release approved stock"
     },
     "ncr": {
         "title": "Non-Conformance Reports (NCR)",

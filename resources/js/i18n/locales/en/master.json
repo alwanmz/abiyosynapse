@@ -26,7 +26,14 @@
         "name_placeholder": "e.g. Pieces",
         "empty": "No units yet.",
         "delete_title": "Delete unit?",
-        "delete_confirm_prefix": "Are you sure you want to delete"
+        "delete_confirm_prefix": "Are you sure you want to delete",
+        "readiness": {
+            "title": "Product readiness", "back": "Back to products", "warehouse": "Warehouse", "no_warehouse": "Select or configure a warehouse to evaluate product readiness.", "available_for_sale": "Available for sale", "reserved": "Reserved", "requirements": "Configuration checks", "reasons": "Status reasons", "no_reasons": "This product is ready for the sales workflow.",
+            "status_not_configured": "Not configured", "status_pending_qc": "Pending QC", "status_quality_hold": "Quality hold", "status_rework_required": "Rework required", "status_out_of_stock": "Out of stock", "status_ready_for_sale": "Ready for sale",
+            "quantity_pending": "Pending", "quantity_approved": "Approved", "quantity_hold": "Quality hold", "quantity_rejected": "Rejected", "quantity_rework": "Rework",
+            "config_product_active": "Product is active", "config_bom_active": "Active BOM", "config_routing_active": "Active routing", "config_selling_price_available": "Selling price available", "config_tax_available": "Tax code available", "config_currency_available": "Currency available",
+            "reason_product_active": "Product is not active", "reason_bom_active": "No active BOM is available", "reason_routing_active": "No active routing is available", "reason_selling_price_available": "Selling price is missing", "reason_tax_available": "No active tax code is available", "reason_currency_available": "No active currency is available", "reason_no_available_stock": "No approved stock is available for sale"
+        }
     },
     "warehouse": {
         "title": "Warehouses",

@@ -175,7 +175,12 @@
         "conversion_variance": "Conversion Variance",
         "standard_total": "Standard Total",
         "actual_total": "Actual Total",
-        "variance": "Total Variance"
+        "variance": "Total Variance",
+        "bypass_reason": "QC bypass reason",
+        "cancel": "Cancel",
+        "output_title": "Production output & sales readiness",
+        "output_planned": "Planned", "output_produced": "Produced", "output_good": "Good", "output_rejected": "Rejected", "output_hold": "Quality hold", "output_approved": "Approved", "output_ready": "Ready for sale",
+        "inspect_operation": "In-process QC", "in_process_inspection_title": "In-process inspection", "quantity_inspected": "Quantity inspected", "quantity_passed": "Quantity passed", "inspection_notes": "Notes", "record_inspection": "Record inspection"
     },
     "mrp": {
         "title": "MRP (Material Requirement Planning)",

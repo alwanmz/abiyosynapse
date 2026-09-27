@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { useBreadcrumbs } from '@/hooks/use-breadcrumbs';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -27,6 +27,7 @@ interface Inspection {
     quantity_failed: string;
     result: 'pending' | 'pass' | 'fail';
     inspected_at: string | null;
+    released_at: string | null;
 }
 
 interface GoodsReceiptLine {
@@ -98,6 +99,11 @@ function GoodsReceiptShowPage({ receipt }: PageProps) {
     };
 
     const isPendingInspection = receipt.status === 'pending_inspection';
+    const releasableInspections = receipt.lines.flatMap((line) => line.inspections).filter((inspection) => inspection.type === 'incoming' && inspection.released_at === null);
+
+    const release = (inspectionId: number) => {
+        router.post(`/purchasing/quality-inspections/${inspectionId}/release`, {}, { preserveScroll: true });
+    };
 
     return (
         <>
@@ -209,6 +215,16 @@ function GoodsReceiptShowPage({ receipt }: PageProps) {
                                     </Button>
                                 </div>
                             </form>
+                        </CardContent>
+                    </Card>
+                )}
+
+                {!isPendingInspection && releasableInspections.length > 0 && (
+                    <Card className="mt-6 overflow-hidden p-0">
+                        <ListHeader title={t('quality:inspection.release')} />
+                        <CardContent className="flex flex-wrap items-center justify-between gap-3 p-5">
+                            <p className="text-sm text-muted-foreground">{t('goods_receipt.quality_release_description')}</p>
+                            <Button variant="save" onClick={() => release(releasableInspections[0].id)}>{t('quality:inspection.release')}</Button>
                         </CardContent>
                     </Card>
                 )}

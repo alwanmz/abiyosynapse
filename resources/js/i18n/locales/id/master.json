@@ -26,7 +26,14 @@
         "name_placeholder": "mis. Pieces",
         "empty": "Belum ada satuan.",
         "delete_title": "Hapus satuan?",
-        "delete_confirm_prefix": "Apakah Anda yakin ingin menghapus"
+        "delete_confirm_prefix": "Apakah Anda yakin ingin menghapus",
+        "readiness": {
+            "title": "Kesiapan Produk", "back": "Kembali ke produk", "warehouse": "Gudang", "no_warehouse": "Pilih atau atur gudang untuk mengevaluasi kesiapan produk.", "available_for_sale": "Tersedia untuk dijual", "reserved": "Direservasi", "requirements": "Pemeriksaan konfigurasi", "reasons": "Alasan status", "no_reasons": "Produk siap dipakai untuk proses penjualan.",
+            "status_not_configured": "Belum dikonfigurasi", "status_pending_qc": "Menunggu QC", "status_quality_hold": "Ditahan kualitas", "status_rework_required": "Perlu rework", "status_out_of_stock": "Stok habis", "status_ready_for_sale": "Siap dijual",
+            "quantity_pending": "Pending", "quantity_approved": "Disetujui", "quantity_hold": "Quality hold", "quantity_rejected": "Ditolak", "quantity_rework": "Rework",
+            "config_product_active": "Produk aktif", "config_bom_active": "BOM aktif", "config_routing_active": "Routing aktif", "config_selling_price_available": "Harga jual tersedia", "config_tax_available": "Pajak tersedia", "config_currency_available": "Mata uang tersedia",
+            "reason_product_active": "Produk belum aktif", "reason_bom_active": "BOM aktif belum tersedia", "reason_routing_active": "Routing aktif belum tersedia", "reason_selling_price_available": "Harga jual belum diisi", "reason_tax_available": "Kode pajak aktif belum tersedia", "reason_currency_available": "Mata uang aktif belum tersedia", "reason_no_available_stock": "Tidak ada stok approved yang tersedia untuk dijual"
+        }
     },
     "warehouse": {
         "title": "Gudang",

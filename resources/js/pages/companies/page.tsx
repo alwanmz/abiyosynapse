@@ -14,7 +14,7 @@ import AppLayout from '@/layouts/app-layout';
 import { useBreadcrumbs } from '@/hooks/use-breadcrumbs';
 import companiesRoutes from '@/routes/companies';
 import { Head, Link } from '@inertiajs/react';
-import { Pencil, Trash2 } from 'lucide-react';
+import { CreditCard, Pencil, Trash2 } from 'lucide-react';
 import { type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeleteCompanyDialog } from './components/delete-company-dialog';
@@ -59,9 +59,17 @@ function CompaniesPage({ companies }: CompaniesPageProps) {
                             {t('page_description')}
                         </p>
                     </div>
-                    <Button asChild>
-                        <Link href={companiesRoutes.create().url}>{t('add_company')}</Link>
-                    </Button>
+                    <div className="flex flex-wrap justify-end gap-2">
+                        <Button variant="outline" asChild>
+                            <Link href="/company/subscription">
+                                <CreditCard className="size-4" />
+                                {t('subscription.manage')}
+                            </Link>
+                        </Button>
+                        <Button asChild>
+                            <Link href={companiesRoutes.create().url}>{t('add_company')}</Link>
+                        </Button>
+                    </div>
                 </div>
 
                 <Card className="overflow-hidden p-0">

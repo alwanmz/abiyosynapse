@@ -22,13 +22,19 @@ trait BelongsToCompany
         static::addGlobalScope(new CompanyScope());
 
         static::creating(function ($model) {
-            if (! $model->getAttribute('company_id')) {
-                $companyId = app(CurrentCompany::class)->id();
-
-                if ($companyId !== null) {
-                    $model->setAttribute('company_id', $companyId);
-                }
+            if ($model->getAttribute('company_id') !== null) {
+                return;
             }
+
+            $companyId = app(CurrentCompany::class)->id();
+
+            if ($companyId === null) {
+                throw new \RuntimeException(
+                    sprintf('%s requires an explicit company context before it can be created.', $model::class),
+                );
+            }
+
+            $model->setAttribute('company_id', $companyId);
         });
     }
 

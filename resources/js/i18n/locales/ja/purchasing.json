@@ -127,6 +127,7 @@
         "lines": "明細行",
         "quality_incoming_title": "受入検査（Quality Incoming）",
         "quality_incoming_description": "各項目のQC合格数量を記録してください。合格数量のみ在庫に反映され、不合格数量は自動的にNCR（不適合報告）が起票されます。",
+        "quality_release_description": "検査に合格した在庫は品質リリースが完了するまで保留されます。",
         "quantity_accepted": "QC合格数量",
         "max_prefix": "上限",
         "inspection_notes": "備考",

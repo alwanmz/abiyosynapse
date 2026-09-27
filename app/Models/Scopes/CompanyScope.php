@@ -11,13 +11,11 @@ use Illuminate\Database\Eloquent\Scope;
  * Filters every query on a BelongsToCompany model to the currently
  * resolved company (set by EnsureCompanyContext on each web request).
  *
- * If no company is resolved (console commands, queue jobs, tests that
- * don't go through the HTTP middleware stack) this scope deliberately
- * applies NO filter rather than throwing — EnsureCompanyContext is the
- * real guard for HTTP requests. Code that touches BelongsToCompany
- * models outside of an HTTP request must call
- * app(CurrentCompany::class)->set($company) explicitly first, or the
- * query will run unscoped across all companies.
+ * If no company is resolved, this scope returns no rows. This fail-closed
+ * behavior protects console commands and queue jobs from accidentally
+ * reading every tenant. Cross-company maintenance code must set an
+ * explicit context with app(CurrentCompany::class)->set($company), or
+ * deliberately opt out with withoutGlobalScope(CompanyScope::class).
  */
 class CompanyScope implements Scope
 {
@@ -25,8 +23,12 @@ class CompanyScope implements Scope
     {
         $companyId = app(CurrentCompany::class)->id();
 
-        if ($companyId !== null) {
-            $builder->where($model->getTable() . '.company_id', $companyId);
+        if ($companyId === null) {
+            $builder->whereRaw('1 = 0');
+
+            return;
         }
+
+        $builder->where($model->getTable() . '.company_id', $companyId);
     }
 }

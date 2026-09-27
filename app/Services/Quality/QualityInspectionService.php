@@ -5,6 +5,7 @@ namespace App\Services\Quality;
 use App\Models\NonConformanceReport;
 use App\Models\Product;
 use App\Models\QualityInspection;
+use App\Models\User;
 use App\Services\CurrentCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -86,13 +87,13 @@ class QualityInspectionService
      * 'disposition' status regardless of current status — investigation
      * is a manual/offline step this system doesn't need to gate on.
      */
-    public function disposition(NonConformanceReport $ncr, string $disposition, ?string $notes = null): NonConformanceReport
+    public function disposition(NonConformanceReport $ncr, string $disposition, ?string $notes = null, ?User $actor = null): NonConformanceReport
     {
-        $ncr->update([
+        $ncr->auditAs($actor)->update([
             'status' => 'disposition',
             'disposition' => $disposition,
             'disposition_notes' => $notes,
-            'approved_by' => auth()->id(),
+            'approved_by' => $actor?->id ?? auth()->id(),
             'approved_at' => now(),
         ]);
 

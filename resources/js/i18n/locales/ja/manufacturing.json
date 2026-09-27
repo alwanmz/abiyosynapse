@@ -175,7 +175,12 @@
         "conversion_variance": "加工費差異",
         "standard_total": "標準合計",
         "actual_total": "実績合計",
-        "variance": "合計差異"
+        "variance": "合計差異",
+        "bypass_reason": "QCバイパスの理由",
+        "cancel": "キャンセル",
+        "output_title": "生産出力と販売準備",
+        "output_planned": "計画", "output_produced": "生産済み", "output_good": "合格", "output_rejected": "不合格", "output_hold": "品質保留", "output_approved": "承認済み", "output_ready": "販売可能",
+        "inspect_operation": "工程QC", "in_process_inspection_title": "工程内検査", "quantity_inspected": "検査数量", "quantity_passed": "合格数量", "inspection_notes": "備考", "record_inspection": "検査を記録"
     },
     "mrp": {
         "title": "MRP（資材所要量計画）",

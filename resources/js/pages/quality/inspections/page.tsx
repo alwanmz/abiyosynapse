@@ -1,5 +1,7 @@
+import { PrintDocumentButton } from '@/components/print-document-button';
 import { ListHeader } from '@/components/list-header';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
     Table,
@@ -11,7 +13,7 @@ import {
 } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { useBreadcrumbs } from '@/hooks/use-breadcrumbs';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -23,6 +25,7 @@ interface Inspection {
     quantity_failed: string;
     result: 'pending' | 'pass' | 'fail';
     inspected_at: string | null;
+    released_at: string | null;
     product: { id: number; code: string; name: string };
     inspector: { id: number; name: string } | null;
 }
@@ -38,6 +41,8 @@ function QualityInspectionsPage({ inspections }: PageProps) {
         { title: t('nav.quality'), href: '#' },
         { title: t('inspection.breadcrumb'), href: '/quality/inspections' },
     ]);
+
+    const release = (inspectionId: number) => router.post(`/quality/inspections/${inspectionId}/release`, {}, { preserveScroll: true });
 
     return (
         <>
@@ -62,12 +67,13 @@ function QualityInspectionsPage({ inspections }: PageProps) {
                                     <TableHead className="text-right">{t('inspection.table.quantity_failed')}</TableHead>
                                     <TableHead>{t('inspection.table.result')}</TableHead>
                                     <TableHead>{t('inspection.table.inspector')}</TableHead>
+                                    <TableHead className="text-right">{t('common.actions')}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {inspections.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
+                                        <TableCell colSpan={8} className="h-24 text-center text-muted-foreground">
                                             {t('inspection.empty')}
                                         </TableCell>
                                     </TableRow>
@@ -99,6 +105,14 @@ function QualityInspectionsPage({ inspections }: PageProps) {
                                             </TableCell>
                                             <TableCell className="text-sm text-muted-foreground">
                                                 {inspection.inspector?.name ?? '—'}
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <div className="flex justify-end">
+                                                    {['final', 'incoming'].includes(inspection.type) && inspection.released_at === null && (
+                                                        <Button variant="save" size="sm" onClick={() => release(inspection.id)}>{t('inspection.release')}</Button>
+                                                    )}
+                                                    <PrintDocumentButton type="qc_inspection" documentId={inspection.id} compact />
+                                                </div>
                                             </TableCell>
                                         </TableRow>
                                     ))

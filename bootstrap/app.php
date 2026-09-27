@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Middleware\EnsureCompanyContext;
+use App\Http\Middleware\EnsureCompanyOperational;
 use App\Http\Middleware\EnsureTrialNotExpired;
 use App\Http\Middleware\EnsureUserHasPermission;
 use App\Http\Middleware\EnsureUserHasRole;
+use App\Http\Middleware\EnsureTenantFeature;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\SetLocale;
@@ -20,7 +22,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->trustProxies(at: '*');
+        // The middleware configuration runs before Laravel registers the
+        // config repository, so this bootstrap-only value must be read from
+        // the environment directly.
+        $trustedProxies = env('TRUSTED_PROXIES');
+        if (is_string($trustedProxies) && trim($trustedProxies) !== '') {
+            $middleware->trustProxies(at: $trustedProxies);
+        }
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state', 'locale']);
 
         $middleware->web(append: [
@@ -28,6 +36,7 @@ return Application::configure(basePath: dirname(__DIR__))
             SetLocale::class,
             EnsureCompanyContext::class,
             EnsureTrialNotExpired::class,
+            EnsureCompanyOperational::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);
@@ -35,7 +44,15 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => EnsureUserHasRole::class,
             'permission' => EnsureUserHasPermission::class,
+            'feature' => EnsureTenantFeature::class,
         ]);
+
+        // Resolve the tenant before SubstituteBindings so route-bound
+        // company-scoped models cannot be looked up with an empty context.
+        $middleware->prependToPriorityList(
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            EnsureCompanyContext::class,
+        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // An expired CSRF token means the session lapsed, so send people back to

@@ -17,6 +17,7 @@ class NonConformanceReport extends Model
         'company_id',
         'number',
         'quality_inspection_id',
+        'rework_production_order_id',
         'description',
         'status',
         'disposition',
@@ -49,6 +50,11 @@ class NonConformanceReport extends Model
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function reworkProductionOrder(): BelongsTo
+    {
+        return $this->belongsTo(ProductionOrder::class, 'rework_production_order_id');
     }
 
     public function isOpen(): bool

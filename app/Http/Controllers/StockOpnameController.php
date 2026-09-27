@@ -30,7 +30,7 @@ class StockOpnameController extends Controller
     public function store(Request $request, CurrentCompany $currentCompany): RedirectResponse
     {
         $validated = $request->validate([
-            'warehouse_id' => 'required|exists:warehouses,id',
+            'warehouse_id' => ['required', $this->tenantExists('warehouses')],
             'opname_date' => 'required|date',
             'notes' => 'nullable|string',
         ]);
@@ -78,7 +78,7 @@ class StockOpnameController extends Controller
 
         $validated = $request->validate([
             'lines' => 'required|array',
-            'lines.*.id' => 'required|exists:stock_opname_lines,id',
+            'lines.*.id' => ['required', $this->tenantChildExists('stock_opname_lines', 'id', 'stock_opnames', 'stock_opname_id')],
             'lines.*.counted_quantity' => 'nullable|numeric|min:0',
         ]);
 

@@ -17,7 +17,9 @@
         "search": "검색",
         "confirm": "확인",
         "close": "닫기",
-        "print": "인쇄"
+        "actions": "작업",
+        "print": "인쇄",
+        "export_excel": "Excel 내보내기"
     },
     "status": {
         "active": "활성",

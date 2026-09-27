@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\GoodsReceipt;
 use App\Models\PurchaseOrder;
 use App\Services\Purchasing\GoodsReceiptService;
+use App\Services\Quality\QualityReleaseService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -72,5 +73,16 @@ class GoodsReceiptController extends Controller
         }
 
         return redirect()->back()->with('success', __('messages.goods_receipt.put_away'));
+    }
+
+    public function releaseInspection(\App\Models\QualityInspection $inspection, QualityReleaseService $service, Request $request): RedirectResponse
+    {
+        try {
+            $service->release($inspection, $request->user());
+        } catch (RuntimeException $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+
+        return redirect()->back()->with('success', __('messages.quality.released'));
     }
 }

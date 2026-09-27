@@ -8,6 +8,7 @@
         "description": "受入検査、工程内検査、最終検査の履歴です。",
         "list_title": "検査一覧",
         "empty": "まだ検査記録がありません。",
+        "release": "品質リリース",
         "type_incoming": "受入検査",
         "type_in_process": "工程内検査",
         "type_final": "最終検査",
@@ -31,8 +32,10 @@
         "quantity_passed": "合格数量",
         "notes": "備考",
         "notes_placeholder": "任意",
-        "submit": "結果を記録して指図を完了",
-        "total_to_inspect": "検査対象合計"
+        "submit": "QC結果を記録",
+        "total_to_inspect": "検査対象合計",
+        "result_summary": "合格：{{passed}} · 不合格：{{failed}}。品質リリースまで出力は保留されます。",
+        "release": "承認済み在庫をリリース"
     },
     "ncr": {
         "title": "不適合報告書（NCR）",

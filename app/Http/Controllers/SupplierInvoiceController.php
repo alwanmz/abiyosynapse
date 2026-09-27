@@ -33,7 +33,7 @@ class SupplierInvoiceController extends Controller
             'invoice_date' => 'required|date',
             'due_date' => 'required|date|after_or_equal:invoice_date',
             'lines' => 'required|array|min:1',
-            'lines.*.purchase_order_line_id' => 'required|exists:purchase_order_lines,id',
+            'lines.*.purchase_order_line_id' => ['required', $this->tenantChildExists('purchase_order_lines', 'id', 'purchase_orders', 'purchase_order_id')],
             'lines.*.quantity' => 'required|numeric|min:0.0001',
             'lines.*.unit_price' => 'required|numeric|min:0',
         ]);

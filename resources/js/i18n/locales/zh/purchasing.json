@@ -127,6 +127,7 @@
         "lines": "明细行",
         "quality_incoming_title": "来料质检",
         "quality_incoming_description": "记录每个项目质检合格的数量。只有合格数量会计入库存；拒收数量将自动开立不合格品报告（NCR）。",
+        "quality_release_description": "通过检验的库存将在质量放行完成前保持冻结。",
         "quantity_accepted": "质检合格数量",
         "max_prefix": "最多",
         "inspection_notes": "备注",

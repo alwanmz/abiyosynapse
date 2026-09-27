@@ -7,7 +7,9 @@ use App\Models\Bom;
 use App\Models\Product;
 use App\Models\ProductionOrder;
 use App\Models\ProductionOrderOperation;
+use App\Models\QualityInspection;
 use App\Models\Routing;
+use App\Models\User;
 use App\Services\Accounting\JournalPostingService;
 use App\Services\CurrentCompany;
 use App\Services\Inventory\InventoryValuationService;
@@ -115,6 +117,12 @@ class ProductionOrderService
         DB::transaction(function () use ($order) {
             $totalCost = 0.0;
 
+            if ($order->is_rework) {
+                $order->update(['status' => 'in_production']);
+
+                return;
+            }
+
             foreach ($order->components as $component) {
                 $remaining = $component->remainingQuantity();
 
@@ -186,13 +194,17 @@ class ProductionOrderService
      * unit cost — a simplification until Fase 3's costing is extended
      * with actual labor/overhead allocation.
      */
-    public function complete(ProductionOrder $order, float $producedQuantity): ProductionOrder
+    public function complete(ProductionOrder $order, float $producedQuantity, ?string $bypassReason = null, ?User $actor = null): ProductionOrder
     {
         if (! $order->isInProgress()) {
             throw new RuntimeException("Production order {$order->number} must be in production before it can be completed.");
         }
 
-        return DB::transaction(function () use ($order, $producedQuantity) {
+        if (blank($bypassReason)) {
+            throw new RuntimeException('A quality-control bypass reason is required to complete an order without Final QC.');
+        }
+
+        return DB::transaction(function () use ($order, $producedQuantity, $bypassReason, $actor) {
             $unitCost = (float) $order->product->standard_cost;
             $totalCost = $producedQuantity * $unitCost;
 
@@ -203,7 +215,8 @@ class ProductionOrderService
                 $unitCost,
                 $order,
                 'in',
-                "Production completion for {$order->number}",
+                "Production completion with QC bypass for {$order->number}",
+                'approved',
             );
 
             if ($totalCost > 0) {
@@ -217,11 +230,20 @@ class ProductionOrderService
                 );
             }
 
-            $order->update([
+            $order->auditAs($actor)->update([
                 'produced_quantity' => (float) $order->produced_quantity + $producedQuantity,
+                'good_quantity' => (float) $order->good_quantity + $producedQuantity,
+                'qc_bypass_reason' => $bypassReason,
+                'qc_bypassed_by' => $actor?->id ?? auth()->id(),
+                'qc_bypassed_at' => now(),
                 'status' => 'completed',
                 'completed_at' => now(),
             ]);
+            app(\App\Services\AuditTrailService::class)->record($order, 'qc_bypassed', null, [
+                'reason' => $bypassReason,
+                'quantity' => $producedQuantity,
+                'completed_at' => $order->completed_at,
+            ], 'Production completed without Final QC after an authorized bypass.', $actor?->id);
 
             return $order->fresh();
         });
@@ -245,63 +267,52 @@ class ProductionOrderService
     }
 
     /**
-     * Complete an order that went through Fase 3.5 final QC: receives
-     * only the passed quantity as finished goods (Finished Goods debit /
-     * WIP credit), and posts the failed quantity as scrap (Scrap Expense
-     * debit / WIP credit) rather than silently dropping it — a failed
-     * unit still consumed real material/labor cost that has to leave WIP
-     * somehow (blueprint §12: reject quantity does not enter FG stock).
+     * Records all inspected output as Finished Goods on quality hold. This
+     * keeps physical stock and the FG ledger synchronized while failed units
+     * await an NCR disposition. Sellable stock only exists after a separate
+     * Quality Release transitions the passed quantity to approved.
      */
-    public function completeAfterQc(ProductionOrder $order, float $passedQuantity, float $failedQuantity): ProductionOrder
+    public function completeAfterQc(ProductionOrder $order, float $passedQuantity, float $failedQuantity, ?QualityInspection $inspection = null): ProductionOrder
     {
         if (! $order->isPendingQc()) {
             throw new RuntimeException("Production order {$order->number} must be pending QC before it can be completed.");
         }
 
-        return DB::transaction(function () use ($order, $passedQuantity, $failedQuantity) {
+        return DB::transaction(function () use ($order, $passedQuantity, $failedQuantity, $inspection) {
             $unitCost = (float) $order->product->standard_cost;
+            $totalQuantity = $passedQuantity + $failedQuantity;
+            $totalCost = $totalQuantity * $unitCost;
 
-            if ($passedQuantity > 0) {
-                $goodCost = $passedQuantity * $unitCost;
-
+            if ($totalQuantity > 0) {
                 $this->valuation->receive(
                     $order->product,
                     $order->warehouse,
-                    $passedQuantity,
+                    $totalQuantity,
                     $unitCost,
                     $order,
                     'in',
-                    "Production completion (QC passed) for {$order->number}",
-                );
-
-                $this->posting->post(
-                    description: "Production completion for {$order->number}",
-                    lines: [
-                        ['account_id' => $this->accountId(self::FINISHED_GOODS_ACCOUNT_CODE), 'debit' => $goodCost],
-                        ['account_id' => $this->accountId(self::WIP_ACCOUNT_CODE), 'credit' => $goodCost],
+                    "Production output awaiting Quality Release for {$order->number}",
+                    'hold',
+                    [
+                        'quality_inspection_id' => $inspection?->id,
+                        'non_conformance_report_id' => $inspection?->nonConformanceReport?->id,
                     ],
-                    sourceable: $order,
                 );
-            }
-
-            if ($failedQuantity > 0) {
-                $scrapCost = $failedQuantity * $unitCost;
 
                 $this->posting->post(
-                    description: "Scrap (QC reject) for {$order->number}",
+                    description: "Production output held for Quality Release {$order->number}",
                     lines: [
-                        ['account_id' => $this->accountId(self::SCRAP_EXPENSE_ACCOUNT_CODE), 'debit' => $scrapCost],
-                        ['account_id' => $this->accountId(self::WIP_ACCOUNT_CODE), 'credit' => $scrapCost],
+                        ['account_id' => $this->accountId(self::FINISHED_GOODS_ACCOUNT_CODE), 'debit' => $totalCost],
+                        ['account_id' => $this->accountId(self::WIP_ACCOUNT_CODE), 'credit' => $totalCost],
                     ],
                     sourceable: $order,
                 );
             }
 
             $order->update([
-                'produced_quantity' => (float) $order->produced_quantity + $passedQuantity,
+                'produced_quantity' => (float) $order->produced_quantity + $totalQuantity,
+                'good_quantity' => (float) $order->good_quantity + $passedQuantity,
                 'rejected_quantity' => (float) $order->rejected_quantity + $failedQuantity,
-                'status' => 'completed',
-                'completed_at' => now(),
             ]);
 
             return $order->fresh();

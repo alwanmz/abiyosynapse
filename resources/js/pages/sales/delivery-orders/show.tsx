@@ -24,13 +24,14 @@ interface DeliveryOrderLine {
     quantity: string;
     unit_cost: string | null;
     product: { id: number; code: string; name: string };
+    reservations: { id: number; quantity: string; status: 'reserved' | 'consumed' | 'released' }[];
 }
 
 interface DeliveryOrder {
     id: number;
     number: string;
     delivery_date: string;
-    status: 'draft' | 'shipped';
+    status: 'draft' | 'shipped' | 'cancelled';
     sales_order: { id: number; number: string; customer: { id: number; name: string } };
     warehouse: { id: number; code: string; name: string };
     lines: DeliveryOrderLine[];
@@ -43,11 +44,13 @@ interface PageProps {
 const STATUS_VARIANT: Record<DeliveryOrder['status'], 'default' | 'outline' | 'secondary'> = {
     draft: 'secondary',
     shipped: 'default',
+    cancelled: 'outline',
 };
 
 function DeliveryOrderShowPage({ delivery }: PageProps) {
     const { t } = useTranslation('sales');
     const [shipDialogOpen, setShipDialogOpen] = useState(false);
+    const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
 
     useBreadcrumbs([
         { title: t('nav.sales'), href: '#' },
@@ -66,6 +69,13 @@ function DeliveryOrderShowPage({ delivery }: PageProps) {
                 onFinish: () => setShipDialogOpen(false),
             },
         );
+    };
+
+    const handleCancel = () => {
+        router.post(`/sales/delivery-orders/${delivery.id}/cancel`, {}, {
+            preserveScroll: true,
+            onFinish: () => setCancelDialogOpen(false),
+        });
     };
 
     const isDraft = delivery.status === 'draft';
@@ -90,11 +100,10 @@ function DeliveryOrderShowPage({ delivery }: PageProps) {
 
                     <div className="flex items-center gap-2">
                         <PrintDocumentButton type="delivery_order" documentId={delivery.id} />
-                        {isDraft && (
-                        <Button onClick={() => setShipDialogOpen(true)} disabled={shipping}>
-                            {t('delivery_order.ship')}
-                        </Button>
-                        )}
+                        {isDraft && <>
+                            <Button variant="cancel" onClick={() => setCancelDialogOpen(true)}>{t('delivery_order.cancel')}</Button>
+                            <Button onClick={() => setShipDialogOpen(true)} disabled={shipping}>{t('delivery_order.ship')}</Button>
+                        </>}
                     </div>
                 </div>
 
@@ -107,6 +116,7 @@ function DeliveryOrderShowPage({ delivery }: PageProps) {
                                     <TableHead>{t('delivery_order.table.product')}</TableHead>
                                     <TableHead className="text-right">{t('delivery_order.table.quantity')}</TableHead>
                                     <TableHead className="text-right">{t('delivery_order.table.unit_cost')}</TableHead>
+                                    <TableHead className="text-right">{t('delivery_order.table.reserved')}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -118,6 +128,9 @@ function DeliveryOrderShowPage({ delivery }: PageProps) {
                                         </TableCell>
                                         <TableCell className="text-right tabular-nums">{line.quantity}</TableCell>
                                         <TableCell className="text-right tabular-nums">{line.unit_cost ?? '—'}</TableCell>
+                                        <TableCell className="text-right tabular-nums">
+                                            {line.reservations.filter((reservation) => reservation.status === 'reserved').reduce((sum, reservation) => sum + Number(reservation.quantity), 0).toFixed(4)}
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -135,6 +148,15 @@ function DeliveryOrderShowPage({ delivery }: PageProps) {
                 variant="default"
                 loading={shipping}
                 onConfirm={handleShip}
+            />
+            <ConfirmDialog
+                open={cancelDialogOpen}
+                onOpenChange={setCancelDialogOpen}
+                title={t('delivery_order.cancel_confirm_title')}
+                description={t('delivery_order.cancel_confirm_description')}
+                confirmLabel={t('delivery_order.cancel')}
+                variant="destructive"
+                onConfirm={handleCancel}
             />
         </>
     );

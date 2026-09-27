@@ -45,13 +45,13 @@ class ApPaymentController extends Controller
     public function store(Request $request, ApPaymentService $service): RedirectResponse
     {
         $validated = $request->validate([
-            'supplier_id' => 'required|exists:suppliers,id',
-            'bank_account_id' => 'required|exists:bank_accounts,id',
+            'supplier_id' => ['required', $this->tenantExists('suppliers')],
+            'bank_account_id' => ['required', $this->tenantExists('bank_accounts')],
             'payment_date' => 'required|date',
             'amount' => 'required|numeric|min:0.01',
             'reference' => 'nullable|string|max:255',
             'lines' => 'required|array|min:1',
-            'lines.*.supplier_invoice_id' => 'required|exists:supplier_invoices,id',
+            'lines.*.supplier_invoice_id' => ['required', $this->tenantExists('supplier_invoices')],
             'lines.*.amount_applied' => 'required|numeric|min:0.01',
         ]);
 

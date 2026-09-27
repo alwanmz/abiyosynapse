@@ -26,7 +26,14 @@
         "name_placeholder": "例：個",
         "empty": "まだ単位がありません。",
         "delete_title": "単位を削除しますか？",
-        "delete_confirm_prefix": "本当に削除しますか："
+        "delete_confirm_prefix": "本当に削除しますか：",
+        "readiness": {
+            "title": "製品販売準備状況", "back": "製品一覧へ戻る", "warehouse": "倉庫", "no_warehouse": "製品の準備状況を確認するために倉庫を選択または設定してください。", "available_for_sale": "販売可能数量", "reserved": "引当済み", "requirements": "設定チェック", "reasons": "ステータス理由", "no_reasons": "この製品は販売フローで使用できます。",
+            "status_not_configured": "未設定", "status_pending_qc": "QC待ち", "status_quality_hold": "品質保留", "status_rework_required": "再作業が必要", "status_out_of_stock": "在庫切れ", "status_ready_for_sale": "販売可能",
+            "quantity_pending": "保留中", "quantity_approved": "承認済み", "quantity_hold": "品質保留", "quantity_rejected": "不合格", "quantity_rework": "再作業",
+            "config_product_active": "製品が有効", "config_bom_active": "有効なBOM", "config_routing_active": "有効な工程", "config_selling_price_available": "販売価格あり", "config_tax_available": "税コードあり", "config_currency_available": "通貨あり",
+            "reason_product_active": "製品が有効ではありません", "reason_bom_active": "有効なBOMがありません", "reason_routing_active": "有効な工程がありません", "reason_selling_price_available": "販売価格が未設定です", "reason_tax_available": "有効な税コードがありません", "reason_currency_available": "有効な通貨がありません", "reason_no_available_stock": "販売可能な承認済み在庫がありません"
+        }
     },
     "warehouse": {
         "title": "倉庫",

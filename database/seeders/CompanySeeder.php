@@ -3,13 +3,16 @@
 namespace Database\Seeders;
 
 use App\Models\Company;
+use App\Models\CompanyCurrency;
+use App\Models\CompanySubscription;
+use App\Models\SubscriptionPlan;
 use Illuminate\Database\Seeder;
 
 class CompanySeeder extends Seeder
 {
     public function run(): void
     {
-        Company::updateOrCreate(
+        $company = Company::updateOrCreate(
             ['code' => 'default'],
             [
                 'name' => 'PT Abiyo Synapse Contoh',
@@ -19,5 +22,24 @@ class CompanySeeder extends Seeder
                 'is_active' => true,
             ]
         );
+
+        CompanyCurrency::withoutGlobalScopes()->updateOrCreate(
+            ['company_id' => $company->id, 'currency_code' => $company->currency],
+            ['is_active' => true, 'is_base' => true],
+        );
+
+        $plan = SubscriptionPlan::where('code', 'starter')->first();
+        if ($plan) {
+            CompanySubscription::updateOrCreate(
+                ['company_id' => $company->id],
+                [
+                    'subscription_plan_id' => $plan->id,
+                    'status' => $company->trial_ends_at?->isFuture() ? 'trialing' : 'active',
+                    'starts_at' => $company->created_at ?? now(),
+                    'trial_ends_at' => $company->trial_ends_at,
+                    'current_period_start' => $company->created_at ?? now(),
+                ],
+            );
+        }
     }
 }

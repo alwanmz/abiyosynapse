@@ -82,7 +82,7 @@ test('production costing captures material, conversion, and total variance', fun
     $operation = $order->fresh()->operations->first();
     $production->startOperation($operation);
     $production->completeOperation($operation->fresh(), actualMinutes: 50, outputQuantity: 10);
-    $completed = $production->complete($order->fresh(), 10);
+    $completed = $production->complete($order->fresh(), 10, 'Costing test bypasses Final QC intentionally.');
 
     $costed = $costing->cost($completed);
 

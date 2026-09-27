@@ -175,7 +175,12 @@
         "conversion_variance": "Variance Konversi",
         "standard_total": "Total Standard",
         "actual_total": "Total Aktual",
-        "variance": "Total Variance"
+        "variance": "Total Variance",
+        "bypass_reason": "Alasan bypass QC",
+        "cancel": "Batal",
+        "output_title": "Hasil produksi & kesiapan jual",
+        "output_planned": "Rencana", "output_produced": "Diproduksi", "output_good": "Good", "output_rejected": "Reject", "output_hold": "Quality hold", "output_approved": "Approved", "output_ready": "Siap dijual",
+        "inspect_operation": "QC proses", "in_process_inspection_title": "Inspeksi in-process", "quantity_inspected": "Qty diinspeksi", "quantity_passed": "Qty lulus", "inspection_notes": "Catatan", "record_inspection": "Catat inspeksi"
     },
     "mrp": {
         "title": "MRP (Material Requirement Planning)",

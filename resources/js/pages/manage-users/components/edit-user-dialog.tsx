@@ -58,7 +58,7 @@ export function EditUserDialog({
                 remove_avatar: false,
             });
         }
-    }, [user]);
+    }, [user, setData]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

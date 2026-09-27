@@ -26,7 +26,14 @@
         "name_placeholder": "예: 개",
         "empty": "아직 단위가 없습니다.",
         "delete_title": "단위를 삭제하시겠습니까?",
-        "delete_confirm_prefix": "정말로 삭제하시겠습니까:"
+        "delete_confirm_prefix": "정말로 삭제하시겠습니까:",
+        "readiness": {
+            "title": "제품 판매 준비 상태", "back": "제품으로 돌아가기", "warehouse": "창고", "no_warehouse": "제품 준비 상태를 평가하려면 창고를 선택하거나 설정하세요.", "available_for_sale": "판매 가능 수량", "reserved": "예약됨", "requirements": "구성 확인", "reasons": "상태 사유", "no_reasons": "이 제품은 판매 흐름에서 사용할 수 있습니다.",
+            "status_not_configured": "미설정", "status_pending_qc": "QC 대기", "status_quality_hold": "품질 보류", "status_rework_required": "재작업 필요", "status_out_of_stock": "재고 없음", "status_ready_for_sale": "판매 가능",
+            "quantity_pending": "보류 중", "quantity_approved": "승인됨", "quantity_hold": "품질 보류", "quantity_rejected": "불합격", "quantity_rework": "재작업",
+            "config_product_active": "제품 활성", "config_bom_active": "활성 BOM", "config_routing_active": "활성 라우팅", "config_selling_price_available": "판매 가격 있음", "config_tax_available": "세금 코드 있음", "config_currency_available": "통화 있음",
+            "reason_product_active": "제품이 활성 상태가 아닙니다", "reason_bom_active": "활성 BOM이 없습니다", "reason_routing_active": "활성 라우팅이 없습니다", "reason_selling_price_available": "판매 가격이 없습니다", "reason_tax_available": "활성 세금 코드가 없습니다", "reason_currency_available": "활성 통화가 없습니다", "reason_no_available_stock": "판매 가능한 승인 재고가 없습니다"
+        }
     },
     "warehouse": {
         "title": "창고",

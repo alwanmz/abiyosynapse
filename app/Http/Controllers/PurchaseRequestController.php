@@ -28,10 +28,10 @@ class PurchaseRequestController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'warehouse_id' => 'required|exists:warehouses,id',
+            'warehouse_id' => ['required', $this->tenantExists('warehouses')],
             'notes' => 'nullable|string',
             'lines' => 'required|array|min:1',
-            'lines.*.product_id' => 'required|exists:products,id',
+            'lines.*.product_id' => ['required', $this->tenantExists('products')],
             'lines.*.quantity' => 'required|numeric|min:0.0001',
         ]);
 

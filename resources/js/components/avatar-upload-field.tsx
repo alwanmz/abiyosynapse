@@ -54,6 +54,9 @@ export function AvatarUploadField({
     const [croppedPreview, setCroppedPreview] = useState<string | null>(null);
     useEffect(() => {
         if (!cropped) {
+            // Blob URLs are an external resource, so their lifecycle belongs
+            // in an effect rather than in render.
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setCroppedPreview(null);
             return;
         }

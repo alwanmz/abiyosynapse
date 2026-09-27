@@ -8,10 +8,14 @@
         "description": "View current stock balances by product and warehouse.",
         "list_title": "Stock Balances",
         "all_warehouses": "All Warehouses",
+        "all_categories": "All categories", "category_raw_material": "Raw materials", "category_wip": "WIP / rework", "category_finished_goods": "Finished goods", "all_quality": "All quality states", "all_readiness": "All readiness states", "ready_for_sale": "Ready for sale",
+        "quality_pending": "Pending", "quality_approved": "Approved", "quality_hold": "Quality hold", "quality_rejected": "Rejected", "quality_rework": "Rework",
+        "readiness_not_configured": "Not configured", "readiness_pending_qc": "Pending QC", "readiness_quality_hold": "Quality hold", "readiness_rework_required": "Rework required", "readiness_out_of_stock": "Out of stock", "readiness_ready_for_sale": "Ready for sale",
         "table": {
             "product": "Product",
             "warehouse": "Warehouse",
             "quantity_on_hand": "Quantity",
+            "approved": "Approved", "hold": "Quality hold", "rejected_rework": "Rejected/rework", "reserved": "Reserved", "available": "For sale", "readiness": "Readiness",
             "average_cost": "Average Cost",
             "total_value": "Total Value"
         },

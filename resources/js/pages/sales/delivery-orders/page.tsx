@@ -19,7 +19,7 @@ interface DeliveryOrder {
     id: number;
     number: string;
     delivery_date: string;
-    status: 'draft' | 'shipped';
+    status: 'draft' | 'shipped' | 'cancelled';
     sales_order: { id: number; number: string; customer: { id: number; name: string } };
     warehouse: { id: number; code: string; name: string };
 }
@@ -31,6 +31,7 @@ interface PageProps {
 const STATUS_VARIANT: Record<DeliveryOrder['status'], 'default' | 'outline' | 'secondary'> = {
     draft: 'secondary',
     shipped: 'default',
+    cancelled: 'outline',
 };
 
 function DeliveryOrdersPage({ deliveries }: PageProps) {

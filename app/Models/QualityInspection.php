@@ -28,6 +28,8 @@ class QualityInspection extends Model
         'notes',
         'inspected_by',
         'inspected_at',
+        'released_by',
+        'released_at',
     ];
 
     protected function casts(): array
@@ -37,6 +39,7 @@ class QualityInspection extends Model
             'quantity_passed' => 'decimal:4',
             'quantity_failed' => 'decimal:4',
             'inspected_at' => 'datetime',
+            'released_at' => 'datetime',
         ];
     }
 
@@ -53,6 +56,11 @@ class QualityInspection extends Model
     public function inspector(): BelongsTo
     {
         return $this->belongsTo(User::class, 'inspected_by');
+    }
+
+    public function releaser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'released_by');
     }
 
     public function nonConformanceReport(): HasOne

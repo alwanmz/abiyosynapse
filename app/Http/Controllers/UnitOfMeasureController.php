@@ -20,7 +20,7 @@ class UnitOfMeasureController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'code' => 'required|string|max:20|unique:unit_of_measures,code',
+            'code' => ['required', 'string', 'max:20', $this->tenantUnique('unit_of_measures', 'code')],
             'name' => 'required|string|max:255',
         ]);
 
@@ -32,7 +32,7 @@ class UnitOfMeasureController extends Controller
     public function update(Request $request, UnitOfMeasure $unitOfMeasure): RedirectResponse
     {
         $validated = $request->validate([
-            'code' => 'required|string|max:20|unique:unit_of_measures,code,' . $unitOfMeasure->id,
+            'code' => ['required', 'string', 'max:20', $this->tenantUnique('unit_of_measures', 'code', $unitOfMeasure->id)],
             'name' => 'required|string|max:255',
             'is_active' => 'boolean',
         ]);

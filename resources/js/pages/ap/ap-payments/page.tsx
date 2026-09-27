@@ -1,3 +1,4 @@
+import { PrintDocumentButton } from '@/components/print-document-button';
 import { ListHeader } from '@/components/list-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -187,12 +188,13 @@ function ApPaymentsPage({ payments, suppliers, bankAccounts, payableInvoices }: 
                                     <TableHead>{t('ap_payment.table.date')}</TableHead>
                                     <TableHead>{t('ap_payment.table.invoices')}</TableHead>
                                     <TableHead className="text-right">{t('ap_payment.table.amount')}</TableHead>
+                                    <TableHead className="text-right">{t('common.actions')}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {payments.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                                        <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
                                             {t('ap_payment.empty')}
                                         </TableCell>
                                     </TableRow>
@@ -216,6 +218,11 @@ function ApPaymentsPage({ payments, suppliers, bankAccounts, payableInvoices }: 
                                                 {payment.lines.map((line) => line.supplier_invoice.number).join(', ')}
                                             </TableCell>
                                             <TableCell className="text-right tabular-nums">{payment.amount}</TableCell>
+                                            <TableCell className="text-right">
+                                                <div className="flex justify-end">
+                                                    <PrintDocumentButton type="ap_payment" documentId={payment.id} compact />
+                                                </div>
+                                            </TableCell>
                                         </TableRow>
                                     ))
                                 )}

@@ -14,12 +14,14 @@ use App\Http\Controllers\BomController;
 use App\Http\Controllers\CashTransactionController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CompanySwitchController;
+use App\Http\Controllers\CompanySubscriptionController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\ExchangeRevaluationController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeliveryOrderController;
 use App\Http\Controllers\DocumentPrintController;
+use App\Http\Controllers\DocumentExportController;
 use App\Http\Controllers\GoodsReceiptController;
 use App\Http\Controllers\FixedAssetController;
 use App\Http\Controllers\FinancialReportController;
@@ -34,6 +36,7 @@ use App\Http\Controllers\ProductionOrderController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseRequestController;
 use App\Http\Controllers\QualityInspectionController;
+use App\Http\Controllers\ReadinessController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoutingController;
 use App\Http\Controllers\SalesInvoiceController;
@@ -58,6 +61,11 @@ Route::get('/', function () {
     return redirect()->route('login');
 })->name('home');
 
+// Public, detail-free readiness endpoint for a load balancer or process monitor.
+// Laravel's /up endpoint checks that the application boots; /ready also verifies
+// the database is accepting connections without exposing exception details.
+Route::get('/ready', ReadinessController::class)->name('health.ready');
+
 // Own OTP-code email verification flow, replacing Fortify's signed-link
 // click flow (see config/fortify.php — Features::emailVerification() is
 // disabled there). Route names match what the `verified` middleware
@@ -72,19 +80,19 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::middleware('permission:ai.use')->group(function () {
+    Route::middleware(['permission:ai.use', 'feature:ai'])->group(function () {
         Route::get('/ai/copilot', [AiCopilotController::class, 'index'])->name('ai.copilot.index');
         Route::post('/ai/copilot/chat', [AiCopilotController::class, 'chat'])->name('ai.copilot.chat');
         Route::post('/ai/voice/transcribe', [AiVoiceController::class, 'transcribe'])->name('ai.voice.transcribe');
     });
-    Route::middleware('permission:ai.documents.view,ai.documents.manage')->group(function () {
+    Route::middleware(['permission:ai.documents.view,ai.documents.manage', 'feature:ai'])->group(function () {
         Route::get('/ai/documents', [AiDocumentController::class, 'index'])->name('ai.documents.index');
     });
-    Route::middleware('permission:ai.documents.view,ai.documents.manage')->group(function () {
+    Route::middleware(['permission:ai.documents.view,ai.documents.manage', 'feature:ai'])->group(function () {
         Route::get('/ai/documents/{document}/file', [AiDocumentController::class, 'file'])->name('ai.documents.file');
         Route::get('/ai/documents/{document}', [AiDocumentController::class, 'show'])->name('ai.documents.show');
     });
-    Route::middleware('permission:ai.documents.manage')->group(function () {
+    Route::middleware(['permission:ai.documents.manage', 'feature:ai'])->group(function () {
         Route::post('/ai/documents', [AiDocumentController::class, 'store'])->name('ai.documents.store');
         Route::post('/ai/documents/{document}/process', [AiDocumentController::class, 'process'])->name('ai.documents.process');
         Route::post('/ai/documents/{document}/accept', [AiDocumentController::class, 'accept'])->name('ai.documents.accept');
@@ -109,6 +117,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('/company/switch', CompanySwitchController::class)->name('company.switch');
 
+    Route::get('/company/subscription', [CompanySubscriptionController::class, 'show'])
+        ->name('company.subscription')
+        ->middleware('permission:companies.view,companies.manage');
+    Route::post('/company/subscription/suspend', [CompanySubscriptionController::class, 'suspend'])
+        ->name('company.subscription.suspend')
+        ->middleware('permission:companies.manage');
+    Route::post('/company/subscription/activate', [CompanySubscriptionController::class, 'activate'])
+        ->name('company.subscription.activate')
+        ->middleware('permission:companies.manage');
+
     Route::get('/trial-expired', [TrialExpiredController::class, 'show'])->name('trial-expired');
 
     Route::get('/roles', [RoleController::class, 'index'])->name('roles.index')->middleware('permission:roles.view');
@@ -127,10 +145,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('master/accounts', [AccountController::class, 'index'])->name('master.accounts.index');
     });
 
-    Route::middleware('permission:currencies.view,currencies.manage')->group(function () {
+    Route::middleware(['permission:currencies.view,currencies.manage', 'feature:multicurrency'])->group(function () {
         Route::get('master/currencies', [CurrencyController::class, 'index'])->name('master.currencies.index');
     });
-    Route::middleware('permission:currencies.manage')->group(function () {
+    Route::middleware(['permission:currencies.manage', 'feature:multicurrency'])->group(function () {
         Route::post('master/currencies/enable', [CurrencyController::class, 'enable'])->name('master.currencies.enable');
         Route::delete('master/currencies/{currency}/disable', [CurrencyController::class, 'disable'])->name('master.currencies.disable');
         Route::post('master/currency-rates', [CurrencyController::class, 'storeRate'])->name('master.currency-rates.store');
@@ -148,6 +166,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('master/suppliers', [SupplierController::class, 'index'])->name('master.suppliers.index');
         Route::get('master/customers', [CustomerController::class, 'index'])->name('master.customers.index');
         Route::get('master/products', [ProductController::class, 'index'])->name('master.products.index');
+        Route::get('master/products/{product}', [ProductController::class, 'show'])->name('master.products.show');
     });
     Route::middleware('permission:master-data.manage')->group(function () {
         Route::post('master/unit-of-measures', [UnitOfMeasureController::class, 'store'])->name('master.uoms.store');
@@ -217,6 +236,7 @@ Route::delete('manufacturing/boms/{bom}', [BomController::class, 'destroy'])->na
         Route::post('manufacturing/production-orders/{productionOrder}/release', [ProductionOrderController::class, 'release'])->name('manufacturing.production-orders.release');
         Route::post('manufacturing/production-orders/{productionOrder}/issue-materials', [ProductionOrderController::class, 'issueMaterials'])->name('manufacturing.production-orders.issue-materials');
 Route::post('manufacturing/production-orders/{productionOrder}/complete', [ProductionOrderController::class, 'complete'])->name('manufacturing.production-orders.complete');
+        Route::post('manufacturing/production-orders/{productionOrder}/complete-without-qc', [ProductionOrderController::class, 'complete'])->name('manufacturing.production-orders.complete-without-qc');
 Route::post('manufacturing/production-orders/{productionOrder}/cost', [ProductionOrderController::class, 'cost'])->name('manufacturing.production-orders.cost');
         Route::post('manufacturing/production-orders/{productionOrder}/submit-for-qc', [ProductionOrderController::class, 'submitForQc'])->name('manufacturing.production-orders.submit-for-qc');
         Route::post('manufacturing/operations/{operation}/start', [ProductionOrderController::class, 'startOperation'])->name('manufacturing.operations.start');
@@ -229,9 +249,12 @@ Route::post('manufacturing/production-orders/{productionOrder}/cost', [Productio
     });
     Route::middleware('permission:quality.manage')->group(function () {
         Route::post('manufacturing/production-orders/{productionOrder}/final-inspection', [QualityInspectionController::class, 'storeFinal'])->name('quality.inspections.store-final');
+        Route::post('manufacturing/operations/{operation}/in-process-inspection', [QualityInspectionController::class, 'storeInProcess'])->name('quality.inspections.store-in-process');
+        Route::post('quality/inspections/{inspection}/release', [QualityInspectionController::class, 'release'])->name('quality.inspections.release');
         Route::post('quality/ncrs/{ncr}/disposition', [NonConformanceReportController::class, 'disposition'])->name('quality.ncrs.disposition');
         Route::post('quality/ncrs/{ncr}/corrective-action', [NonConformanceReportController::class, 'correctiveAction'])->name('quality.ncrs.corrective-action');
         Route::post('quality/ncrs/{ncr}/close', [NonConformanceReportController::class, 'close'])->name('quality.ncrs.close');
+        Route::post('quality/ncrs/{ncr}/create-rework', [NonConformanceReportController::class, 'createRework'])->name('quality.ncrs.create-rework');
     });
 
     Route::middleware('permission:purchasing.view,purchasing.manage')->group(function () {
@@ -257,6 +280,7 @@ Route::post('manufacturing/production-orders/{productionOrder}/cost', [Productio
 
         Route::post('purchasing/purchase-orders/{purchaseOrder}/goods-receipts', [GoodsReceiptController::class, 'store'])->name('purchasing.goods-receipts.store');
         Route::post('purchasing/goods-receipts/{goodsReceipt}/put-away', [GoodsReceiptController::class, 'putAway'])->name('purchasing.goods-receipts.put-away');
+        Route::post('purchasing/quality-inspections/{inspection}/release', [GoodsReceiptController::class, 'releaseInspection'])->name('purchasing.goods-receipts.release-inspection');
 
         Route::post('purchasing/purchase-orders/{purchaseOrder}/supplier-invoices', [SupplierInvoiceController::class, 'store'])->name('purchasing.supplier-invoices.store');
     });
@@ -279,6 +303,7 @@ Route::post('manufacturing/production-orders/{productionOrder}/cost', [Productio
 
         Route::post('sales/sales-orders/{salesOrder}/delivery-orders', [DeliveryOrderController::class, 'store'])->name('sales.delivery-orders.store');
         Route::post('sales/delivery-orders/{deliveryOrder}/ship', [DeliveryOrderController::class, 'ship'])->name('sales.delivery-orders.ship');
+        Route::post('sales/delivery-orders/{deliveryOrder}/cancel', [DeliveryOrderController::class, 'cancel'])->name('sales.delivery-orders.cancel');
 
         Route::post('sales/sales-orders/{salesOrder}/sales-invoices', [SalesInvoiceController::class, 'store'])->name('sales.sales-invoices.store');
 
@@ -359,9 +384,13 @@ Route::post('manufacturing/production-orders/{productionOrder}/cost', [Productio
     });
     Route::middleware('permission:documents.print')->group(function () {
         Route::get('documents/{type}/{document}/print', DocumentPrintController::class)
-            ->whereIn('type', ['purchase_request', 'purchase_order', 'goods_receipt', 'supplier_invoice', 'sales_order', 'delivery_order', 'sales_invoice', 'sales_return', 'ar_receipt', 'ap_payment', 'bank_reconciliation', 'production_order', 'bom', 'routing', 'qc_inspection', 'ncr', 'fixed_asset', 'maintenance_work_order'])
+            ->whereIn('type', ['purchase_request', 'purchase_order', 'goods_receipt', 'supplier_invoice', 'sales_order', 'delivery_order', 'sales_invoice', 'sales_return', 'ar_receipt', 'ap_payment', 'cash_transaction', 'bank_reconciliation', 'production_order', 'bom', 'routing', 'qc_inspection', 'ncr', 'fixed_asset', 'maintenance_work_order'])
             ->whereNumber('document')
             ->name('documents.print');
+        Route::get('documents/{type}/{document}/xlsx', [DocumentExportController::class, 'xlsx'])
+            ->whereIn('type', ['purchase_request', 'purchase_order', 'goods_receipt', 'supplier_invoice', 'sales_order', 'delivery_order', 'sales_invoice', 'sales_return', 'ar_receipt', 'ap_payment', 'cash_transaction', 'bank_reconciliation', 'production_order', 'bom', 'routing', 'qc_inspection', 'ncr', 'fixed_asset', 'maintenance_work_order'])
+            ->whereNumber('document')
+            ->name('documents.export.xlsx');
     });
 
     Route::middleware('permission:audit.view')->group(function () {

@@ -17,7 +17,9 @@
         "search": "Cari",
         "confirm": "Konfirmasi",
         "close": "Tutup",
-        "print": "Cetak"
+        "actions": "Aksi",
+        "print": "Cetak",
+        "export_excel": "Export Excel"
     },
     "status": {
         "active": "Aktif",

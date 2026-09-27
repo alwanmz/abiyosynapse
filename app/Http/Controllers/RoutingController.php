@@ -93,13 +93,13 @@ class RoutingController extends Controller
     private function validated(Request $request, ?int $ignoreId = null): array
     {
         return $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'code' => 'required|string|max:50|unique:routings,code' . ($ignoreId ? ",{$ignoreId}" : ''),
+            'product_id' => ['required', $this->tenantExists('products')],
+            'code' => ['required', 'string', 'max:50', $this->tenantUnique('routings', 'code', $ignoreId)],
             'status' => 'required|in:draft,approved,active,obsolete',
             'notes' => 'nullable|string',
             'operations' => 'required|array|min:1',
             'operations.*.name' => 'required|string|max:255',
-            'operations.*.work_center_id' => 'required|exists:work_centers,id',
+            'operations.*.work_center_id' => ['required', $this->tenantExists('work_centers')],
             'operations.*.setup_minutes' => 'nullable|numeric|min:0',
             'operations.*.run_minutes_per_unit' => 'required|numeric|min:0',
             'operations.*.is_inspection_point' => 'boolean',

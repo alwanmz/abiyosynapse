@@ -31,11 +31,11 @@ import {
 } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { useBreadcrumbs } from '@/hooks/use-breadcrumbs';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { IconPlus } from '@tabler/icons-react';
 import { type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Eye, Pencil, Trash2 } from 'lucide-react';
 
 interface Product {
     id: number;
@@ -211,6 +211,9 @@ function ProductsPage({ products, categories, unitOfMeasures, warehouses }: Page
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex items-center justify-end gap-1">
+                                                    <Button asChild variant="ghost" size="icon" title={t('product.readiness.title')}>
+                                                        <Link href={`/master/products/${product.id}`}><Eye className="h-4 w-4" /></Link>
+                                                    </Button>
                                                     <Button variant="ghost" size="icon" onClick={() => openEdit(product)}>
                                                         <Pencil className="h-4 w-4" />
                                                     </Button>

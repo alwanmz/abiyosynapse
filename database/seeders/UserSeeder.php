@@ -37,6 +37,8 @@ class UserSeeder extends Seeder
             if (! $user->current_company_id) {
                 $user->forceFill(['current_company_id' => $company->id])->save();
             }
+
+            $company->forceFill(['owner_id' => $user->id])->save();
         }
     }
 }

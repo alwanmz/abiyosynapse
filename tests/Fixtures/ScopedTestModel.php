@@ -7,9 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Exists only to exercise BelongsToCompany/CompanyScope mechanics in
- * CompanyScopeTest. No real model uses this trait yet in Fase 0 §2 — the
- * first business model in Fase 1 should add a second, model-specific
- * regression test alongside this one.
+ * CompanyScopeTest. Real business models use this same trait; the fixture
+ * keeps the scope behavior test independent from any one module schema.
  */
 class ScopedTestModel extends Model
 {

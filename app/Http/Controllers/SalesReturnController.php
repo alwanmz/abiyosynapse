@@ -30,11 +30,11 @@ class SalesReturnController extends Controller
     public function store(Request $request, SalesInvoice $salesInvoice, SalesReturnService $service): RedirectResponse
     {
         $validated = $request->validate([
-            'warehouse_id' => 'required|exists:warehouses,id',
+            'warehouse_id' => ['required', $this->tenantExists('warehouses')],
             'return_date' => 'required|date',
             'reason' => 'nullable|string',
             'lines' => 'required|array|min:1',
-            'lines.*.sales_invoice_line_id' => 'required|exists:sales_invoice_lines,id',
+            'lines.*.sales_invoice_line_id' => ['required', $this->tenantChildExists('sales_invoice_lines', 'id', 'sales_invoices', 'sales_invoice_id')],
             'lines.*.quantity' => 'required|numeric|min:0.0001',
         ]);
 

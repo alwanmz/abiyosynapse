@@ -8,7 +8,7 @@ import { useBreadcrumbs } from '@/hooks/use-breadcrumbs';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { ArrowDown, ArrowUp, ArrowUpRight, Banknote, FileWarning, Minus, TrendingUp, Wrench } from 'lucide-react';
-import { type FormEvent, type ReactElement, type ReactNode, useEffect, useMemo, useState } from 'react';
+import { type FormEvent, type ReactElement, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface FinancialMetrics {
@@ -117,18 +117,13 @@ const toneStyles: Record<Tone, { card: string; icon: string; value: string; text
     },
 };
 
-function Dashboard(props: DashboardPageProps) {
+function DashboardContent(props: DashboardPageProps) {
     const { t } = useTranslation('dashboard');
     const { locale, currentCompany } = usePage().props as { locale?: string; currentCompany?: { currency: string } | null };
     const [fromDate, setFromDate] = useState(props.period.from);
     const [toDate, setToDate] = useState(props.period.to);
 
     useBreadcrumbs([{ title: t('breadcrumb'), href: '/dashboard' }]);
-
-    useEffect(() => {
-        setFromDate(props.period.from);
-        setToDate(props.period.to);
-    }, [props.period.from, props.period.to]);
 
     const formatCurrency = (value: number) => new Intl.NumberFormat(locale ?? 'id-ID', {
         style: 'currency',
@@ -474,6 +469,10 @@ function TrendBar({ label, value, max, color, format }: { label: string; value: 
             <span className="w-28 shrink-0 text-right text-[11px] tabular-nums text-muted-foreground">{format(value)}</span>
         </div>
     );
+}
+
+function Dashboard(props: DashboardPageProps) {
+    return <DashboardContent key={`${props.period.from}:${props.period.to}`} {...props} />;
 }
 
 Dashboard.layout = (page: ReactElement) => <AppLayout>{page}</AppLayout>;

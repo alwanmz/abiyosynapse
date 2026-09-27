@@ -6,9 +6,11 @@ use App\Models\CompanyUser;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\CurrentCompany;
+use App\Services\TenantLifecycleService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -77,9 +79,10 @@ class UserController extends Controller
      * max 2 MB) — frontend already cropped it to a circle so we just save
      * the file as-is.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, TenantLifecycleService $tenants): RedirectResponse
     {
         $companyId = app(CurrentCompany::class)->id();
+        $tenants->assertWithinQuota('users');
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'username' => 'required|string|max:255|alpha_dash|unique:users,username',
@@ -94,24 +97,26 @@ class UserController extends Controller
             $avatarPath = $request->file('avatar')->store('avatars', 'public');
         }
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'username' => strtolower($validated['username']),
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'avatar_path' => $avatarPath,
-            'email_verified_at' => now(),
-        ]);
+        DB::transaction(function () use (&$user, $validated, $avatarPath, $companyId): void {
+            $user = User::create([
+                'name' => $validated['name'],
+                'username' => strtolower($validated['username']),
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+                'avatar_path' => $avatarPath,
+                'email_verified_at' => now(),
+            ]);
 
-        CompanyUser::create([
-            'company_id' => $companyId,
-            'user_id' => $user->id,
-            'role_id' => $validated['role_id'],
-            'is_default' => true,
-            'joined_at' => now(),
-        ]);
+            CompanyUser::create([
+                'company_id' => $companyId,
+                'user_id' => $user->id,
+                'role_id' => $validated['role_id'],
+                'is_default' => true,
+                'joined_at' => now(),
+            ]);
 
-        $user->forceFill(['current_company_id' => $companyId])->save();
+            $user->forceFill(['current_company_id' => $companyId])->save();
+        });
 
         $this->forgetUserCaches();
 
@@ -124,9 +129,10 @@ class UserController extends Controller
      * account — the email must already belong to a registered user, and
      * that user must not already be a member of this company.
      */
-    public function invite(Request $request): RedirectResponse
+    public function invite(Request $request, TenantLifecycleService $tenants): RedirectResponse
     {
         $companyId = app(CurrentCompany::class)->id();
+        $tenants->assertWithinQuota('users');
         $validated = $request->validate([
             'email' => ['required', 'string', 'email', 'exists:users,email'],
             'role_id' => ['required', $this->availableRoleRule($companyId)],
@@ -144,17 +150,19 @@ class UserController extends Controller
             ]);
         }
 
-        CompanyUser::create([
-            'company_id' => $companyId,
-            'user_id' => $user->id,
-            'role_id' => $validated['role_id'],
-            'is_default' => ! $user->current_company_id,
-            'joined_at' => now(),
-        ]);
+        DB::transaction(function () use ($companyId, $user, $validated): void {
+            CompanyUser::create([
+                'company_id' => $companyId,
+                'user_id' => $user->id,
+                'role_id' => $validated['role_id'],
+                'is_default' => ! $user->current_company_id,
+                'joined_at' => now(),
+            ]);
 
-        if (! $user->current_company_id) {
-            $user->forceFill(['current_company_id' => $companyId])->save();
-        }
+            if (! $user->current_company_id) {
+                $user->forceFill(['current_company_id' => $companyId])->save();
+            }
+        });
 
         $this->forgetUserCaches();
 
@@ -166,6 +174,13 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user): RedirectResponse
     {
+        abort_unless(
+            CompanyUser::where('company_id', app(CurrentCompany::class)->id())
+                ->where('user_id', $user->id)
+                ->exists(),
+            403,
+        );
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'username' => 'required|string|max:255|alpha_dash|unique:users,username,' . $user->id,

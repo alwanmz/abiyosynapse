@@ -57,11 +57,11 @@ class AccountController extends Controller
     private function validated(Request $request, ?int $ignoreId = null): array
     {
         return $request->validate([
-            'code' => 'required|string|max:30|unique:accounts,code' . ($ignoreId ? ",{$ignoreId}" : ''),
+            'code' => ['required', 'string', 'max:30', $this->tenantUnique('accounts', 'code', $ignoreId)],
             'name' => 'required|string|max:255',
             'type' => 'required|in:asset,liability,equity,revenue,expense',
             'normal_balance' => 'required|in:debit,credit',
-            'parent_id' => 'nullable|exists:accounts,id',
+            'parent_id' => ['nullable', $this->tenantExists('accounts')],
             'is_postable' => 'boolean',
             'is_active' => 'boolean',
         ]);

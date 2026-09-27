@@ -9,6 +9,8 @@ return [
         'deleted' => '회사가 삭제되었습니다.',
         'has_dependent_data' => '관련된 업무 데이터가 남아 있어 이 회사를 삭제할 수 없습니다.',
         'cannot_delete_only_company' => '유일한 회사는 삭제할 수 없습니다.',
+        'suspended' => '회사가 일시 중지되었습니다.',
+        'activated' => '회사가 다시 활성화되었습니다.',
     ],
 
     'role' => [
@@ -134,12 +136,16 @@ return [
         'order_not_pending_qc' => '이 제조 지시서는 아직 품질 검사 대기 상태가 아닙니다.',
         'passed_exceeds_inspected' => '합격 수량은 검사 수량을 초과할 수 없습니다.',
         'final_inspection_recorded' => '최종 검사가 기록되었으며, 품질 검사 결과에 따라 완제품이 처리되었습니다.',
+        'final_inspection_already_recorded' => '이 제조 지시서의 최종 검사가 이미 기록되었습니다.',
+        'in_process_inspection_recorded' => '공정 중 검사가 기록되었습니다.',
+        'released' => '품질 릴리스가 완료되었습니다. 승인 재고는 판매 규칙에 따라 사용할 수 있습니다.',
     ],
 
     'ncr' => [
         'disposition_recorded' => '부적합 처리 방침이 기록되었습니다.',
         'corrective_action_recorded' => '시정 조치가 기록되었습니다.',
         'closed' => '부적합 보고서가 종료되었습니다.',
+        'rework_order_created' => '부적합 보고서에서 재작업 제조 지시서를 만들었습니다.',
     ],
 
     'purchase_request' => [
@@ -171,11 +177,13 @@ return [
         'submitted_for_approval' => '판매 주문이 승인 요청되었습니다.',
         'approved' => '판매 주문이 승인되었습니다.',
         'closed' => '판매 주문이 종료되었습니다.',
+        'inactive_product' => '비활성 제품은 새 판매 주문에 사용할 수 없습니다.',
     ],
 
     'delivery_order' => [
         'created' => '출고 지시서가 생성되었습니다.',
         'shipped' => '출고가 완료되어 재고와 매출원가 전표가 반영되었습니다.',
+        'cancelled' => '출고 지시가 취소되고 재고 예약이 해제되었습니다.',
     ],
 
     'sales_invoice' => [

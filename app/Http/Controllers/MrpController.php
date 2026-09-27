@@ -14,8 +14,8 @@ class MrpController extends Controller
     public function index(Request $request, MrpService $mrpService): Response
     {
         $validated = $request->validate([
-            'product_id' => 'nullable|exists:products,id',
-            'warehouse_id' => 'nullable|exists:warehouses,id',
+            'product_id' => ['nullable', $this->tenantExists('products')],
+            'warehouse_id' => ['nullable', $this->tenantExists('warehouses')],
             'demand_quantity' => 'nullable|numeric|min:0.0001',
         ]);
 

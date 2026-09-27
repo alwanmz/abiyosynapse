@@ -127,6 +127,7 @@
         "lines": "Line Items",
         "quality_incoming_title": "Quality Incoming",
         "quality_incoming_description": "Record the QC-accepted quantity for each item. Only the accepted quantity enters stock; any rejected quantity automatically opens an NCR.",
+        "quality_release_description": "Stock that passed inspection remains on hold until Quality Release is completed.",
         "quantity_accepted": "QC Accepted Quantity",
         "max_prefix": "max",
         "inspection_notes": "Notes",

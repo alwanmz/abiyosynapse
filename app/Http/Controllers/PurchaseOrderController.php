@@ -39,14 +39,14 @@ class PurchaseOrderController extends Controller
     public function storeFromRequest(Request $request, PurchaseRequest $purchaseRequest, PurchaseOrderService $service): RedirectResponse
     {
         $validated = $request->validate([
-            'supplier_id' => 'required|exists:suppliers,id',
-            'warehouse_id' => 'required|exists:warehouses,id',
+            'supplier_id' => ['required', $this->tenantExists('suppliers')],
+            'warehouse_id' => ['required', $this->tenantExists('warehouses')],
             'currency_code' => 'nullable|string|size:3|exists:currencies,code',
             'lines' => 'required|array|min:1',
-            'lines.*.purchase_request_line_id' => 'required|exists:purchase_request_lines,id',
+            'lines.*.purchase_request_line_id' => ['required', $this->tenantChildExists('purchase_request_lines', 'id', 'purchase_requests', 'purchase_request_id')],
             'lines.*.quantity' => 'required|numeric|min:0.0001',
             'lines.*.unit_price' => 'required|numeric|min:0',
-            'lines.*.tax_code_id' => 'nullable|exists:tax_codes,id',
+            'lines.*.tax_code_id' => ['nullable', $this->tenantExists('tax_codes')],
         ]);
 
         try {

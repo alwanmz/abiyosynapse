@@ -55,12 +55,16 @@ export function AvatarCropDialog({
     const [tx, setTx] = useState(0);
     const [ty, setTy] = useState(0);
     const [loaded, setLoaded] = useState(false);
+    const [imageSize, setImageSize] = useState<{ width: number; height: number } | null>(null);
     const dragStartRef = useRef<{ x: number; y: number; tx: number; ty: number } | null>(null);
 
     // Load the picked file into an HTMLImageElement.
     useEffect(() => {
         if (!file || !open) {
+            // Reset local image state when the dialog closes or its input is cleared.
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setLoaded(false);
+            setImageSize(null);
             imageRef.current = null;
             return;
         }
@@ -68,6 +72,7 @@ export function AvatarCropDialog({
         const img = new Image();
         img.onload = () => {
             imageRef.current = img;
+            setImageSize({ width: img.width, height: img.height });
 
             // Initial fit: scale so the image's *short* side covers the
             // crop circle, then center it.
@@ -196,8 +201,7 @@ export function AvatarCropDialog({
     };
 
     /** Min/max zoom — never let the image become smaller than the circle. */
-    const img = imageRef.current;
-    const minZoom = img ? size / Math.min(img.width, img.height) : 1;
+    const minZoom = imageSize ? size / Math.min(imageSize.width, imageSize.height) : 1;
     const maxZoom = minZoom * 4;
 
     return (

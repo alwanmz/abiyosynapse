@@ -75,14 +75,19 @@
             "product": "Produk",
             "quantity": "Kuantitas",
             "unit_cost": "Biaya Satuan"
+            ,"reserved": "Direservasi"
         },
         "status_draft": "Draft",
         "status_shipped": "Terkirim",
+        "status_cancelled": "Dibatalkan",
         "detail_title": "Detail Delivery Order",
         "lines": "Baris Item",
         "ship": "Kirim Barang",
         "ship_confirm_title": "Kirim Delivery Order Ini?",
-        "ship_confirm_description": "Barang akan dikeluarkan dari stok Finished Goods dan status sales order akan diperbarui. Tindakan ini tidak dapat dibatalkan."
+        "ship_confirm_description": "Barang akan dikeluarkan dari stok Finished Goods dan status sales order akan diperbarui. Tindakan ini tidak dapat dibatalkan.",
+        "cancel": "Batalkan Delivery Order",
+        "cancel_confirm_title": "Batalkan delivery order?",
+        "cancel_confirm_description": "Reservasi stok approved akan dilepas dan delivery order tidak dapat dikirim."
     },
     "sales_invoice": {
         "title": "Sales Invoice",

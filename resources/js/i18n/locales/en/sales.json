@@ -74,15 +74,18 @@
             "status": "Status",
             "product": "Product",
             "quantity": "Quantity",
-            "unit_cost": "Unit Cost"
+            "unit_cost": "Unit Cost",
+            "reserved": "Reserved"
         },
         "status_draft": "Draft",
         "status_shipped": "Shipped",
+        "status_cancelled": "Cancelled",
         "detail_title": "Delivery Order Detail",
         "lines": "Line Items",
         "ship": "Ship",
         "ship_confirm_title": "Ship This Delivery Order?",
-        "ship_confirm_description": "Stock will be issued from Finished Goods and the sales order status will be updated. This action cannot be undone."
+        "ship_confirm_description": "Stock will be issued from Finished Goods and the sales order status will be updated. This action cannot be undone.",
+        "cancel": "Cancel Delivery Order", "cancel_confirm_title": "Cancel this delivery order?", "cancel_confirm_description": "The approved-stock reservation will be released and this delivery can no longer be shipped."
     },
     "sales_invoice": {
         "title": "Sales Invoices",

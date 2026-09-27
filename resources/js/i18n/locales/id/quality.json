@@ -8,6 +8,7 @@
         "description": "Riwayat inspeksi Incoming, In-Process, dan Final.",
         "list_title": "Daftar Inspeksi",
         "empty": "Belum ada inspeksi.",
+        "release": "Quality Release",
         "type_incoming": "Incoming",
         "type_in_process": "In-Process",
         "type_final": "Final",
@@ -31,8 +32,10 @@
         "quantity_passed": "Kuantitas Lulus",
         "notes": "Catatan",
         "notes_placeholder": "Opsional",
-        "submit": "Catat Hasil & Selesaikan Order",
-        "total_to_inspect": "Total yang Diinspeksi"
+        "submit": "Catat Hasil QC",
+        "total_to_inspect": "Total yang Diinspeksi",
+        "result_summary": "Lulus: {{passed}} · Gagal: {{failed}}. Output masih hold sampai Quality Release.",
+        "release": "Lepaskan stok approved"
     },
     "ncr": {
         "title": "Non-Conformance Report (NCR)",

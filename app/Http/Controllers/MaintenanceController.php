@@ -35,10 +35,14 @@ class MaintenanceController extends Controller
 
     public function workOrders(): Response
     {
+        $companyId = app(\App\Services\CurrentCompany::class)->id();
+
         return Inertia::render('maintenance/work-orders/page', [
             'workOrders' => MaintenanceWorkOrder::with(['equipment:id,code,name', 'assignee:id,name', 'creator:id,name'])->latest()->get(),
             'equipment' => MaintenanceEquipment::where('is_active', true)->orderBy('code')->get(['id', 'code', 'name']),
-            'users' => User::orderBy('name')->get(['id', 'name']),
+            'users' => User::whereHas('companies', fn ($query) => $query->where('companies.id', $companyId))
+                ->orderBy('name')
+                ->get(['users.id', 'users.name']),
         ]);
     }
 
@@ -81,7 +85,15 @@ class MaintenanceController extends Controller
             'priority' => ['required', 'integer', 'min:1', 'max:5'], 'scheduled_at' => ['nullable', 'date'],
             'symptom' => ['nullable', 'string'], 'assigned_to' => ['nullable', 'integer'], 'cost_base' => ['nullable', 'numeric', 'min:0'],
         ]);
-        if (isset($validated['assigned_to'])) User::findOrFail($validated['assigned_to']);
+        if (isset($validated['assigned_to'])) {
+            abort_unless(
+                User::whereHas('companies', fn ($query) => $query->where('companies.id', app(\App\Services\CurrentCompany::class)->id()))
+                    ->whereKey($validated['assigned_to'])
+                    ->exists(),
+                422,
+                'The selected assignee is not a member of the current company.',
+            );
+        }
         $service->createWorkOrder($validated, $request->user());
 
         return back()->with('success', 'Draft maintenance work order berhasil dibuat.');

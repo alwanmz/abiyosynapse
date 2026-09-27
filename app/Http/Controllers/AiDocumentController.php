@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AiDocument;
 use App\Services\Ai\AiDocumentService;
 use App\Services\Ai\OcrDraftService;
+use App\Services\TenantLifecycleService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -26,8 +27,10 @@ class AiDocumentController extends Controller
         ]);
     }
 
-    public function store(Request $request, AiDocumentService $service): RedirectResponse
+    public function store(Request $request, AiDocumentService $service, TenantLifecycleService $tenants): RedirectResponse
     {
+        $tenants->assertWithinQuota('ai_documents');
+
         $validated = $request->validate([
             'document_type' => ['required', Rule::in(AiDocumentService::DOCUMENT_TYPES)],
             'file' => ['required', 'file', 'mimes:jpg,jpeg,png,webp,pdf', 'max:20480'],

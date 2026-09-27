@@ -11,7 +11,7 @@ class ProductCategoryController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:product_categories,name',
+            'name' => ['required', 'string', 'max:255', $this->tenantUnique('product_categories', 'name')],
         ]);
 
         ProductCategory::create($validated);
@@ -22,7 +22,7 @@ class ProductCategoryController extends Controller
     public function update(Request $request, ProductCategory $productCategory): RedirectResponse
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:product_categories,name,' . $productCategory->id,
+            'name' => ['required', 'string', 'max:255', $this->tenantUnique('product_categories', 'name', $productCategory->id)],
         ]);
 
         $productCategory->update($validated);

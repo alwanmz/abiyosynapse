@@ -158,7 +158,7 @@ test('completing a production order receives finished goods and posts FG debit /
     $order = $service->release($this->order);
     $service->issueMaterials($order->fresh());
 
-    $completed = $service->complete($order->fresh(), 10);
+    $completed = $service->complete($order->fresh(), 10, 'Service lifecycle test bypasses Final QC intentionally.');
 
     expect($completed->status)->toBe('completed');
     expect((float) $completed->produced_quantity)->toBe(10.0);
@@ -195,7 +195,7 @@ test('full CHR-X1 scenario end to end matches blueprint flow', function () {
     $service->startOperation($operation);
     $service->completeOperation($operation->fresh(), actualMinutes: 45, outputQuantity: 10);
 
-    $completed = $service->complete($order->fresh(), 10);
+    $completed = $service->complete($order->fresh(), 10, 'Blueprint test bypasses Final QC intentionally.');
     expect($completed->status)->toBe('completed');
 
     // Raw material stock depleted by the BOM requirement.

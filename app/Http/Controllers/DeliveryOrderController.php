@@ -30,7 +30,7 @@ class DeliveryOrderController extends Controller
     {
         $validated = $request->validate([
             'lines' => 'required|array|min:1',
-            'lines.*.sales_order_line_id' => 'required|exists:sales_order_lines,id',
+            'lines.*.sales_order_line_id' => ['required', $this->tenantChildExists('sales_order_lines', 'id', 'sales_orders', 'sales_order_id')],
             'lines.*.quantity' => 'required|numeric|min:0.0001',
         ]);
 
@@ -51,6 +51,7 @@ class DeliveryOrderController extends Controller
                 'salesOrder.customer:id,name',
                 'warehouse:id,code,name',
                 'lines.product:id,code,name',
+                'lines.reservations',
             ]),
         ]);
     }
@@ -64,5 +65,16 @@ class DeliveryOrderController extends Controller
         }
 
         return redirect()->back()->with('success', __('messages.delivery_order.shipped'));
+    }
+
+    public function cancel(Request $request, DeliveryOrder $deliveryOrder, DeliveryOrderService $service): RedirectResponse
+    {
+        try {
+            $service->cancel($deliveryOrder, $request->user());
+        } catch (RuntimeException $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+
+        return redirect()->back()->with('success', __('messages.delivery_order.cancelled'));
     }
 }

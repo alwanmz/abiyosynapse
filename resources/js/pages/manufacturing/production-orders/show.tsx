@@ -48,12 +48,25 @@ interface Operation {
     work_center: { id: number; code: string; name: string };
 }
 
+interface Inspection {
+    id: number;
+    type: 'final';
+    quantity_inspected: string;
+    quantity_passed: string;
+    quantity_failed: string;
+    result: 'pass' | 'fail' | 'pending';
+    released_at: string | null;
+}
+
 interface Order {
     id: number;
     number: string;
     planned_quantity: string;
     produced_quantity: string;
+    good_quantity: string;
     rejected_quantity: string;
+    qc_bypassed_at: string | null;
+    quality_released_at: string | null;
     standard_material_cost: string | null;
     actual_material_cost: string | null;
     standard_conversion_cost: string | null;
@@ -72,10 +85,14 @@ interface Order {
     routing: { id: number; code: string };
     components: Component[];
     operations: Operation[];
+    inspections: Inspection[];
 }
 
 interface PageProps {
     order: Order;
+    readiness: {
+        available_for_sale: number;
+    };
 }
 
 const STATUS_VARIANT: Record<Order['status'], 'default' | 'outline' | 'secondary'> = {
@@ -87,10 +104,11 @@ const STATUS_VARIANT: Record<Order['status'], 'default' | 'outline' | 'secondary
     closed: 'outline',
 };
 
-function ProductionOrderShowPage({ order }: PageProps) {
+function ProductionOrderShowPage({ order, readiness }: PageProps) {
     const { t } = useTranslation('manufacturing');
     const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
     const [operationDialog, setOperationDialog] = useState<Operation | null>(null);
+    const [inspectionOperation, setInspectionOperation] = useState<Operation | null>(null);
 
     useBreadcrumbs([
         { title: t('nav.manufacturing'), href: '#' },
@@ -102,8 +120,9 @@ function ProductionOrderShowPage({ order }: PageProps) {
     const { processing: issuing } = useForm({});
     const { processing: submittingQc } = useForm({});
     const { processing: costing } = useForm({});
-    const completeForm = useForm({ produced_quantity: order.planned_quantity });
+    const completeForm = useForm({ produced_quantity: order.planned_quantity, bypass_reason: '' });
     const operationForm = useForm({ actual_minutes: '', output_quantity: '' });
+    const inProcessForm = useForm({ quantity_inspected: order.planned_quantity, quantity_passed: order.planned_quantity, notes: '' });
     const finalInspectionForm = useForm({ quantity_passed: order.planned_quantity, notes: '' });
 
     const handleRelease = () => {
@@ -136,6 +155,10 @@ function ProductionOrderShowPage({ order }: PageProps) {
         });
     };
 
+    const handleQualityRelease = (inspectionId: number) => {
+        router.post(`/quality/inspections/${inspectionId}/release`, {}, { preserveScroll: true });
+    };
+
     const handleStartOperation = (operationId: number) => {
         router.post(`/manufacturing/operations/${operationId}/start`, {}, { preserveScroll: true });
     };
@@ -156,11 +179,29 @@ function ProductionOrderShowPage({ order }: PageProps) {
         });
     };
 
+    const openInProcessInspection = (operation: Operation) => {
+        const quantity = operation.output_quantity ?? order.planned_quantity;
+        inProcessForm.setData({ quantity_inspected: quantity, quantity_passed: quantity, notes: '' });
+        setInspectionOperation(operation);
+    };
+
+    const handleInProcessInspection = () => {
+        if (!inspectionOperation) return;
+        inProcessForm.post(`/manufacturing/operations/${inspectionOperation.id}/in-process-inspection`, {
+            preserveScroll: true,
+            onSuccess: () => setInspectionOperation(null),
+        });
+    };
+
     const canRelease = order.status === 'planned';
     const canIssueMaterials = order.status === 'released' || order.status === 'in_production';
     const canComplete = order.status === 'in_production';
     const canSubmitForQc = order.status === 'in_production';
     const isPendingQc = order.status === 'qc';
+    const finalInspection = order.inspections.find((inspection) => inspection.type === 'final');
+    const canReleaseQuality = isPendingQc && finalInspection !== undefined && finalInspection.released_at === null;
+    const outputApproved = order.qc_bypassed_at !== null || order.quality_released_at !== null ? Number(order.good_quantity) : 0;
+    const outputHold = finalInspection && order.quality_released_at === null ? Number(order.produced_quantity) : Number(order.rejected_quantity);
     const isCosted = order.costed_at !== null;
     const formatCost = (value: string | null) =>
         value === null ? '—' : Number(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -207,11 +248,26 @@ function ProductionOrderShowPage({ order }: PageProps) {
                     </div>
                 </div>
 
+                <Card className="mb-6 overflow-hidden p-0">
+                    <ListHeader title={t('production_order.output_title')} />
+                    <CardContent className="grid gap-3 p-5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
+                        {([
+                            ['planned', order.planned_quantity], ['produced', order.produced_quantity], ['good', order.good_quantity], ['rejected', order.rejected_quantity],
+                            ['hold', outputHold], ['approved', outputApproved], ['ready', readiness.available_for_sale],
+                        ] as const).map(([label, value]) => (
+                            <div key={label} className="border-l-2 border-nx-cyan-500 pl-3">
+                                <p className="text-xs text-muted-foreground">{t(`production_order.output_${label}`)}</p>
+                                <p className="mt-1 font-semibold tabular-nums">{typeof value === 'number' ? value.toFixed(4) : value}</p>
+                            </div>
+                        ))}
+                    </CardContent>
+                </Card>
+
                 {isPendingQc && (
                     <Card className="mb-6 overflow-hidden p-0">
                         <ListHeader title={t('quality:final_inspection.title')} />
                         <CardContent className="p-5">
-                            <p className="mb-4 text-sm text-muted-foreground">{t('quality:final_inspection.description')}</p>
+                            {!finalInspection ? <><p className="mb-4 text-sm text-muted-foreground">{t('quality:final_inspection.description')}</p>
                             <form onSubmit={handleFinalInspection} className="grid gap-4 sm:grid-cols-3 sm:items-end">
                                 <div className="grid gap-2">
                                     <Label htmlFor="quantity_passed">{t('quality:final_inspection.quantity_passed')}</Label>
@@ -246,6 +302,10 @@ function ProductionOrderShowPage({ order }: PageProps) {
                                     </Button>
                                 </div>
                             </form>
+                            </> : <div className="flex flex-wrap items-center justify-between gap-4">
+                                <div className="text-sm text-muted-foreground">{t('quality:final_inspection.result_summary', { passed: finalInspection.quantity_passed, failed: finalInspection.quantity_failed })}</div>
+                                {canReleaseQuality && <Button variant="save" onClick={() => handleQualityRelease(finalInspection.id)}>{t('quality:final_inspection.release')}</Button>}
+                            </div>}
                         </CardContent>
                     </Card>
                 )}
@@ -363,6 +423,11 @@ function ProductionOrderShowPage({ order }: PageProps) {
                                                             {t('production_order.complete_operation')}
                                                         </Button>
                                                     )}
+                                                    {op.status === 'complete' && (
+                                                        <Button variant="outline" size="sm" onClick={() => openInProcessInspection(op)}>
+                                                            {t('production_order.inspect_operation')}
+                                                        </Button>
+                                                    )}
                                                 </TableCell>
                                             </TableRow>
                                         ))
@@ -456,6 +521,16 @@ function ProductionOrderShowPage({ order }: PageProps) {
                                 onChange={(e) => completeForm.setData('produced_quantity', e.target.value)}
                             />
                         </div>
+                        <div className="grid gap-2 text-left">
+                            <Label htmlFor="bypass_reason">{t('production_order.bypass_reason')}</Label>
+                            <Input
+                                id="bypass_reason"
+                                required
+                                value={completeForm.data.bypass_reason}
+                                onChange={(e) => completeForm.setData('bypass_reason', e.target.value)}
+                            />
+                            {completeForm.errors.bypass_reason && <p className="text-sm text-destructive">{completeForm.errors.bypass_reason}</p>}
+                        </div>
                     </div>
                 }
                 confirmLabel={t('production_order.complete_order')}
@@ -508,6 +583,34 @@ function ProductionOrderShowPage({ order }: PageProps) {
                         <Button onClick={handleCompleteOperation} disabled={operationForm.processing}>
                             {t('production_order.complete_operation')}
                         </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={!!inspectionOperation} onOpenChange={(open) => !open && setInspectionOperation(null)}>
+                <DialogContent className="sm:max-w-[440px]">
+                    <DialogHeader>
+                        <DialogTitle>{t('production_order.in_process_inspection_title')}</DialogTitle>
+                        <DialogDescription>{inspectionOperation?.name}</DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="quantity_inspected">{t('production_order.quantity_inspected')}</Label>
+                            <Input id="quantity_inspected" type="number" min={0.0001} step="0.0001" value={inProcessForm.data.quantity_inspected} onChange={(e) => inProcessForm.setData('quantity_inspected', e.target.value)} />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="quantity_passed">{t('production_order.quantity_passed')}</Label>
+                            <Input id="quantity_passed" type="number" min={0} step="0.0001" value={inProcessForm.data.quantity_passed} onChange={(e) => inProcessForm.setData('quantity_passed', e.target.value)} />
+                            {inProcessForm.errors.quantity_passed && <p className="text-sm text-destructive">{inProcessForm.errors.quantity_passed}</p>}
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="in_process_notes">{t('production_order.inspection_notes')}</Label>
+                            <Input id="in_process_notes" value={inProcessForm.data.notes} onChange={(e) => inProcessForm.setData('notes', e.target.value)} />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="cancel" onClick={() => setInspectionOperation(null)}>{t('production_order.cancel')}</Button>
+                        <Button variant="save" onClick={handleInProcessInspection} disabled={inProcessForm.processing}>{t('production_order.record_inspection')}</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

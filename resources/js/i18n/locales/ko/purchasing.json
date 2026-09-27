@@ -127,6 +127,7 @@
         "lines": "품목 라인",
         "quality_incoming_title": "수입 검사 (Quality Incoming)",
         "quality_incoming_description": "각 품목의 품질 합격 수량을 기록하세요. 합격 수량만 재고에 반영되며, 불합격 수량은 자동으로 부적합 보고서(NCR)를 생성합니다.",
+        "quality_release_description": "검사 합격 재고는 품질 릴리스가 완료될 때까지 보류됩니다.",
         "quantity_accepted": "품질 합격 수량",
         "max_prefix": "최대",
         "inspection_notes": "비고",

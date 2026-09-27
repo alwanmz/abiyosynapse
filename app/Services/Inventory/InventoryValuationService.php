@@ -30,6 +30,7 @@ class InventoryValuationService
 {
     public function __construct(
         private readonly CurrentCompany $currentCompany,
+        private readonly StockQualityService $quality,
     ) {
     }
 
@@ -46,6 +47,8 @@ class InventoryValuationService
         ?Model $sourceable = null,
         string $type = 'in',
         ?string $notes = null,
+        string $qualityState = 'approved',
+        array $qualityContext = [],
     ): StockMovement {
         if ($quantity <= 0) {
             throw new RuntimeException('Received quantity must be greater than zero.');
@@ -53,7 +56,7 @@ class InventoryValuationService
 
         $companyId = $this->requireCompanyId();
 
-        return DB::transaction(function () use ($companyId, $product, $warehouse, $quantity, $unitCost, $sourceable, $type, $notes) {
+        return DB::transaction(function () use ($companyId, $product, $warehouse, $quantity, $unitCost, $sourceable, $type, $notes, $qualityState, $qualityContext) {
             $level = $this->lockOrCreateLevel($companyId, $product, $warehouse);
 
             $newQty = (float) $level->quantity_on_hand + $quantity;
@@ -66,25 +69,35 @@ class InventoryValuationService
                 'average_unit_cost' => $newAvgCost,
             ]);
 
-            if ($product->usesFifo()) {
-                StockLot::create([
-                    'company_id' => $companyId,
-                    'product_id' => $product->id,
-                    'warehouse_id' => $warehouse->id,
-                    'received_at' => now(),
-                    'quantity_received' => $quantity,
-                    'quantity_remaining' => $quantity,
-                    'unit_cost' => $unitCost,
-                    'sourceable_type' => $sourceable?->getMorphClass(),
-                    'sourceable_id' => $sourceable?->getKey(),
-                ]);
-            }
+            // Quality segregation needs a traceable layer for every receipt,
+            // including average-cost products. Costing still follows the
+            // product valuation method below; these layers are availability
+            // and quality controls, not a change to average valuation.
+            $lot = StockLot::create([
+                'company_id' => $companyId,
+                'product_id' => $product->id,
+                'warehouse_id' => $warehouse->id,
+                'received_at' => now(),
+                'quantity_received' => $quantity,
+                'quantity_remaining' => $quantity,
+                'quality_state' => $qualityState,
+                'unit_cost' => $unitCost,
+                'sourceable_type' => $sourceable?->getMorphClass(),
+                'sourceable_id' => $sourceable?->getKey(),
+                'quality_inspection_id' => $qualityContext['quality_inspection_id'] ?? null,
+                'non_conformance_report_id' => $qualityContext['non_conformance_report_id'] ?? null,
+            ]);
+
+            $this->quality->increase($product, $warehouse, $qualityState, $quantity);
 
             return StockMovement::create([
                 'company_id' => $companyId,
                 'product_id' => $product->id,
                 'warehouse_id' => $warehouse->id,
+                'stock_lot_id' => $lot->id,
                 'type' => $type,
+                'quality_state' => $qualityState,
+                'quality_event' => 'received',
                 'quantity' => $quantity,
                 'unit_cost' => $unitCost,
                 'total_cost' => $quantity * $unitCost,
@@ -112,6 +125,8 @@ class InventoryValuationService
         ?Model $sourceable = null,
         string $type = 'out',
         ?string $notes = null,
+        string $qualityState = 'approved',
+        array $lotAllocations = [],
     ): array {
         if ($quantity <= 0) {
             throw new RuntimeException('Issued quantity must be greater than zero.');
@@ -119,7 +134,7 @@ class InventoryValuationService
 
         $companyId = $this->requireCompanyId();
 
-        return DB::transaction(function () use ($companyId, $product, $warehouse, $quantity, $sourceable, $type, $notes) {
+        return DB::transaction(function () use ($companyId, $product, $warehouse, $quantity, $sourceable, $type, $notes, $qualityState, $lotAllocations) {
             $level = $this->lockOrCreateLevel($companyId, $product, $warehouse);
 
             if ((float) $level->quantity_on_hand < $quantity) {
@@ -128,9 +143,27 @@ class InventoryValuationService
                 );
             }
 
+            $allocations = $lotAllocations !== []
+                ? $lotAllocations
+                : $this->quality->allocateLots($product, $warehouse, $quantity, $qualityState);
+
+            $allocatedQuantity = array_sum(array_map(fn (array $allocation) => $allocation['quantity'], $allocations));
+            if (abs($allocatedQuantity - $quantity) > 0.0001) {
+                throw new RuntimeException('Stock lot allocations do not match the requested issue quantity.');
+            }
+
+            foreach ($allocations as $allocation) {
+                if ($allocation['lot']->quality_state !== $qualityState) {
+                    throw new RuntimeException('A stock issue may only consume lots from the requested quality state.');
+                }
+            }
+
             $totalCost = $product->usesFifo()
-                ? $this->consumeFifoLayers($companyId, $product, $warehouse, $quantity)
+                ? array_sum(array_map(fn (array $allocation) => $allocation['quantity'] * (float) $allocation['lot']->unit_cost, $allocations))
                 : $quantity * (float) $level->average_unit_cost;
+
+            $this->quality->consumeLots($allocations);
+            $this->quality->decrease($product, $warehouse, $qualityState, $quantity);
 
             $newQty = (float) $level->quantity_on_hand - $quantity;
 
@@ -149,7 +182,10 @@ class InventoryValuationService
                 'company_id' => $companyId,
                 'product_id' => $product->id,
                 'warehouse_id' => $warehouse->id,
+                'stock_lot_id' => count($allocations) === 1 ? $allocations[0]['lot']->id : null,
                 'type' => $type,
+                'quality_state' => $qualityState,
+                'quality_event' => 'issued',
                 'quantity' => $quantity,
                 'unit_cost' => $unitCost,
                 'total_cost' => $totalCost,
@@ -193,46 +229,6 @@ class InventoryValuationService
         }
 
         return $this->issue($product, $warehouse, abs($delta), $sourceable, 'out', $notes)['movement'];
-    }
-
-    /**
-     * Consumes the oldest-first FIFO layers to cover $quantity, splitting
-     * a layer if it only partially covers what's needed. Returns the
-     * total cost of everything consumed.
-     */
-    private function consumeFifoLayers(int $companyId, Product $product, Warehouse $warehouse, float $quantity): float
-    {
-        $remaining = $quantity;
-        $totalCost = 0.0;
-
-        $lots = StockLot::withoutGlobalScopes()
-            ->where('company_id', $companyId)
-            ->where('product_id', $product->id)
-            ->where('warehouse_id', $warehouse->id)
-            ->where('quantity_remaining', '>', 0)
-            ->orderBy('received_at')
-            ->orderBy('id')
-            ->lockForUpdate()
-            ->get();
-
-        foreach ($lots as $lot) {
-            if ($remaining <= 0) {
-                break;
-            }
-
-            $take = min($remaining, (float) $lot->quantity_remaining);
-            $totalCost += $take * (float) $lot->unit_cost;
-            $lot->decrement('quantity_remaining', $take);
-            $remaining -= $take;
-        }
-
-        if ($remaining > 0.0001) {
-            throw new RuntimeException(
-                "FIFO layers for \"{$product->name}\" at \"{$warehouse->name}\" don't cover the requested quantity — {$remaining} short. Stock levels and lot layers are out of sync.",
-            );
-        }
-
-        return $totalCost;
     }
 
     private function refreshFifoDisplayAverage(StockLevel $level): void

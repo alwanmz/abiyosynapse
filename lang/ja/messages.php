@@ -9,6 +9,8 @@ return [
         'deleted' => '会社を削除しました。',
         'has_dependent_data' => 'この会社には関連する業務データが残っているため削除できません。',
         'cannot_delete_only_company' => '唯一の会社は削除できません。',
+        'suspended' => '会社を停止しました。',
+        'activated' => '会社を再び有効にしました。',
     ],
 
     'role' => [
@@ -134,12 +136,16 @@ return [
         'order_not_pending_qc' => 'この製造指図はまだQC待ちの状態ではありません。',
         'passed_exceeds_inspected' => '合格数量は検査数量を超えることはできません。',
         'final_inspection_recorded' => '最終検査を記録しました。QC結果に応じて完成品が処理されました。',
+        'final_inspection_already_recorded' => 'この製造指図の最終検査はすでに記録されています。',
+        'in_process_inspection_recorded' => '工程内検査を記録しました。',
+        'released' => '品質リリースが完了しました。承認済み在庫は販売ルールに従って使用できます。',
     ],
 
     'ncr' => [
         'disposition_recorded' => '不適合処置を記録しました。',
         'corrective_action_recorded' => '是正措置を記録しました。',
         'closed' => '不適合報告書をクローズしました。',
+        'rework_order_created' => '不適合報告書から再作業の製造指図を作成しました。',
     ],
 
     'purchase_request' => [
@@ -171,11 +177,13 @@ return [
         'submitted_for_approval' => '受注を承認申請しました。',
         'approved' => '受注が承認されました。',
         'closed' => '受注をクローズしました。',
+        'inactive_product' => '無効な製品は新しい受注に使用できません。',
     ],
 
     'delivery_order' => [
         'created' => '出荷指図を作成しました。',
         'shipped' => '出荷が完了し、在庫と原価の仕訳が計上されました。',
+        'cancelled' => '出荷指示を取り消し、在庫引当を解除しました。',
     ],
 
     'sales_invoice' => [

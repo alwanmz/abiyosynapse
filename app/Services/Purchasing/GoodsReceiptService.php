@@ -121,7 +121,7 @@ class GoodsReceiptService
                     throw new RuntimeException('Quantity accepted cannot exceed quantity received.');
                 }
 
-                $this->inspectionService->inspect(
+                $inspection = $this->inspectionService->inspect(
                     'incoming',
                     $line,
                     $line->product,
@@ -144,6 +144,8 @@ class GoodsReceiptService
                         $receipt,
                         'in',
                         "Goods receipt {$receipt->number} put away",
+                        'hold',
+                        ['quality_inspection_id' => $inspection->id],
                     );
 
                     $totalAcceptedCost += $accepted * (float) $line->unit_cost;

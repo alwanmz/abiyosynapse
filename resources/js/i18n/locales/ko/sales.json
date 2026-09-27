@@ -74,15 +74,18 @@
             "status": "상태",
             "product": "제품",
             "quantity": "수량",
-            "unit_cost": "단위 원가"
+            "unit_cost": "단위 원가",
+            "reserved": "예약됨"
         },
         "status_draft": "임시저장",
         "status_shipped": "출고됨",
+        "status_cancelled": "취소됨",
         "detail_title": "출고 지시서 상세",
         "lines": "품목 라인",
         "ship": "출고",
         "ship_confirm_title": "이 출고 지시서를 출고하시겠습니까?",
-        "ship_confirm_description": "제품 재고에서 출고 처리되며 판매 주문 상태가 업데이트됩니다. 이 작업은 되돌릴 수 없습니다."
+        "ship_confirm_description": "제품 재고에서 출고 처리되며 판매 주문 상태가 업데이트됩니다. 이 작업은 되돌릴 수 없습니다.",
+        "cancel": "출고 지시 취소", "cancel_confirm_title": "이 출고 지시를 취소하시겠습니까?", "cancel_confirm_description": "승인 재고 예약이 해제되며 이 출고는 더 이상 처리할 수 없습니다."
     },
     "sales_invoice": {
         "title": "판매 청구서",

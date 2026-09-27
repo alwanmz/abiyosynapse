@@ -32,7 +32,7 @@ class SalesInvoiceController extends Controller
             'invoice_date' => 'required|date',
             'due_date' => 'required|date|after_or_equal:invoice_date',
             'lines' => 'required|array|min:1',
-            'lines.*.sales_order_line_id' => 'required|exists:sales_order_lines,id',
+            'lines.*.sales_order_line_id' => ['required', $this->tenantChildExists('sales_order_lines', 'id', 'sales_orders', 'sales_order_id')],
             'lines.*.quantity' => 'required|numeric|min:0.0001',
         ]);
 

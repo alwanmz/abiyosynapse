@@ -1,4 +1,5 @@
 import { ConfirmDialog } from '@/components/confirm-dialog';
+import { PrintDocumentButton } from '@/components/print-document-button';
 import { ListHeader } from '@/components/list-header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -30,7 +31,7 @@ import {
 } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { useBreadcrumbs } from '@/hooks/use-breadcrumbs';
-import { Head, router, useForm } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import { type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -125,7 +126,7 @@ function NcrsPage({ ncrs }: PageProps) {
                                     <TableHead>{t('ncr.table.status')}</TableHead>
                                     <TableHead>{t('ncr.table.disposition')}</TableHead>
                                     <TableHead>{t('ncr.table.created_at')}</TableHead>
-                                    <TableHead className="text-right">Aksi</TableHead>
+                                    <TableHead className="text-right">{t('common.actions')}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -155,7 +156,8 @@ function NcrsPage({ ncrs }: PageProps) {
                                             </TableCell>
                                             <TableCell className="text-sm text-muted-foreground">{ncr.created_at}</TableCell>
                                             <TableCell className="text-right">
-                                                <div className="flex justify-end gap-2">
+                                                <div className="flex flex-wrap justify-end gap-2">
+                                                    <PrintDocumentButton type="ncr" documentId={ncr.id} compact />
                                                     {ncr.status !== 'closed' && !ncr.disposition && (
                                                         <Button
                                                             variant="default"

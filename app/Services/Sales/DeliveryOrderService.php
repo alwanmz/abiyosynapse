@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Services\Accounting\JournalPostingService;
 use App\Services\CurrentCompany;
 use App\Services\Inventory\InventoryValuationService;
+use App\Services\Inventory\StockReservationService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -32,6 +33,7 @@ class DeliveryOrderService
     public function __construct(
         private readonly CurrentCompany $currentCompany,
         private readonly InventoryValuationService $valuation,
+        private readonly StockReservationService $reservations,
         private readonly JournalPostingService $posting,
     ) {
     }
@@ -63,14 +65,22 @@ class DeliveryOrderService
                     throw new RuntimeException("Cannot deliver more than the remaining ordered quantity for product #{$soLine->product_id}.");
                 }
 
-                $delivery->lines()->create([
+                $line = $delivery->lines()->create([
                     'sales_order_line_id' => $soLine->id,
                     'product_id' => $soLine->product_id,
                     'quantity' => $quantity,
                 ]);
+
+                $line->load('product');
+                if (! $line->product->isActive()) {
+                    throw new RuntimeException("Inactive product \"{$line->product->name}\" cannot be added to a delivery order.");
+                }
             }
 
-            return $delivery->fresh('lines');
+            $delivery = $delivery->fresh(['lines.product', 'warehouse']);
+            $this->reservations->reserve($delivery);
+
+            return $delivery->fresh(['lines.reservations', 'warehouse']);
         });
     }
 
@@ -81,9 +91,21 @@ class DeliveryOrderService
         }
 
         return DB::transaction(function () use ($delivery, $shipper) {
+            $delivery->loadMissing(['lines.product', 'lines.salesOrderLine', 'lines.reservations.lot', 'warehouse', 'salesOrder.lines']);
+            $this->reservations->reserve($delivery);
             $totalCost = 0.0;
 
             foreach ($delivery->lines as $line) {
+                $allocations = $this->reservations->allocationsFor($line);
+                if ($line->product->type !== 'service' && $allocations === []) {
+                    throw new RuntimeException("Delivery order {$delivery->number} has no approved stock reservation for \"{$line->product->name}\".");
+                }
+
+                if ($line->product->type === 'service') {
+                    $line->salesOrderLine->increment('delivered_quantity', (float) $line->quantity);
+                    continue;
+                }
+
                 $result = $this->valuation->issue(
                     $line->product,
                     $delivery->warehouse,
@@ -91,6 +113,8 @@ class DeliveryOrderService
                     $delivery,
                     'out',
                     "Delivery order {$delivery->number} shipped",
+                    'approved',
+                    $allocations,
                 );
 
                 $unitCost = (float) $line->quantity > 0 ? $result['total_cost'] / (float) $line->quantity : 0.0;
@@ -116,8 +140,27 @@ class DeliveryOrderService
             $order->update(['status' => $order->fresh('lines')->isFullyDelivered() ? 'fulfilled' : 'partial']);
 
             $delivery->update(['status' => 'shipped', 'shipped_by' => $shipper?->id]);
+            $this->reservations->consume($delivery);
 
             return $delivery->fresh('lines');
+        });
+    }
+
+    public function cancel(DeliveryOrder $delivery, User $actor): DeliveryOrder
+    {
+        if (! $delivery->isDraft()) {
+            throw new RuntimeException("Only a draft delivery order can be cancelled.");
+        }
+
+        return DB::transaction(function () use ($delivery, $actor): DeliveryOrder {
+            $this->reservations->release($delivery);
+            $delivery->auditAs($actor)->update([
+                'status' => 'cancelled',
+                'cancelled_by' => $actor->id,
+                'cancelled_at' => now(),
+            ]);
+
+            return $delivery->fresh('reservations');
         });
     }
 

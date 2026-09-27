@@ -35,18 +35,26 @@ class SalesOrderController extends Controller
     public function store(Request $request, SalesOrderService $service): RedirectResponse
     {
         $validated = $request->validate([
-            'customer_id' => 'required|exists:customers,id',
-            'warehouse_id' => 'required|exists:warehouses,id',
+            'customer_id' => ['required', $this->tenantExists('customers')],
+            'warehouse_id' => ['required', $this->tenantExists('warehouses')],
             'currency_code' => 'nullable|string|size:3|exists:currencies,code',
             'requested_delivery_date' => 'nullable|date',
             'lines' => 'required|array|min:1',
-            'lines.*.product_id' => 'required|exists:products,id',
+            'lines.*.product_id' => ['required', $this->tenantExists('products')],
             'lines.*.quantity' => 'required|numeric|min:0.0001',
             'lines.*.unit_price' => 'required|numeric|min:0',
-            'lines.*.tax_code_id' => 'nullable|exists:tax_codes,id',
+            'lines.*.tax_code_id' => ['nullable', $this->tenantExists('tax_codes')],
         ]);
 
         $customer = Customer::findOrFail($validated['customer_id']);
+        $inactiveProduct = Product::whereIn('id', collect($validated['lines'])->pluck('product_id'))
+            ->where('status', '!=', 'active')
+            ->first();
+
+        if ($inactiveProduct) {
+            return redirect()->back()->withErrors(['lines' => __('messages.sales_order.inactive_product')]);
+        }
+
         $currency = app(CurrencyDocumentService::class)->resolve(
             $validated['currency_code'] ?? null,
             now()->toDateString(),

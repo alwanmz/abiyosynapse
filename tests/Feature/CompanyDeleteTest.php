@@ -8,7 +8,7 @@ use App\Models\User;
 test('super admin can delete a company they are not solely dependent on', function () {
     $user = User::factory()->create();
     $secondCompany = Company::factory()->create();
-    $role = Role::factory()->create();
+    $role = Role::where('name', 'super_admin')->whereNull('company_id')->firstOrFail();
 
     CompanyUser::create([
         'company_id' => $secondCompany->id,

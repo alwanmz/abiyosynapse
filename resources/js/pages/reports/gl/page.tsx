@@ -16,7 +16,7 @@ import { useBreadcrumbs } from '@/hooks/use-breadcrumbs';
 import AppLayout from '@/layouts/app-layout';
 import { router, Head, usePage } from '@inertiajs/react';
 import { IconRefresh } from '@tabler/icons-react';
-import { type FormEvent, type ReactElement, useEffect, useState } from 'react';
+import { type FormEvent, type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type ReportKey = 'trial_balance' | 'general_ledger' | 'profit_loss' | 'balance_sheet' | 'cash_flow' | 'equity' | 'notes' | 'financial_statements';
@@ -118,7 +118,7 @@ interface PageProps {
     balanceSheet?: BalanceSheet;
 }
 
-function FinancialReportsPage(props: PageProps) {
+function FinancialReportsContent(props: PageProps) {
     const { t } = useTranslation('reports');
     const { locale, currentCompany } = usePage().props as { locale?: string; currentCompany?: { currency: string } | null };
     const [report, setReport] = useState<ReportKey>(props.report);
@@ -134,16 +134,6 @@ function FinancialReportsPage(props: PageProps) {
         { title: t('nav.gl_reports'), href: '#' },
         { title: t('title'), href: '/reports/gl' },
     ]);
-
-    useEffect(() => {
-        setReport(props.report);
-        setFromDate(props.fromDate);
-        setToDate(props.toDate);
-        setAccountId(props.selectedAccountId?.toString() ?? '');
-        setStandard(props.snapshot.meta.reporting_standard);
-        setPresentationCurrency(props.snapshot.meta.presentation_currency);
-        setLanguage(props.snapshot.meta.language);
-    }, [props.report, props.fromDate, props.toDate, props.selectedAccountId]);
 
     const formatCurrency = (value: number) =>
         new Intl.NumberFormat(locale ?? 'id-ID', {
@@ -526,6 +516,20 @@ function StatementSection({
             </div>
         </section>
     );
+}
+
+function FinancialReportsPage(props: PageProps) {
+    const stateKey = [
+        props.report,
+        props.fromDate,
+        props.toDate,
+        props.selectedAccountId ?? '',
+        props.snapshot.meta.reporting_standard,
+        props.snapshot.meta.presentation_currency,
+        props.snapshot.meta.language,
+    ].join(':');
+
+    return <FinancialReportsContent key={stateKey} {...props} />;
 }
 
 FinancialReportsPage.layout = (page: ReactElement) => <AppLayout>{page}</AppLayout>;

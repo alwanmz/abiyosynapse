@@ -8,6 +8,7 @@
         "description": "수입검사, 공정검사, 최종검사 이력입니다.",
         "list_title": "검사 목록",
         "empty": "아직 검사 기록이 없습니다.",
+        "release": "품질 릴리스",
         "type_incoming": "수입검사",
         "type_in_process": "공정검사",
         "type_final": "최종검사",
@@ -31,8 +32,10 @@
         "quantity_passed": "합격 수량",
         "notes": "비고",
         "notes_placeholder": "선택 사항",
-        "submit": "결과 기록 및 지시서 완료",
-        "total_to_inspect": "총 검사 수량"
+        "submit": "QC 결과 기록",
+        "total_to_inspect": "총 검사 수량",
+        "result_summary": "합격: {{passed}} · 불합격: {{failed}}. 품질 릴리스 전까지 생산량은 보류됩니다.",
+        "release": "승인 재고 릴리스"
     },
     "ncr": {
         "title": "부적합 보고서 (NCR)",

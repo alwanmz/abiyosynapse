@@ -45,13 +45,13 @@ class ArReceiptController extends Controller
     public function store(Request $request, ArReceiptService $service): RedirectResponse
     {
         $validated = $request->validate([
-            'customer_id' => 'required|exists:customers,id',
-            'bank_account_id' => 'required|exists:bank_accounts,id',
+            'customer_id' => ['required', $this->tenantExists('customers')],
+            'bank_account_id' => ['required', $this->tenantExists('bank_accounts')],
             'receipt_date' => 'required|date',
             'amount' => 'required|numeric|min:0.01',
             'reference' => 'nullable|string|max:255',
             'lines' => 'required|array|min:1',
-            'lines.*.sales_invoice_id' => 'required|exists:sales_invoices,id',
+            'lines.*.sales_invoice_id' => ['required', $this->tenantExists('sales_invoices')],
             'lines.*.amount_applied' => 'required|numeric|min:0.01',
         ]);
 

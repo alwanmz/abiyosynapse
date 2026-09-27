@@ -8,11 +8,13 @@ export function UserInfo({
     user: User;
     showEmail?: boolean;
 }) {
-    const handleTag = (user as any).username
-        ? `@${(user as any).username}`
+    const username = typeof user.username === 'string' ? user.username : null;
+    const handleTag = username
+        ? `@${username}`
         : user.email
           ? `@${user.email.split('@')[0]}`
           : '';
+    const secondaryLabel = showEmail ? user.email : handleTag;
 
     return (
         <>
@@ -28,12 +30,12 @@ export function UserInfo({
                 >
                     {user.name}
                 </span>
-                {handleTag && (
+                {secondaryLabel && (
                     <span
                         className="truncate text-xs text-muted-foreground"
-                        title={handleTag}
+                        title={secondaryLabel}
                     >
-                        {handleTag}
+                        {secondaryLabel}
                     </span>
                 )}
             </div>

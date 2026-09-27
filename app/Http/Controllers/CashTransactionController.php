@@ -36,10 +36,10 @@ class CashTransactionController extends Controller
     public function store(Request $request, CashTransactionService $service): RedirectResponse
     {
         $validated = $request->validate([
-            'bank_account_id' => 'required|exists:bank_accounts,id',
+            'bank_account_id' => ['required', $this->tenantExists('bank_accounts')],
             'type' => 'required|in:in,out',
             'transaction_date' => 'required|date',
-            'counter_account_id' => 'required|exists:accounts,id',
+            'counter_account_id' => ['required', $this->tenantExists('accounts')],
             'amount' => 'required|numeric|min:0.01',
             'description' => 'required|string|max:255',
             'reference' => 'nullable|string|max:255',

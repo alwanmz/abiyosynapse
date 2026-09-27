@@ -9,6 +9,8 @@ return [
         'deleted' => '公司删除成功。',
         'has_dependent_data' => '该公司仍有关联的业务数据，无法删除。',
         'cannot_delete_only_company' => '您无法删除您唯一的公司。',
+        'suspended' => '公司已暂停使用。',
+        'activated' => '公司已重新启用。',
     ],
 
     'role' => [
@@ -134,12 +136,16 @@ return [
         'order_not_pending_qc' => '该生产工单尚未处于待质检状态。',
         'passed_exceeds_inspected' => '合格数量不能超过检验数量。',
         'final_inspection_recorded' => '终检记录成功，成品已根据质检结果处理。',
+        'final_inspection_already_recorded' => '该生产工单已记录终检。',
+        'in_process_inspection_recorded' => '过程检验记录成功。',
+        'released' => '质量放行完成。已批准库存现在可按销售规则使用。',
     ],
 
     'ncr' => [
         'disposition_recorded' => '不合格处置意见记录成功。',
         'corrective_action_recorded' => '纠正措施记录成功。',
         'closed' => '不合格报告已关闭。',
+        'rework_order_created' => '已从不合格报告创建返工生产工单。',
     ],
 
     'purchase_request' => [
@@ -171,11 +177,13 @@ return [
         'submitted_for_approval' => '销售订单已提交审批。',
         'approved' => '销售订单审批通过。',
         'closed' => '销售订单已关闭。',
+        'inactive_product' => '已停用的产品不能用于新的销售订单。',
     ],
 
     'delivery_order' => [
         'created' => '发货单创建成功。',
         'shipped' => '发货成功，库存与成本分录已过账。',
+        'cancelled' => '发货单已取消，库存预留已释放。',
     ],
 
     'sales_invoice' => [

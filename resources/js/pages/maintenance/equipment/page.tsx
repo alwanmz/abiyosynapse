@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { useBreadcrumbs } from '@/hooks/use-breadcrumbs';
 import AppLayout from '@/layouts/app-layout';
 import { Head, useForm, router } from '@inertiajs/react';
-import { Gauge, Plus, RefreshCw } from 'lucide-react';
+import { Plus, RefreshCw } from 'lucide-react';
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 

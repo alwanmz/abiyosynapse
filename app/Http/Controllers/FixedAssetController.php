@@ -40,10 +40,10 @@ class FixedAssetController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'category' => 'nullable|string|max:100',
-            'asset_account_id' => 'required|exists:accounts,id',
-            'accumulated_depreciation_account_id' => 'required|exists:accounts,id',
-            'depreciation_expense_account_id' => 'required|exists:accounts,id',
-            'source_account_id' => 'required|exists:accounts,id',
+            'asset_account_id' => ['required', $this->tenantExists('accounts')],
+            'accumulated_depreciation_account_id' => ['required', $this->tenantExists('accounts')],
+            'depreciation_expense_account_id' => ['required', $this->tenantExists('accounts')],
+            'source_account_id' => ['required', $this->tenantExists('accounts')],
             'acquisition_date' => 'required|date',
             'placed_in_service_date' => 'nullable|date|after_or_equal:acquisition_date',
             'acquisition_cost' => 'required|numeric|min:0.01',
@@ -94,7 +94,7 @@ class FixedAssetController extends Controller
         $validated = $request->validate([
             'disposal_date' => 'required|date',
             'proceeds' => 'required|numeric|min:0',
-            'proceeds_account_id' => 'nullable|exists:accounts,id',
+            'proceeds_account_id' => ['nullable', $this->tenantExists('accounts')],
         ]);
 
         try {

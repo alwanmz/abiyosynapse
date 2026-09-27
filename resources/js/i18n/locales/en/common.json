@@ -17,7 +17,9 @@
         "search": "Search",
         "confirm": "Confirm",
         "close": "Close",
-        "print": "Print"
+        "actions": "Actions",
+        "print": "Print",
+        "export_excel": "Export Excel"
     },
     "status": {
         "active": "Active",

@@ -8,10 +8,14 @@
         "description": "查看各产品和仓库的当前库存余额。",
         "list_title": "库存余额",
         "all_warehouses": "所有仓库",
+        "all_categories": "全部类别", "category_raw_material": "原材料", "category_wip": "在制品/返工", "category_finished_goods": "成品", "all_quality": "全部质量状态", "all_readiness": "全部就绪状态", "ready_for_sale": "可销售",
+        "quality_pending": "待处理", "quality_approved": "已批准", "quality_hold": "质量冻结", "quality_rejected": "不合格", "quality_rework": "返工",
+        "readiness_not_configured": "尚未配置", "readiness_pending_qc": "等待质检", "readiness_quality_hold": "质量冻结", "readiness_rework_required": "需要返工", "readiness_out_of_stock": "缺货", "readiness_ready_for_sale": "可销售",
         "table": {
             "product": "产品",
             "warehouse": "仓库",
             "quantity_on_hand": "数量",
+            "approved": "已批准", "hold": "质量冻结", "rejected_rework": "不合格/返工", "reserved": "已预留", "available": "可销售", "readiness": "就绪状态",
             "average_cost": "平均成本",
             "total_value": "总价值"
         },

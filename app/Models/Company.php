@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Company extends Model
 {
@@ -26,6 +28,10 @@ class Company extends Model
         'fiscal_year_start_month',
         'is_active',
         'trial_ends_at',
+        'owner_id',
+        'status',
+        'suspended_at',
+        'suspension_reason',
     ];
 
     protected function casts(): array
@@ -35,6 +41,7 @@ class Company extends Model
             'fiscal_year_start_month' => 'integer',
             'trial_ends_at' => 'datetime',
             'comparative_period_enabled' => 'boolean',
+            'suspended_at' => 'datetime',
         ];
     }
 
@@ -44,7 +51,16 @@ class Company extends Model
      */
     public function isTrialExpired(): bool
     {
-        return $this->trial_ends_at !== null && $this->trial_ends_at->isPast();
+        $trialEndsAt = $this->subscription?->trial_ends_at ?? $this->trial_ends_at;
+
+        return $trialEndsAt !== null && $trialEndsAt->isPast();
+    }
+
+    public function isOperational(): bool
+    {
+        return $this->is_active
+            && $this->status === 'active'
+            && ($this->subscription?->isOperational() ?? true);
     }
 
     public function users(): BelongsToMany
@@ -58,6 +74,16 @@ class Company extends Model
     public function memberships(): HasMany
     {
         return $this->hasMany(CompanyUser::class);
+    }
+
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    public function subscription(): HasOne
+    {
+        return $this->hasOne(CompanySubscription::class);
     }
 
     public function accounts(): HasMany

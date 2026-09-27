@@ -8,10 +8,14 @@
         "description": "Lihat saldo stok saat ini per produk dan gudang.",
         "list_title": "Saldo Stok",
         "all_warehouses": "Semua Gudang",
+        "all_categories": "Semua kategori", "category_raw_material": "Bahan baku", "category_wip": "WIP / rework", "category_finished_goods": "Barang jadi", "all_quality": "Semua kualitas", "all_readiness": "Semua kesiapan", "ready_for_sale": "Siap dijual",
+        "quality_pending": "Pending", "quality_approved": "Disetujui", "quality_hold": "Quality hold", "quality_rejected": "Ditolak", "quality_rework": "Rework",
+        "readiness_not_configured": "Belum dikonfigurasi", "readiness_pending_qc": "Menunggu QC", "readiness_quality_hold": "Ditahan kualitas", "readiness_rework_required": "Perlu rework", "readiness_out_of_stock": "Stok habis", "readiness_ready_for_sale": "Siap dijual",
         "table": {
             "product": "Produk",
             "warehouse": "Gudang",
             "quantity_on_hand": "Kuantitas",
+            "approved": "Approved", "hold": "Quality hold", "rejected_rework": "Reject/rework", "reserved": "Reserved", "available": "Siap dijual", "readiness": "Kesiapan",
             "average_cost": "Biaya Rata-rata",
             "total_value": "Nilai Total"
         },

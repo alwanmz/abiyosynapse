@@ -20,7 +20,7 @@ class WarehouseController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'code' => 'required|string|max:20|unique:warehouses,code',
+            'code' => ['required', 'string', 'max:20', $this->tenantUnique('warehouses', 'code')],
             'name' => 'required|string|max:255',
             'address' => 'nullable|string',
         ]);
@@ -33,7 +33,7 @@ class WarehouseController extends Controller
     public function update(Request $request, Warehouse $warehouse): RedirectResponse
     {
         $validated = $request->validate([
-            'code' => 'required|string|max:20|unique:warehouses,code,' . $warehouse->id,
+            'code' => ['required', 'string', 'max:20', $this->tenantUnique('warehouses', 'code', $warehouse->id)],
             'name' => 'required|string|max:255',
             'address' => 'nullable|string',
             'is_active' => 'boolean',

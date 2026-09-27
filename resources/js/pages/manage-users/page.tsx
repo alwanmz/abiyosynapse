@@ -2,6 +2,7 @@ import { ListHeader } from '@/components/list-header';
 import { Card, CardContent } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { useBreadcrumbs } from '@/hooks/use-breadcrumbs';
+import { type SharedData } from '@/types';
 import { User } from '@/types/user';
 import { Head, usePage } from '@inertiajs/react';
 import { type ReactElement, useState } from 'react';
@@ -36,7 +37,7 @@ interface ManageUsersProps {
 
 function ManageUsersPage({ users, roles }: ManageUsersProps) {
     const { t } = useTranslation('manage-users');
-    const { auth } = usePage().props as any;
+    const { auth } = usePage<SharedData>().props;
     const currentUserId = auth?.user?.id;
 
     useBreadcrumbs([

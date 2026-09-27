@@ -1,4 +1,5 @@
 import { ConfirmDialog } from '@/components/confirm-dialog';
+import { PrintDocumentButton } from '@/components/print-document-button';
 import { ListHeader } from '@/components/list-header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -249,6 +250,7 @@ function BomsPage({ boms, products, unitOfMeasures }: PageProps) {
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex items-center justify-end gap-1">
+                                                    <PrintDocumentButton type="bom" documentId={bom.id} compact />
                                                     {bom.status === 'draft' ? (
                                                         <>
                                                             <Button variant="ghost" size="icon" onClick={() => openEdit(bom)} title={t('bom.edit_title')}>

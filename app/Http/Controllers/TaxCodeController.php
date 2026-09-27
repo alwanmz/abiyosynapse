@@ -23,10 +23,10 @@ class TaxCodeController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'code' => 'required|string|max:20|unique:tax_codes,code',
+            'code' => ['required', 'string', 'max:20', $this->tenantUnique('tax_codes', 'code')],
             'name' => 'required|string|max:255',
             'rate' => 'required|numeric|min:0|max:100',
-            'account_id' => 'nullable|exists:accounts,id',
+            'account_id' => ['nullable', $this->tenantExists('accounts')],
         ]);
 
         TaxCode::create($validated);
@@ -37,10 +37,10 @@ class TaxCodeController extends Controller
     public function update(Request $request, TaxCode $taxCode): RedirectResponse
     {
         $validated = $request->validate([
-            'code' => 'required|string|max:20|unique:tax_codes,code,' . $taxCode->id,
+            'code' => ['required', 'string', 'max:20', $this->tenantUnique('tax_codes', 'code', $taxCode->id)],
             'name' => 'required|string|max:255',
             'rate' => 'required|numeric|min:0|max:100',
-            'account_id' => 'nullable|exists:accounts,id',
+            'account_id' => ['nullable', $this->tenantExists('accounts')],
             'is_active' => 'boolean',
         ]);
 

@@ -6,12 +6,12 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { useActiveUrl } from '@/hooks/use-active-url';
-import { type NavItem } from '@/types';
+import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 
 export function NavMain({ items = [], label = 'Platform' }: { items: NavItem[]; label?: string }) {
     const { urlIsActive } = useActiveUrl();
-    const { unreadNotifications } = usePage().props as any;
+    const { unreadNotifications = 0 } = usePage<SharedData & { unreadNotifications?: number }>().props;
 
     return (
         <SidebarGroup className="px-2 py-0">

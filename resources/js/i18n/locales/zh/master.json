@@ -26,7 +26,14 @@
         "name_placeholder": "例如：件",
         "empty": "暂无单位。",
         "delete_title": "删除单位？",
-        "delete_confirm_prefix": "确定要删除"
+        "delete_confirm_prefix": "确定要删除",
+        "readiness": {
+            "title": "产品就绪状态", "back": "返回产品", "warehouse": "仓库", "no_warehouse": "请选择或配置仓库以评估产品就绪状态。", "available_for_sale": "可销售数量", "reserved": "已预留", "requirements": "配置检查", "reasons": "状态原因", "no_reasons": "该产品已可用于销售流程。",
+            "status_not_configured": "尚未配置", "status_pending_qc": "等待质检", "status_quality_hold": "质量冻结", "status_rework_required": "需要返工", "status_out_of_stock": "缺货", "status_ready_for_sale": "可销售",
+            "quantity_pending": "待处理", "quantity_approved": "已批准", "quantity_hold": "质量冻结", "quantity_rejected": "不合格", "quantity_rework": "返工",
+            "config_product_active": "产品已启用", "config_bom_active": "有效 BOM", "config_routing_active": "有效工艺路线", "config_selling_price_available": "已有售价", "config_tax_available": "已有税码", "config_currency_available": "已有币种",
+            "reason_product_active": "产品尚未启用", "reason_bom_active": "没有有效 BOM", "reason_routing_active": "没有有效工艺路线", "reason_selling_price_available": "尚未设置售价", "reason_tax_available": "没有有效税码", "reason_currency_available": "没有有效币种", "reason_no_available_stock": "没有可销售的已批准库存"
+        }
     },
     "warehouse": {
         "title": "仓库",

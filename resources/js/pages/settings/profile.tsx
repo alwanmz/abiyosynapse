@@ -23,7 +23,7 @@ function Profile({
     status?: string;
 }) {
     const { auth } = usePage<SharedData>().props;
-    const [savedAt, setSavedAt] = useState<number | null>(null);
+    const [recentlySuccessful, setRecentlySuccessful] = useState(false);
 
     useBreadcrumbs([
         {
@@ -54,15 +54,13 @@ function Profile({
             forceFormData: true,
             preserveScroll: true,
             onSuccess: () => {
-                setSavedAt(Date.now());
+                setRecentlySuccessful(true);
+                window.setTimeout(() => setRecentlySuccessful(false), 2000);
                 setData('avatar', null);
                 setData('remove_avatar', false);
             },
         });
     };
-
-    // Show "Saved" for 2s after a successful save.
-    const recentlySuccessful = savedAt !== null && Date.now() - savedAt < 2000;
 
     return (
         <>

@@ -1,4 +1,5 @@
 import { ConfirmDialog } from '@/components/confirm-dialog';
+import { PrintDocumentButton } from '@/components/print-document-button';
 import { ListHeader } from '@/components/list-header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -253,6 +254,7 @@ function FixedAssetsPage({ fixedAssets, accounts, currencies }: PageProps) {
                                                 </TableCell>
                                                 <TableCell>
                                                     <div className="flex items-center justify-end gap-1">
+                                                        <PrintDocumentButton type="fixed_asset" documentId={asset.id} compact />
                                                         <Button variant="ghost" size="icon" onClick={() => setDetailAsset(asset)} title={t('asset.details')}>
                                                             <IconEye className="size-4" />
                                                         </Button>

@@ -127,6 +127,7 @@
         "lines": "Baris Item",
         "quality_incoming_title": "Quality Incoming",
         "quality_incoming_description": "Catat kuantitas yang diterima QC untuk setiap item. Hanya kuantitas yang diterima yang akan masuk ke stok; kuantitas yang ditolak otomatis membuka NCR.",
+        "quality_release_description": "Stok yang lolos inspeksi masih ditahan sampai Quality Release dilakukan.",
         "quantity_accepted": "Kuantitas Diterima QC",
         "max_prefix": "maks",
         "inspection_notes": "Catatan",

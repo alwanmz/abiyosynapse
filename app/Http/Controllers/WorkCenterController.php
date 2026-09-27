@@ -49,7 +49,7 @@ class WorkCenterController extends Controller
     private function validated(Request $request, ?int $ignoreId = null): array
     {
         return $request->validate([
-            'code' => 'required|string|max:20|unique:work_centers,code' . ($ignoreId ? ",{$ignoreId}" : ''),
+            'code' => ['required', 'string', 'max:20', $this->tenantUnique('work_centers', 'code', $ignoreId)],
             'name' => 'required|string|max:255',
             'capacity_per_day_minutes' => 'required|numeric|min:0',
             'cost_rate_per_minute' => 'required|numeric|min:0',

@@ -2,28 +2,30 @@ import { usePage } from '@inertiajs/react';
 import { CheckCircle, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+interface FlashProps extends Record<string, unknown> {
+    flash?: {
+        success?: string | null;
+        error?: string | null;
+    };
+}
+
 export function FlashMessage() {
-    const { flash } = usePage().props as any;
-    const [visible, setVisible] = useState(false);
-    const [current, setCurrent] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+    const { flash } = usePage<FlashProps>().props;
+    const current = flash?.success
+        ? { type: 'success' as const, message: flash.success }
+        : flash?.error
+          ? { type: 'error' as const, message: flash.error }
+          : null;
+    const flashKey = current ? `${current.type}:${current.message}` : null;
+    const [dismissedKey, setDismissedKey] = useState<string | null>(null);
 
     useEffect(() => {
-        if (flash?.success) {
-            setCurrent({ type: 'success', message: flash.success });
-            setVisible(true);
-        } else if (flash?.error) {
-            setCurrent({ type: 'error', message: flash.error });
-            setVisible(true);
-        }
-    }, [flash?.success, flash?.error]);
-
-    useEffect(() => {
-        if (!visible) return;
-        const timer = setTimeout(() => setVisible(false), 4000);
+        if (!flashKey) return;
+        const timer = setTimeout(() => setDismissedKey(flashKey), 4000);
         return () => clearTimeout(timer);
-    }, [visible]);
+    }, [flashKey]);
 
-    if (!visible || !current) return null;
+    if (!current || dismissedKey === flashKey) return null;
 
     const isSuccess = current.type === 'success';
 
@@ -42,7 +44,8 @@ export function FlashMessage() {
             )}
             <span className="text-sm font-medium">{current.message}</span>
             <button
-                onClick={() => setVisible(false)}
+                type="button"
+                onClick={() => setDismissedKey(flashKey)}
                 className="ml-2 opacity-60 hover:opacity-100"
             >
                 ✕

@@ -9,6 +9,8 @@ return [
         'deleted' => 'Perusahaan berhasil dihapus.',
         'has_dependent_data' => 'Perusahaan tidak dapat dihapus karena masih memiliki data bisnis terkait.',
         'cannot_delete_only_company' => 'Anda tidak dapat menghapus satu-satunya perusahaan Anda.',
+        'suspended' => 'Perusahaan berhasil ditangguhkan.',
+        'activated' => 'Perusahaan berhasil diaktifkan kembali.',
     ],
 
     'role' => [
@@ -134,12 +136,16 @@ return [
         'order_not_pending_qc' => 'Production order ini belum berstatus menunggu QC.',
         'passed_exceeds_inspected' => 'Kuantitas lulus tidak boleh melebihi kuantitas yang diinspeksi.',
         'final_inspection_recorded' => 'Inspeksi akhir berhasil dicatat, barang jadi telah diproses sesuai hasil QC.',
+        'final_inspection_already_recorded' => 'Inspeksi akhir untuk production order ini sudah dicatat.',
+        'in_process_inspection_recorded' => 'Inspeksi in-process berhasil dicatat.',
+        'released' => 'Quality Release berhasil dilakukan. Stok approved kini dapat dipakai sesuai aturan penjualan.',
     ],
 
     'ncr' => [
         'disposition_recorded' => 'Disposisi NCR berhasil dicatat.',
         'corrective_action_recorded' => 'Tindakan korektif berhasil dicatat.',
         'closed' => 'NCR berhasil ditutup.',
+        'rework_order_created' => 'Production order rework berhasil dibuat dari NCR.',
     ],
 
     'purchase_request' => [
@@ -171,11 +177,13 @@ return [
         'submitted_for_approval' => 'Sales order berhasil diajukan untuk persetujuan.',
         'approved' => 'Sales order berhasil disetujui.',
         'closed' => 'Sales order berhasil ditutup.',
+        'inactive_product' => 'Produk nonaktif tidak dapat dipakai untuk sales order baru.',
     ],
 
     'delivery_order' => [
         'created' => 'Delivery order berhasil dibuat.',
         'shipped' => 'Barang berhasil dikirim, stok dan jurnal COGS telah diposting.',
+        'cancelled' => 'Delivery order dibatalkan dan reservasi stok telah dilepas.',
     ],
 
     'sales_invoice' => [

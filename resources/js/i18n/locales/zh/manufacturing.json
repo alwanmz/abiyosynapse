@@ -175,7 +175,12 @@
         "conversion_variance": "转换差异",
         "standard_total": "标准总成本",
         "actual_total": "实际总成本",
-        "variance": "总差异"
+        "variance": "总差异",
+        "bypass_reason": "跳过质检原因",
+        "cancel": "取消",
+        "output_title": "生产产出与销售准备",
+        "output_planned": "计划", "output_produced": "已生产", "output_good": "合格", "output_rejected": "不合格", "output_hold": "质量冻结", "output_approved": "已批准", "output_ready": "可销售",
+        "inspect_operation": "过程质检", "in_process_inspection_title": "过程检验", "quantity_inspected": "检验数量", "quantity_passed": "合格数量", "inspection_notes": "备注", "record_inspection": "记录检验"
     },
     "mrp": {
         "title": "物料需求计划（MRP）",

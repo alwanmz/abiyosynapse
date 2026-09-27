@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Company;
 use App\Models\CompanyCurrency;
 use App\Models\Currency;
+use App\Services\CurrentCompany;
 use Illuminate\Database\Seeder;
 
 class CurrencySeeder extends Seeder
@@ -22,11 +23,19 @@ class CurrencySeeder extends Seeder
             Currency::updateOrCreate(['code' => $currency['code']], [...$currency, 'is_active' => true]);
         }
 
-        Company::query()->each(function (Company $company): void {
-            CompanyCurrency::updateOrCreate(
-                ['company_id' => $company->id, 'currency_code' => $company->currency],
-                ['is_active' => true, 'is_base' => true],
-            );
-        });
+        $context = app(CurrentCompany::class);
+        $previousCompany = $context->get();
+
+        try {
+            Company::query()->each(function (Company $company) use ($context): void {
+                $context->set($company);
+                CompanyCurrency::updateOrCreate(
+                    ['company_id' => $company->id, 'currency_code' => $company->currency],
+                    ['is_active' => true, 'is_base' => true],
+                );
+            });
+        } finally {
+            $context->set($previousCompany);
+        }
     }
 }

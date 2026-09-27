@@ -17,7 +17,9 @@
         "search": "検索",
         "confirm": "確認",
         "close": "閉じる",
-        "print": "印刷"
+        "actions": "操作",
+        "print": "印刷",
+        "export_excel": "Excel出力"
     },
     "status": {
         "active": "有効",

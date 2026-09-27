@@ -17,6 +17,9 @@ class ProductionOrder extends Model
 
     protected $fillable = [
         'company_id',
+        'parent_production_order_id',
+        'source_ncr_id',
+        'is_rework',
         'number',
         'product_id',
         'bom_id',
@@ -26,7 +29,13 @@ class ProductionOrder extends Model
         'cost_currency_code',
         'cost_exchange_rate',
         'produced_quantity',
+        'good_quantity',
         'rejected_quantity',
+        'qc_bypass_reason',
+        'qc_bypassed_by',
+        'qc_bypassed_at',
+        'quality_released_by',
+        'quality_released_at',
         'standard_material_cost',
         'actual_material_cost',
         'standard_conversion_cost',
@@ -52,7 +61,9 @@ class ProductionOrder extends Model
         return [
             'planned_quantity' => 'decimal:4',
             'produced_quantity' => 'decimal:4',
+            'good_quantity' => 'decimal:4',
             'rejected_quantity' => 'decimal:4',
+            'is_rework' => 'boolean',
             'standard_material_cost' => 'decimal:2',
             'actual_material_cost' => 'decimal:2',
             'standard_conversion_cost' => 'decimal:2',
@@ -70,6 +81,8 @@ class ProductionOrder extends Model
             'released_at' => 'datetime',
             'completed_at' => 'datetime',
             'costed_at' => 'datetime',
+            'qc_bypassed_at' => 'datetime',
+            'quality_released_at' => 'datetime',
         ];
     }
 
@@ -96,6 +109,26 @@ class ProductionOrder extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function parentProductionOrder(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_production_order_id');
+    }
+
+    public function reworkOrders(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_production_order_id');
+    }
+
+    public function sourceNcr(): BelongsTo
+    {
+        return $this->belongsTo(NonConformanceReport::class, 'source_ncr_id');
+    }
+
+    public function qualityReleaser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'quality_released_by');
     }
 
     public function operations(): HasMany

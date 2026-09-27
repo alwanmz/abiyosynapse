@@ -1,3 +1,4 @@
+import { PrintDocumentButton } from '@/components/print-document-button';
 import { ListHeader } from '@/components/list-header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -132,12 +133,13 @@ function CashTransactionsPage({ transactions, bankAccounts, counterAccounts }: P
                                     <TableHead>{t('cash_transaction.table.counter_account')}</TableHead>
                                     <TableHead className="text-right">{t('cash_transaction.table.amount')}</TableHead>
                                     <TableHead>{t('cash_transaction.table.description')}</TableHead>
+                                    <TableHead className="text-right">{t('common.actions')}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {transactions.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
+                                        <TableCell colSpan={8} className="h-24 text-center text-muted-foreground">
                                             {t('cash_transaction.empty')}
                                         </TableCell>
                                     </TableRow>
@@ -162,6 +164,11 @@ function CashTransactionsPage({ transactions, bankAccounts, counterAccounts }: P
                                             <TableCell className="text-right tabular-nums">{transaction.amount}</TableCell>
                                             <TableCell className="text-sm text-muted-foreground">
                                                 {transaction.description}
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <div className="flex justify-end">
+                                                    <PrintDocumentButton type="cash_transaction" documentId={transaction.id} compact />
+                                                </div>
                                             </TableCell>
                                         </TableRow>
                                     ))

@@ -26,7 +26,7 @@ class BankReconciliationController extends Controller
     public function store(Request $request, BankReconciliationService $service): RedirectResponse
     {
         $validated = $request->validate([
-            'bank_account_id' => 'required|exists:bank_accounts,id',
+            'bank_account_id' => ['required', $this->tenantExists('bank_accounts')],
             'statement_date' => 'required|date',
             'statement_balance' => 'required|numeric',
         ]);
@@ -55,7 +55,7 @@ class BankReconciliationController extends Controller
     {
         $validated = $request->validate([
             'lines' => 'required|array|min:1',
-            'lines.*.id' => 'required|exists:bank_reconciliation_lines,id',
+            'lines.*.id' => ['required', $this->tenantChildExists('bank_reconciliation_lines', 'id', 'bank_reconciliations', 'bank_reconciliation_id')],
             'lines.*.is_cleared' => 'required|boolean',
         ]);
 

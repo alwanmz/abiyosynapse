@@ -1,3 +1,4 @@
+import { PrintDocumentButton } from '@/components/print-document-button';
 import { ListHeader } from '@/components/list-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -187,12 +188,13 @@ function ArReceiptsPage({ receipts, customers, bankAccounts, outstandingInvoices
                                     <TableHead>{t('ar_receipt.table.date')}</TableHead>
                                     <TableHead>{t('ar_receipt.table.invoices')}</TableHead>
                                     <TableHead className="text-right">{t('ar_receipt.table.amount')}</TableHead>
+                                    <TableHead className="text-right">{t('common.actions')}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {receipts.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                                        <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
                                             {t('ar_receipt.empty')}
                                         </TableCell>
                                     </TableRow>
@@ -216,6 +218,11 @@ function ArReceiptsPage({ receipts, customers, bankAccounts, outstandingInvoices
                                                 {receipt.lines.map((line) => line.sales_invoice.number).join(', ')}
                                             </TableCell>
                                             <TableCell className="text-right tabular-nums">{receipt.amount}</TableCell>
+                                            <TableCell className="text-right">
+                                                <div className="flex justify-end">
+                                                    <PrintDocumentButton type="ar_receipt" documentId={receipt.id} compact />
+                                                </div>
+                                            </TableCell>
                                         </TableRow>
                                     ))
                                 )}

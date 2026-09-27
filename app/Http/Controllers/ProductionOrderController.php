@@ -11,6 +11,7 @@ use App\Models\Warehouse;
 use App\Services\CurrentCompany;
 use App\Services\Manufacturing\ProductionCostingService;
 use App\Services\Manufacturing\ProductionOrderService;
+use App\Services\Manufacturing\ProductReadinessService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -38,8 +39,8 @@ class ProductionOrderController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'warehouse_id' => 'required|exists:warehouses,id',
+            'product_id' => ['required', $this->tenantExists('products')],
+            'warehouse_id' => ['required', $this->tenantExists('warehouses')],
             'planned_quantity' => 'required|numeric|min:0.0001',
             'start_date' => 'required|date',
             'due_date' => 'required|date|after_or_equal:start_date',
@@ -67,19 +68,22 @@ class ProductionOrderController extends Controller
         return redirect()->back()->with('success', __('messages.production_order.created'));
     }
 
-    public function show(ProductionOrder $productionOrder): Response
+    public function show(ProductionOrder $productionOrder, ProductReadinessService $readinessService): Response
     {
+        $order = $productionOrder->load([
+            'product:id,code,name',
+            'warehouse:id,code,name',
+            'bom:id,code',
+            'routing:id,code',
+            'components.component:id,code,name,base_uom_id',
+            'components.component.baseUnitOfMeasure:id,code',
+            'operations.workCenter:id,code,name',
+            'inspections' => fn ($query) => $query->where('type', 'final')->latest(),
+        ]);
+
         return Inertia::render('manufacturing/production-orders/show', [
-            'order' => $productionOrder->load([
-                'product:id,code,name',
-                'warehouse:id,code,name',
-                'bom:id,code',
-                'routing:id,code',
-                'components.component:id,code,name,base_uom_id',
-                'components.component.baseUnitOfMeasure:id,code',
-                'operations.workCenter:id,code,name',
-                'inspections' => fn ($query) => $query->where('type', 'final')->latest(),
-            ]),
+            'order' => $order,
+            'readiness' => $readinessService->evaluate($order->product, $order->warehouse)->toArray(),
         ]);
     }
 
@@ -145,12 +149,17 @@ class ProductionOrderController extends Controller
 
     public function complete(Request $request, ProductionOrder $productionOrder, ProductionOrderService $service): RedirectResponse
     {
+        if (! $request->user()->hasPermissionTo('quality.manage')) {
+            abort(403);
+        }
+
         $validated = $request->validate([
             'produced_quantity' => 'required|numeric|min:0.0001',
+            'bypass_reason' => 'required|string|max:1000',
         ]);
 
         try {
-            $service->complete($productionOrder, (float) $validated['produced_quantity']);
+            $service->complete($productionOrder, (float) $validated['produced_quantity'], $validated['bypass_reason'], $request->user());
         } catch (RuntimeException $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
