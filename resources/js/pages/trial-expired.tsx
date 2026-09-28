@@ -4,15 +4,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import company from '@/routes/company';
 import { logout } from '@/routes';
 import { type SharedData } from '@/types';
-import { Form, Head, router, usePage } from '@inertiajs/react';
-import { IconClockPause } from '@tabler/icons-react';
+import { Form, Head, Link, router, usePage } from '@inertiajs/react';
+import { IconClockPause, IconCreditCard } from '@tabler/icons-react';
 
 interface TrialExpiredProps {
     companyName: string | null;
     trialEndedAt: string | null;
+    purgeAt: string | null;
+    canPay: boolean;
 }
 
-export default function TrialExpired({ companyName, trialEndedAt }: TrialExpiredProps) {
+const longDate = (value: string) => new Date(value).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+
+export default function TrialExpired({ companyName, trialEndedAt, purgeAt, canPay }: TrialExpiredProps) {
     const { companies, currentCompany } = usePage<SharedData>().props;
     const otherCompanies = companies.filter((c) => c.id !== currentCompany?.id);
 
@@ -38,15 +42,34 @@ export default function TrialExpired({ companyName, trialEndedAt }: TrialExpired
                     <div className="flex items-center justify-center">
                         <AndonBadge variant="stop">
                             {trialEndedAt
-                                ? `Berakhir ${new Date(trialEndedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`
+                                ? `Berakhir ${longDate(trialEndedAt)}`
                                 : 'Trial berakhir'}
                         </AndonBadge>
                     </div>
 
                     <p className="text-center text-sm text-muted-foreground">
-                        Hubungi tim kami untuk melanjutkan berlangganan dan mendapatkan
-                        kembali akses penuh ke perusahaan ini.
+                        Pilih paket berlangganan untuk membuka kembali akses penuh ke perusahaan ini.
+                        {purgeAt && (
+                            <>
+                                {' '}Jika belum dibayar sampai{' '}
+                                <strong className="text-foreground">{longDate(purgeAt)}</strong>, seluruh data perusahaan
+                                akan dihapus permanen.
+                            </>
+                        )}
                     </p>
+
+                    {canPay ? (
+                        <Button className="w-full" asChild>
+                            <Link href="/billing">
+                                <IconCreditCard />
+                                Pilih Paket & Bayar
+                            </Link>
+                        </Button>
+                    ) : (
+                        <p className="text-center text-xs text-muted-foreground">
+                            Minta pemilik atau administrator perusahaan untuk memilih paket.
+                        </p>
+                    )}
 
                     {otherCompanies.length > 0 && (
                         <div className="space-y-2 border-t border-border pt-4">

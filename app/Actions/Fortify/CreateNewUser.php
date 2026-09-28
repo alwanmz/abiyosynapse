@@ -2,19 +2,20 @@
 
 namespace App\Actions\Fortify;
 
-use App\Models\Company;
-use App\Models\CompanyUser;
-use App\Models\Role;
 use App\Models\User;
+use App\Services\CompanyProvisioningService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 
 class CreateNewUser implements CreatesNewUsers
 {
     use PasswordValidationRules;
+
+    public function __construct(private readonly CompanyProvisioningService $provisioning)
+    {
+    }
 
     /**
      * Validate and create a newly registered user, along with a brand new
@@ -53,30 +54,9 @@ class CreateNewUser implements CreatesNewUsers
                 'password' => $input['password'],
             ]);
 
-            $company = Company::create([
-                'name' => $input['company_name'],
-                'code' => Str::slug($input['company_name']) . '-' . Str::lower(Str::random(4)),
-                'currency' => 'IDR',
-                'fiscal_year_start_month' => 1,
-                'is_active' => true,
-                'trial_ends_at' => now()->addDays(7),
-            ]);
+            $this->provisioning->create($user, ['name' => $input['company_name'], 'currency' => 'IDR']);
 
-            $superAdminRoleId = Role::whereNull('company_id')
-                ->where('name', 'super_admin')
-                ->value('id');
-
-            CompanyUser::create([
-                'company_id' => $company->id,
-                'user_id' => $user->id,
-                'role_id' => $superAdminRoleId,
-                'is_default' => true,
-                'joined_at' => now(),
-            ]);
-
-            $user->forceFill(['current_company_id' => $company->id])->save();
-
-            return $user;
+            return $user->refresh();
         });
     }
 }

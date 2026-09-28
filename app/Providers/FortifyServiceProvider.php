@@ -50,6 +50,17 @@ class FortifyServiceProvider extends ServiceProvider
                 return $user;
             }
 
+            if (! $user && \App\Models\MarketingLead::query()
+                ->where(fn ($query) => $query
+                    ->where('email', strtolower((string) $request->username))
+                    ->orWhere('meta->username', (string) $request->username))
+                ->whereNotNull('purged_at')
+                ->exists()) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    Fortify::username() => 'Masa trial akun ini telah berakhir dan datanya sudah dihapus. Silakan daftar ulang dan pilih paket untuk melanjutkan.',
+                ]);
+            }
+
             return null;
         });
     }

@@ -78,6 +78,11 @@ return [
         'timeout'     => (int) env('GROQ_TIMEOUT', 60),
     ],
 
+    /* Subscription payment gateway. Only the sandbox "dummy" driver exists for now. */
+    'payment' => [
+        'driver' => env('PAYMENT_DRIVER', 'dummy'),
+    ],
+
     /* Gemini Vision is limited to development/demo while using free tier. */
     'gemini' => [
         'api_key' => env('GEMINI_API_KEY'),

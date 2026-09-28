@@ -10,6 +10,8 @@ use App\Services\CurrentCompany;
 use App\Services\MoneyConversionService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
+use App\Services\Accounting\AccountRoleResolver;
+use App\Support\AccountRole;
 
 /**
  * Creates BankAccount records, each backed by its own leaf GL account
@@ -28,9 +30,6 @@ use RuntimeException;
  */
 class BankAccountService
 {
-    private const CASH_PARENT_CODE = '1.1.1';
-    private const BANK_PARENT_CODE = '1.1.2';
-
     public function __construct(
         private readonly CurrentCompany $currentCompany,
         private readonly MoneyConversionService $money,
@@ -46,13 +45,10 @@ class BankAccountService
             if (! CompanyCurrency::where('company_id', $companyId)->where('currency_code', $currencyCode)->where('is_active', true)->exists()) {
                 throw new RuntimeException("Currency {$currencyCode} is not enabled for this company.");
             }
-            $parentCode = $input['type'] === 'cash' ? self::CASH_PARENT_CODE : self::BANK_PARENT_CODE;
-
-            $parent = Account::where('company_id', $companyId)->where('code', $parentCode)->first();
-
-            if (! $parent) {
-                throw new RuntimeException("Chart of accounts is missing the expected account \"{$parentCode}\" for bank accounts.");
-            }
+            $parent = app(AccountRoleResolver::class)->account(
+                $input['type'] === 'cash' ? AccountRole::CashParent : AccountRole::BankParent,
+                $companyId,
+            );
 
             $this->ensureParentIsHeaderAccount($parent);
 

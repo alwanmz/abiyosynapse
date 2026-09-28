@@ -15,19 +15,25 @@ class SubscriptionPlan extends Model
         'name',
         'description',
         'price',
+        'price_yearly',
+        'price_lifetime',
         'currency_code',
         'limits',
         'features',
         'is_active',
+        'is_purchasable',
     ];
 
     protected function casts(): array
     {
         return [
             'price' => 'decimal:2',
+            'price_yearly' => 'decimal:2',
+            'price_lifetime' => 'decimal:2',
             'limits' => 'array',
             'features' => 'array',
             'is_active' => 'boolean',
+            'is_purchasable' => 'boolean',
         ];
     }
 

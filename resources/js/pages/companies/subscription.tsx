@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { CreditCard, ShieldAlert } from 'lucide-react';
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -77,7 +77,12 @@ function CompanySubscriptionPage({ company, subscription, usage }: CompanySubscr
                         </div>
                         <p className="text-sm text-muted-foreground">{company.name} · {company.code}</p>
                     </div>
-                    <Badge variant={statusVariant}>{statusLabel}</Badge>
+                    <div className="flex items-center gap-3">
+                        <Badge variant={statusVariant}>{statusLabel}</Badge>
+                        <Button asChild>
+                            <Link href="/billing">Upgrade / Bayar langganan</Link>
+                        </Button>
+                    </div>
                 </div>
 
                 <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.8fr)]">

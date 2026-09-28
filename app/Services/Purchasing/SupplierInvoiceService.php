@@ -2,7 +2,6 @@
 
 namespace App\Services\Purchasing;
 
-use App\Models\Account;
 use App\Models\GoodsReceiptLine;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderLine;
@@ -13,6 +12,8 @@ use App\Services\CurrentCompany;
 use App\Services\CurrencyDocumentService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
+use App\Services\Accounting\AccountRoleResolver;
+use App\Support\AccountRole;
 
 /**
  * Drives Supplier Invoice -> 3-Way Match -> AP (blueprint §8, §12).
@@ -28,9 +29,9 @@ use RuntimeException;
  */
 class SupplierInvoiceService
 {
-    private const GRNI_ACCOUNT_CODE = '2.1.2';
-    private const AP_ACCOUNT_CODE = '2.1.1';
-    private const INPUT_TAX_ACCOUNT_CODE = '1.1.7';
+    private const GRNI_ACCOUNT_ROLE = AccountRole::Grni;
+    private const AP_ACCOUNT_ROLE = AccountRole::AccountsPayable;
+    private const INPUT_TAX_ACCOUNT_ROLE = AccountRole::InputTax;
     private const QUANTITY_TOLERANCE = 0.0001;
     private const PRICE_TOLERANCE = 0.01;
 
@@ -169,14 +170,14 @@ class SupplierInvoiceService
         return DB::transaction(function () use ($invoice) {
             $currency = $invoice->currency_code;
             $lines = [
-                ['account_id' => $this->accountId(self::GRNI_ACCOUNT_CODE), 'debit' => (float) $invoice->subtotal_base, 'amount_currency' => (float) $invoice->subtotal, 'currency_code' => $currency, 'exchange_rate' => $invoice->exchange_rate],
+                ['account_id' => $this->accountId(self::GRNI_ACCOUNT_ROLE), 'debit' => (float) $invoice->subtotal_base, 'amount_currency' => (float) $invoice->subtotal, 'currency_code' => $currency, 'exchange_rate' => $invoice->exchange_rate],
             ];
 
             if ((float) $invoice->tax_total > 0) {
-                $lines[] = ['account_id' => $this->accountId(self::INPUT_TAX_ACCOUNT_CODE), 'debit' => (float) $invoice->tax_total_base, 'amount_currency' => (float) $invoice->tax_total, 'currency_code' => $currency, 'exchange_rate' => $invoice->exchange_rate];
+                $lines[] = ['account_id' => $this->accountId(self::INPUT_TAX_ACCOUNT_ROLE), 'debit' => (float) $invoice->tax_total_base, 'amount_currency' => (float) $invoice->tax_total, 'currency_code' => $currency, 'exchange_rate' => $invoice->exchange_rate];
             }
 
-            $lines[] = ['account_id' => $this->accountId(self::AP_ACCOUNT_CODE), 'credit' => (float) $invoice->total_base, 'amount_currency' => -(float) $invoice->total, 'currency_code' => $currency, 'exchange_rate' => $invoice->exchange_rate];
+            $lines[] = ['account_id' => $this->accountId(self::AP_ACCOUNT_ROLE), 'credit' => (float) $invoice->total_base, 'amount_currency' => -(float) $invoice->total, 'currency_code' => $currency, 'exchange_rate' => $invoice->exchange_rate];
 
             $this->posting->post(
                 description: "Supplier invoice {$invoice->number}",
@@ -203,15 +204,8 @@ class SupplierInvoiceService
         return $prefix . str_pad((string) $nextSequence, 6, '0', STR_PAD_LEFT);
     }
 
-    private function accountId(string $code): int
+    private function accountId(AccountRole $role): int
     {
-        $companyId = $this->currentCompany->id();
-        $account = Account::where('company_id', $companyId)->where('code', $code)->first();
-
-        if (! $account) {
-            throw new RuntimeException("Chart of accounts is missing the expected account \"{$code}\" for purchasing postings.");
-        }
-
-        return $account->id;
+        return app(AccountRoleResolver::class)->id($role);
     }
 }

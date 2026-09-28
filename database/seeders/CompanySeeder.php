@@ -22,6 +22,7 @@ class CompanySeeder extends Seeder
                 'is_active' => true,
             ]
         );
+        $company->forceFill(['onboarded_at' => $company->onboarded_at ?? now()])->save();
 
         CompanyCurrency::withoutGlobalScopes()->updateOrCreate(
             ['company_id' => $company->id, 'currency_code' => $company->currency],

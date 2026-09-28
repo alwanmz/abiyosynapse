@@ -55,6 +55,7 @@ export interface SharedData {
     sidebarOpen: boolean;
     currentCompany: Company | null;
     companies: Company[];
+    trial: { ends_at: string; days_left: number } | null;
     [key: string]: unknown;
 }
 

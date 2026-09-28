@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Contracts\Ai\VisionProvider;
+use App\Contracts\Billing\PaymentGateway;
+use App\Services\Billing\DummyPaymentGateway;
 use App\Services\CurrentCompany;
 use App\Services\TenantLifecycleService;
 use App\Services\Ai\GeminiVisionProvider;
@@ -18,6 +20,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->scoped(CurrentCompany::class);
         $this->app->scoped(TenantLifecycleService::class);
         $this->app->bind(VisionProvider::class, GeminiVisionProvider::class);
+        $this->app->bind(PaymentGateway::class, fn () => match (config('services.payment.driver')) {
+            'dummy' => new DummyPaymentGateway(),
+            default => throw new \RuntimeException('Unsupported payment driver: ' . config('services.payment.driver')),
+        });
     }
 
     /**

@@ -18,6 +18,12 @@ class CompanyFactory extends Factory
             'currency' => 'IDR',
             'fiscal_year_start_month' => 1,
             'is_active' => true,
+            'onboarded_at' => now(),
         ];
+    }
+
+    public function notOnboarded(): static
+    {
+        return $this->state(fn () => ['onboarded_at' => null]);
     }
 }

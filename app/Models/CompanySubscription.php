@@ -11,6 +11,7 @@ class CompanySubscription extends Model
         'company_id',
         'subscription_plan_id',
         'status',
+        'billing_cycle',
         'starts_at',
         'trial_ends_at',
         'current_period_start',
@@ -50,6 +51,25 @@ class CompanySubscription extends Model
     public function isOperational(): bool
     {
         return in_array($this->status, ['trialing', 'active'], true);
+    }
+
+    /** A subscription has been paid for at least once (null cycle = trial). */
+    public function isPaid(): bool
+    {
+        return $this->billing_cycle !== null;
+    }
+
+    public function isLifetime(): bool
+    {
+        return $this->billing_cycle === 'lifetime';
+    }
+
+    public function isPeriodEnded(): bool
+    {
+        return $this->isPaid()
+            && ! $this->isLifetime()
+            && $this->current_period_end !== null
+            && $this->current_period_end->isPast();
     }
 
     public function limit(string $key): ?int

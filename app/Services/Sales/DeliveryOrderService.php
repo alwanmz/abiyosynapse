@@ -2,7 +2,6 @@
 
 namespace App\Services\Sales;
 
-use App\Models\Account;
 use App\Models\DeliveryOrder;
 use App\Models\SalesOrder;
 use App\Models\SalesOrderLine;
@@ -13,6 +12,8 @@ use App\Services\Inventory\InventoryValuationService;
 use App\Services\Inventory\StockReservationService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
+use App\Services\Accounting\AccountRoleResolver;
+use App\Support\AccountRole;
 
 /**
  * Drives Delivery Order creation and shipment (blueprint §6, §12, mirrors
@@ -27,8 +28,8 @@ use RuntimeException;
  */
 class DeliveryOrderService
 {
-    private const FINISHED_GOODS_ACCOUNT_CODE = '1.1.6';
-    private const COGS_ACCOUNT_CODE = '5.1';
+    private const FINISHED_GOODS_ACCOUNT_ROLE = AccountRole::FinishedGoodsInventory;
+    private const COGS_ACCOUNT_ROLE = AccountRole::Cogs;
 
     public function __construct(
         private readonly CurrentCompany $currentCompany,
@@ -129,8 +130,8 @@ class DeliveryOrderService
                 $this->posting->post(
                     description: "Delivery order {$delivery->number} shipped",
                     lines: [
-                        ['account_id' => $this->accountId(self::COGS_ACCOUNT_CODE), 'debit' => $totalCost],
-                        ['account_id' => $this->accountId(self::FINISHED_GOODS_ACCOUNT_CODE), 'credit' => $totalCost],
+                        ['account_id' => $this->accountId(self::COGS_ACCOUNT_ROLE), 'debit' => $totalCost],
+                        ['account_id' => $this->accountId(self::FINISHED_GOODS_ACCOUNT_ROLE), 'credit' => $totalCost],
                     ],
                     sourceable: $delivery,
                 );
@@ -177,15 +178,8 @@ class DeliveryOrderService
         return $prefix . str_pad((string) $nextSequence, 6, '0', STR_PAD_LEFT);
     }
 
-    private function accountId(string $code): int
+    private function accountId(AccountRole $role): int
     {
-        $companyId = $this->currentCompany->id();
-        $account = Account::where('company_id', $companyId)->where('code', $code)->first();
-
-        if (! $account) {
-            throw new RuntimeException("Chart of accounts is missing the expected account \"{$code}\" for sales postings.");
-        }
-
-        return $account->id;
+        return app(AccountRoleResolver::class)->id($role);
     }
 }

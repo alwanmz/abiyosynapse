@@ -105,6 +105,13 @@ Run the scheduler every minute with cron:
 * * * * * cd /var/www/nexumi && php artisan schedule:run >> /dev/null 2>&1
 ```
 
+The scheduler also runs `tenants:process-lifecycle` daily at 01:00 WIB: trial
+reminders (3 days and 1 day before), locking expired trials and lapsed paid
+periods (`past_due`), and permanently purging trials that were never paid 7
+days after they ended (members' emails are kept in `marketing_leads`). Without
+cron nothing is purged and no reminder is sent. Preview with
+`php artisan tenants:process-lifecycle --dry-run` before enabling it.
+
 The scheduler includes backup execution and cleanup. Configure the backup disk
 and notification email before enabling it, then run a backup manually and
 verify the archive can be restored. A backup that has never been restore-tested

@@ -35,7 +35,7 @@ class TenantLifecycleService
             [],
             [
                 'subscription_plan_id' => $plan->id,
-                'status' => $company->trial_ends_at?->isFuture() ? 'trialing' : 'active',
+                'status' => $company->trial_ends_at === null ? 'active' : 'trialing',
                 'starts_at' => $company->created_at ?? now(),
                 'trial_ends_at' => $company->trial_ends_at,
                 'current_period_start' => $company->created_at ?? now(),
@@ -113,7 +113,13 @@ class TenantLifecycleService
             ]);
             $subscription = $company->subscription;
             if ($subscription && $subscription->status === 'suspended') {
-                $subscription->update(['status' => $company->isTrialExpired() ? 'past_due' : 'active']);
+                $locked = $company->isTrialExpired() || $subscription->isPeriodEnded();
+                $status = match (true) {
+                    $locked => 'past_due',
+                    $subscription->isPaid() => 'active',
+                    default => 'trialing',
+                };
+                $subscription->update(['status' => $status]);
             }
 
             return $company->fresh(['subscription.plan']);

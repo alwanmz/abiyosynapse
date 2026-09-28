@@ -3,10 +3,12 @@
 namespace App\Services\Reports;
 
 use App\Models\Account;
+use App\Models\AccountRoleMapping;
 use App\Models\JournalEntry;
 use App\Models\JournalLine;
 use App\Models\ReportingAccountMapping;
 use App\Services\CurrentCompany;
+use App\Support\AccountRole;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -281,15 +283,7 @@ class FinancialReportService
      */
     private function cashFlow(int $companyId, string $fromDate, string $toDate): array
     {
-        $cashAccountIds = Account::query()
-            ->where('company_id', $companyId)
-            ->where(function ($query): void {
-                $query->where('code', '1.1.1')
-                    ->orWhere('code', 'like', '1.1.1.%')
-                    ->orWhere('code', '1.1.2')
-                    ->orWhere('code', 'like', '1.1.2.%');
-            })
-            ->pluck('id');
+        $cashAccountIds = $this->cashAndBankAccountIds($companyId);
 
         $opening = $this->cashBalance($companyId, $cashAccountIds->all(), '<', $fromDate);
         $closing = $this->cashBalance($companyId, $cashAccountIds->all(), '<=', $toDate);
@@ -477,6 +471,31 @@ class FinancialReportService
         });
 
         return $rows;
+    }
+
+    /**
+     * The mapped cash and bank parent accounts plus all of their descendants.
+     *
+     * @return Collection<int, int>
+     */
+    private function cashAndBankAccountIds(int $companyId): Collection
+    {
+        $ids = AccountRoleMapping::withoutGlobalScopes()
+            ->where('company_id', $companyId)
+            ->whereIn('role', [AccountRole::CashParent->value, AccountRole::BankParent->value])
+            ->pluck('account_id');
+        $frontier = $ids;
+
+        while ($frontier->isNotEmpty()) {
+            $frontier = Account::withoutGlobalScopes()
+                ->where('company_id', $companyId)
+                ->whereIn('parent_id', $frontier)
+                ->whereNotIn('id', $ids)
+                ->pluck('id');
+            $ids = $ids->merge($frontier);
+        }
+
+        return $ids->unique()->values();
     }
 
     private function postedLines(int $companyId): \Illuminate\Database\Eloquent\Builder

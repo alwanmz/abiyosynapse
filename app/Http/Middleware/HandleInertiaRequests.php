@@ -36,6 +36,24 @@ class HandleInertiaRequests extends Middleware
      *
      * @return array<string, mixed>
      */
+    /** @return array{ends_at: string, days_left: int}|null */
+    private function trial(): ?array
+    {
+        $company = app(CurrentCompany::class)->get();
+        $subscription = $company?->subscription;
+
+        if (! $company || $subscription?->isPaid() || $company->isTrialExpired()) {
+            return null;
+        }
+
+        $endsAt = $subscription?->trial_ends_at ?? $company->trial_ends_at;
+
+        return $endsAt ? [
+            'ends_at' => $endsAt->toIso8601String(),
+            'days_left' => max(0, (int) ceil(now()->diffInSeconds($endsAt) / 86400)),
+        ] : null;
+    }
+
     public function share(Request $request): array
     {
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
@@ -56,6 +74,7 @@ class HandleInertiaRequests extends Middleware
                 'role' => $membership?->role,
             ],
             'currentCompany' => app(CurrentCompany::class)->get(),
+            'trial' => fn () => $this->trial(),
             'companies' => $user
                 ? $user->companies()
                     ->select('companies.id', 'companies.name', 'companies.code', 'companies.logo_path')

@@ -2,7 +2,6 @@
 
 namespace App\Services\AP;
 
-use App\Models\Account;
 use App\Models\ApPayment;
 use App\Models\BankAccount;
 use App\Models\SupplierInvoice;
@@ -13,6 +12,8 @@ use App\Services\CurrencyDocumentService;
 use App\Services\MoneyConversionService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
+use App\Services\Accounting\AccountRoleResolver;
+use App\Support\AccountRole;
 
 /**
  * Records an AP Payment: money actually paid to a supplier, applied
@@ -32,9 +33,9 @@ use RuntimeException;
  */
 class ApPaymentService
 {
-    private const AP_ACCOUNT_CODE = '2.1.1';
-    private const FX_GAIN_ACCOUNT_CODE = '4.2';
-    private const FX_LOSS_ACCOUNT_CODE = '5.6';
+    private const AP_ACCOUNT_ROLE = AccountRole::AccountsPayable;
+    private const FX_GAIN_ACCOUNT_ROLE = AccountRole::FxGain;
+    private const FX_LOSS_ACCOUNT_ROLE = AccountRole::FxRealizedLoss;
     private const AMOUNT_TOLERANCE = 0.01;
 
     public function __construct(
@@ -126,12 +127,12 @@ class ApPaymentService
             $difference = round($paymentAmountBase - $totalAppliedBase, 6);
             $lines = [];
             foreach ($validatedLines as $line) {
-                $lines[] = ['account_id' => $this->accountId(self::AP_ACCOUNT_CODE), 'debit' => $line['amount_base'], 'amount_currency' => $line['amount'], 'currency_code' => $line['invoice']->currency_code, 'exchange_rate' => $line['invoice']->exchange_rate];
+                $lines[] = ['account_id' => $this->accountId(self::AP_ACCOUNT_ROLE), 'debit' => $line['amount_base'], 'amount_currency' => $line['amount'], 'currency_code' => $line['invoice']->currency_code, 'exchange_rate' => $line['invoice']->exchange_rate];
             }
             if (abs($difference) > self::AMOUNT_TOLERANCE) {
                 $lines[] = $difference > 0
-                    ? ['account_id' => $this->accountId(self::FX_LOSS_ACCOUNT_CODE), 'debit' => $difference, 'amount_currency' => $difference, 'currency_code' => $this->money->baseCurrency()]
-                    : ['account_id' => $this->accountId(self::FX_GAIN_ACCOUNT_CODE), 'credit' => abs($difference), 'amount_currency' => -abs($difference), 'currency_code' => $this->money->baseCurrency()];
+                    ? ['account_id' => $this->accountId(self::FX_LOSS_ACCOUNT_ROLE), 'debit' => $difference, 'amount_currency' => $difference, 'currency_code' => $this->money->baseCurrency()]
+                    : ['account_id' => $this->accountId(self::FX_GAIN_ACCOUNT_ROLE), 'credit' => abs($difference), 'amount_currency' => -abs($difference), 'currency_code' => $this->money->baseCurrency()];
             }
             $lines[] = ['account_id' => $bankAccount->account_id, 'credit' => $paymentAmountBase, 'amount_currency' => -$paymentAmount, 'currency_code' => $bankAccount->currency_code, 'exchange_rate' => $paymentConversion['rate']];
 
@@ -159,15 +160,8 @@ class ApPaymentService
         return $prefix . str_pad((string) $nextSequence, 6, '0', STR_PAD_LEFT);
     }
 
-    private function accountId(string $code): int
+    private function accountId(AccountRole $role): int
     {
-        $companyId = $this->currentCompany->id();
-        $account = Account::where('company_id', $companyId)->where('code', $code)->first();
-
-        if (! $account) {
-            throw new RuntimeException("Chart of accounts is missing the expected account \"{$code}\" for AP postings.");
-        }
-
-        return $account->id;
+        return app(AccountRoleResolver::class)->id($role);
     }
 }

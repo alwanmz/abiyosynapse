@@ -2,7 +2,6 @@
 
 namespace App\Services\Sales;
 
-use App\Models\Account;
 use App\Models\DeliveryOrderLine;
 use App\Models\SalesInvoice;
 use App\Models\SalesOrder;
@@ -13,6 +12,8 @@ use App\Services\CurrentCompany;
 use App\Services\CurrencyDocumentService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
+use App\Services\Accounting\AccountRoleResolver;
+use App\Support\AccountRole;
 
 /**
  * Creates a Sales Invoice against a Sales Order and immediately posts it
@@ -27,11 +28,11 @@ use RuntimeException;
  */
 class SalesInvoiceService
 {
-    private const AR_ACCOUNT_CODE = '1.1.3';
-    private const REVENUE_ACCOUNT_CODE = '4.1';
-    private const OUTPUT_TAX_ACCOUNT_CODE = '2.1.3';
-    private const COGS_ACCOUNT_CODE = '5.1';
-    private const FINISHED_GOODS_ACCOUNT_CODE = '1.1.6';
+    private const AR_ACCOUNT_ROLE = AccountRole::AccountsReceivable;
+    private const REVENUE_ACCOUNT_ROLE = AccountRole::SalesRevenue;
+    private const OUTPUT_TAX_ACCOUNT_ROLE = AccountRole::OutputTax;
+    private const COGS_ACCOUNT_ROLE = AccountRole::Cogs;
+    private const FINISHED_GOODS_ACCOUNT_ROLE = AccountRole::FinishedGoodsInventory;
     private const QUANTITY_TOLERANCE = 0.0001;
 
     public function __construct(
@@ -133,12 +134,12 @@ class SalesInvoiceService
 
             $currency = $invoice->currency_code;
             $lines = [
-                ['account_id' => $this->accountId(self::AR_ACCOUNT_CODE), 'debit' => (float) $invoice->total_base, 'amount_currency' => (float) $invoice->total, 'currency_code' => $currency, 'exchange_rate' => $invoice->exchange_rate],
-                ['account_id' => $this->accountId(self::REVENUE_ACCOUNT_CODE), 'credit' => (float) $invoice->subtotal_base, 'amount_currency' => -(float) $invoice->subtotal, 'currency_code' => $currency, 'exchange_rate' => $invoice->exchange_rate],
+                ['account_id' => $this->accountId(self::AR_ACCOUNT_ROLE), 'debit' => (float) $invoice->total_base, 'amount_currency' => (float) $invoice->total, 'currency_code' => $currency, 'exchange_rate' => $invoice->exchange_rate],
+                ['account_id' => $this->accountId(self::REVENUE_ACCOUNT_ROLE), 'credit' => (float) $invoice->subtotal_base, 'amount_currency' => -(float) $invoice->subtotal, 'currency_code' => $currency, 'exchange_rate' => $invoice->exchange_rate],
             ];
 
             if ($taxTotal > 0) {
-                $lines[] = ['account_id' => $this->accountId(self::OUTPUT_TAX_ACCOUNT_CODE), 'credit' => (float) $invoice->tax_total_base, 'amount_currency' => -(float) $invoice->tax_total, 'currency_code' => $currency, 'exchange_rate' => $invoice->exchange_rate];
+                $lines[] = ['account_id' => $this->accountId(self::OUTPUT_TAX_ACCOUNT_ROLE), 'credit' => (float) $invoice->tax_total_base, 'amount_currency' => -(float) $invoice->tax_total, 'currency_code' => $currency, 'exchange_rate' => $invoice->exchange_rate];
             }
 
             $this->posting->post(
@@ -152,8 +153,8 @@ class SalesInvoiceService
                 $this->posting->post(
                     description: "COGS for sales invoice {$invoice->number}",
                     lines: [
-                        ['account_id' => $this->accountId(self::COGS_ACCOUNT_CODE), 'debit' => $totalCost, 'amount_currency' => $totalCost, 'currency_code' => $baseCurrency],
-                        ['account_id' => $this->accountId(self::FINISHED_GOODS_ACCOUNT_CODE), 'credit' => $totalCost, 'amount_currency' => -$totalCost, 'currency_code' => $baseCurrency],
+                        ['account_id' => $this->accountId(self::COGS_ACCOUNT_ROLE), 'debit' => $totalCost, 'amount_currency' => $totalCost, 'currency_code' => $baseCurrency],
+                        ['account_id' => $this->accountId(self::FINISHED_GOODS_ACCOUNT_ROLE), 'credit' => $totalCost, 'amount_currency' => -$totalCost, 'currency_code' => $baseCurrency],
                     ],
                     sourceable: $invoice,
                 );
@@ -200,15 +201,8 @@ class SalesInvoiceService
         return $prefix . str_pad((string) $nextSequence, 6, '0', STR_PAD_LEFT);
     }
 
-    private function accountId(string $code): int
+    private function accountId(AccountRole $role): int
     {
-        $companyId = $this->currentCompany->id();
-        $account = Account::where('company_id', $companyId)->where('code', $code)->first();
-
-        if (! $account) {
-            throw new RuntimeException("Chart of accounts is missing the expected account \"{$code}\" for sales postings.");
-        }
-
-        return $account->id;
+        return app(AccountRoleResolver::class)->id($role);
     }
 }

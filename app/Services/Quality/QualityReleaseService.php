@@ -2,7 +2,6 @@
 
 namespace App\Services\Quality;
 
-use App\Models\Account;
 use App\Models\GoodsReceiptLine;
 use App\Models\NonConformanceReport;
 use App\Models\ProductionOrder;
@@ -15,11 +14,13 @@ use App\Services\Inventory\StockQualityService;
 use App\Services\Manufacturing\ReworkProductionOrderService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
+use App\Services\Accounting\AccountRoleResolver;
+use App\Support\AccountRole;
 
 class QualityReleaseService
 {
-    private const FINISHED_GOODS_ACCOUNT_CODE = '1.1.6';
-    private const SCRAP_EXPENSE_ACCOUNT_CODE = '5.4';
+    private const FINISHED_GOODS_ACCOUNT_ROLE = AccountRole::FinishedGoodsInventory;
+    private const SCRAP_EXPENSE_ACCOUNT_ROLE = AccountRole::ScrapExpense;
 
     public function __construct(
         private readonly StockQualityService $quality,
@@ -157,8 +158,8 @@ class QualityReleaseService
             $this->posting->post(
                 description: "Scrap disposition for {$ncr->number}",
                 lines: [
-                    ['account_id' => $this->accountId(self::SCRAP_EXPENSE_ACCOUNT_CODE), 'debit' => $result['total_cost']],
-                    ['account_id' => $this->accountId(self::FINISHED_GOODS_ACCOUNT_CODE), 'credit' => $result['total_cost']],
+                    ['account_id' => $this->accountId(self::SCRAP_EXPENSE_ACCOUNT_ROLE), 'debit' => $result['total_cost']],
+                    ['account_id' => $this->accountId(self::FINISHED_GOODS_ACCOUNT_ROLE), 'credit' => $result['total_cost']],
                 ],
                 sourceable: $ncr,
             );
@@ -195,14 +196,8 @@ class QualityReleaseService
         return null;
     }
 
-    private function accountId(string $code): int
+    private function accountId(AccountRole $role): int
     {
-        $account = Account::where('company_id', $this->currentCompany->id())->where('code', $code)->first();
-
-        if (! $account) {
-            throw new RuntimeException("Chart of accounts is missing the expected account \"{$code}\" for a quality disposition.");
-        }
-
-        return $account->id;
+        return app(AccountRoleResolver::class)->id($role);
     }
 }

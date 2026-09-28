@@ -6,13 +6,11 @@ use App\Models\Company;
 use App\Models\CompanyUser;
 use App\Models\CompanyCurrency;
 use App\Models\Currency;
-use App\Models\Role;
-use App\Models\SubscriptionPlan;
+use App\Services\CompanyProvisioningService;
 use App\Services\TenantAuthorizationService;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
 
@@ -32,7 +30,7 @@ class CompanyController extends Controller
         return Inertia::render('companies/create');
     }
 
-    public function store(Request $request)
+    public function store(Request $request, CompanyProvisioningService $provisioning)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -44,55 +42,10 @@ class CompanyController extends Controller
             'fiscal_year_start_month' => 'required|integer|min:1|max:12',
         ]);
 
-        $validated['code'] ??= Str::slug($validated['name']) . '-' . Str::lower(Str::random(4));
         $validated['currency'] = strtoupper($validated['currency']);
         Currency::where('code', $validated['currency'])->where('is_active', true)->firstOrFail();
-        $validated['trial_ends_at'] = now()->addDays(7);
 
-        $user = $request->user();
-        $starterPlan = SubscriptionPlan::where('code', 'starter')
-            ->where('is_active', true)
-            ->first();
-        abort_if($starterPlan === null, 500, 'The starter subscription plan is not configured.');
-
-        DB::transaction(function () use (&$company, $validated, $user, $starterPlan): void {
-            $company = Company::create([...$validated, 'owner_id' => $user->id]);
-            CompanyCurrency::create([
-                'company_id' => $company->id,
-                'currency_code' => $company->currency,
-                'is_active' => true,
-                'is_base' => true,
-            ]);
-
-            $superAdminRoleId = Role::whereNull('company_id')
-                ->where('name', 'super_admin')
-                ->value('id');
-
-            abort_if($superAdminRoleId === null, 500, 'The default administrator role is not configured.');
-
-            CompanyUser::create([
-                'company_id' => $company->id,
-                'user_id' => $user->id,
-                'role_id' => $superAdminRoleId,
-                'is_default' => ! $user->companies()->where('company_id', '!=', $company->id)->exists(),
-                'joined_at' => now(),
-            ]);
-
-            $company->subscription()->firstOrCreate(
-                    [],
-                [
-                    'subscription_plan_id' => $starterPlan->id,
-                    'status' => 'trialing',
-                    'starts_at' => now(),
-                    'trial_ends_at' => $company->trial_ends_at,
-                    'current_period_start' => now(),
-                ],
-            );
-
-            if (! $user->current_company_id) {
-                $user->forceFill(['current_company_id' => $company->id])->save();
-            }
-        });
+        $provisioning->create($request->user(), array_filter($validated, fn ($value) => $value !== null));
 
         return redirect()->route('dashboard')->with('success', __('messages.company.created'));
     }

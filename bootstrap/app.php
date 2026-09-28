@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureCompanyContext;
+use App\Http\Middleware\EnsureCompanyOnboarded;
 use App\Http\Middleware\EnsureCompanyOperational;
 use App\Http\Middleware\EnsureTrialNotExpired;
 use App\Http\Middleware\EnsureUserHasPermission;
@@ -30,6 +31,7 @@ return Application::configure(basePath: dirname(__DIR__))
             $middleware->trustProxies(at: $trustedProxies);
         }
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state', 'locale']);
+        $middleware->validateCsrfTokens(except: ['billing/webhook/*']);
 
         $middleware->web(append: [
             HandleAppearance::class,
@@ -37,6 +39,7 @@ return Application::configure(basePath: dirname(__DIR__))
             EnsureCompanyContext::class,
             EnsureTrialNotExpired::class,
             EnsureCompanyOperational::class,
+            EnsureCompanyOnboarded::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);

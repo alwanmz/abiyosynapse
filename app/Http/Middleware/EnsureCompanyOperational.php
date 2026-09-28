@@ -10,6 +10,8 @@ use Symfony\Component\HttpFoundation\Response;
 class EnsureCompanyOperational
 {
     private const EXEMPT_ROUTES = [
+        'trial-expired',
+        'billing.*',
         'company.subscription',
         'company.subscription.suspend',
         'company.subscription.activate',

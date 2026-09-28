@@ -32,7 +32,7 @@ import {
 import AppLayout from '@/layouts/app-layout';
 import { useBreadcrumbs } from '@/hooks/use-breadcrumbs';
 import { Head, useForm } from '@inertiajs/react';
-import { IconPlus } from '@tabler/icons-react';
+import { IconArrowsExchange, IconPlus } from '@tabler/icons-react';
 import { type ReactElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pencil, Trash2 } from 'lucide-react';
@@ -49,8 +49,18 @@ interface Account {
     is_active: boolean;
 }
 
+interface RoleOption {
+    value: string;
+    label: string;
+    description: string;
+    is_parent_role: boolean;
+    allowed_types: Account['type'][];
+}
+
 interface PageProps {
     accounts: Account[];
+    roleOptions: RoleOption[];
+    roleMappings: Record<string, number>;
 }
 
 const TYPE_VARIANT: Record<Account['type'], 'default' | 'outline' | 'secondary'> = {
@@ -61,9 +71,14 @@ const TYPE_VARIANT: Record<Account['type'], 'default' | 'outline' | 'secondary'>
     expense: 'outline',
 };
 
-function AccountsPage({ accounts }: PageProps) {
+function AccountsPage({ accounts, roleOptions, roleMappings }: PageProps) {
     const { t } = useTranslation('master');
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [mappingOpen, setMappingOpen] = useState(false);
+    const mappingForm = useForm<{ mappings: Record<string, string> }>({
+        mappings: Object.fromEntries(roleOptions.map((role) => [role.value, roleMappings[role.value]?.toString() ?? ''])),
+    });
+    const unmappedRoles = roleOptions.filter((role) => !roleMappings[role.value]).length;
     const [editing, setEditing] = useState<Account | null>(null);
     const [deleting, setDeleting] = useState<Account | null>(null);
 
@@ -149,10 +164,17 @@ function AccountsPage({ accounts }: PageProps) {
                         <h1 className="text-2xl font-semibold tracking-tight">{t('account.title')}</h1>
                         <p className="text-sm text-muted-foreground">{t('account.description')}</p>
                     </div>
-                    <Button onClick={openCreate}>
-                        <IconPlus className="mr-2 h-4 w-4" />
-                        {t('account.add')}
-                    </Button>
+                    <div className="flex items-center gap-2">
+                        <Button variant="outline" onClick={() => setMappingOpen(true)}>
+                            <IconArrowsExchange className="mr-2 h-4 w-4" />
+                            Mapping Akun Inti
+                            {unmappedRoles > 0 && <Badge variant="destructive" className="ml-2">{unmappedRoles}</Badge>}
+                        </Button>
+                        <Button onClick={openCreate}>
+                            <IconPlus className="mr-2 h-4 w-4" />
+                            {t('account.add')}
+                        </Button>
+                    </div>
                 </div>
 
                 <Card className="overflow-hidden p-0">
@@ -340,6 +362,70 @@ function AccountsPage({ accounts }: PageProps) {
                             </Button>
                             <Button type="submit" variant="save" disabled={processing}>
                                 {processing ? t('common.saving') : t('common.save')}
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={mappingOpen} onOpenChange={setMappingOpen}>
+                <DialogContent className="sm:max-w-[720px]">
+                    <DialogHeader>
+                        <DialogTitle>Mapping Akun Inti</DialogTitle>
+                        <DialogDescription>
+                            Akun yang dipakai jurnal otomatis Nexumi (penjualan, pembelian, persediaan, kurs).
+                        </DialogDescription>
+                    </DialogHeader>
+                    <form
+                        onSubmit={(event) => {
+                            event.preventDefault();
+                            mappingForm.put('/master/account-roles', {
+                                preserveScroll: true,
+                                onSuccess: () => setMappingOpen(false),
+                            });
+                        }}
+                    >
+                        <div className="max-h-[60vh] divide-y overflow-y-auto rounded-lg border">
+                            {roleOptions.map((role) => {
+                                const error = (mappingForm.errors as Record<string, string>)[`mappings.${role.value}`];
+                                return (
+                                    <div key={role.value} className="grid gap-2 p-3 md:grid-cols-2 md:items-center">
+                                        <div>
+                                            <p className="text-sm font-medium">{role.label}</p>
+                                            <p className="text-xs text-muted-foreground">{role.description}</p>
+                                        </div>
+                                        <div>
+                                            <Select
+                                                value={mappingForm.data.mappings[role.value] || undefined}
+                                                onValueChange={(value) =>
+                                                    mappingForm.setData('mappings', { ...mappingForm.data.mappings, [role.value]: value })
+                                                }
+                                            >
+                                                <SelectTrigger className={error ? 'border-destructive' : undefined}>
+                                                    <SelectValue placeholder="Pilih akun" />
+                                                </SelectTrigger>
+                                                <SelectContent className="max-h-72">
+                                                    {accounts
+                                                        .filter((account) => role.allowed_types.includes(account.type) && (role.is_parent_role || account.is_postable))
+                                                        .map((account) => (
+                                                            <SelectItem key={account.id} value={account.id.toString()}>
+                                                                {account.code} — {account.name}
+                                                            </SelectItem>
+                                                        ))}
+                                                </SelectContent>
+                                            </Select>
+                                            {error && <p className="mt-1 text-xs text-destructive">{error}</p>}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        <DialogFooter className="mt-4">
+                            <Button type="button" variant="cancel" onClick={() => setMappingOpen(false)} disabled={mappingForm.processing}>
+                                {t('common.cancel')}
+                            </Button>
+                            <Button type="submit" variant="save" disabled={mappingForm.processing}>
+                                {mappingForm.processing ? t('common.saving') : t('common.save')}
                             </Button>
                         </DialogFooter>
                     </form>

@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Account;
 use App\Models\ApPayment;
 use App\Models\ArReceipt;
 use App\Models\BankAccount;
@@ -14,13 +13,15 @@ use App\Services\Accounting\JournalPostingService;
 use Brick\Math\BigDecimal;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
+use App\Services\Accounting\AccountRoleResolver;
+use App\Support\AccountRole;
 
 class ExchangeRevaluationService
 {
-    private const AR_ACCOUNT_CODE = '1.1.3';
-    private const AP_ACCOUNT_CODE = '2.1.1';
-    private const FX_GAIN_ACCOUNT_CODE = '4.2';
-    private const FX_LOSS_ACCOUNT_CODE = '5.7';
+    private const AR_ACCOUNT_ROLE = AccountRole::AccountsReceivable;
+    private const AP_ACCOUNT_ROLE = AccountRole::AccountsPayable;
+    private const FX_GAIN_ACCOUNT_ROLE = AccountRole::FxGain;
+    private const FX_LOSS_ACCOUNT_ROLE = AccountRole::FxUnrealizedLoss;
 
     public function __construct(
         private readonly CurrentCompany $currentCompany,
@@ -55,10 +56,10 @@ class ExchangeRevaluationService
         $lines = [];
         $netAdjustment = 0.0;
 
-        $ar = $this->accountId(self::AR_ACCOUNT_CODE);
-        $ap = $this->accountId(self::AP_ACCOUNT_CODE);
-        $gain = $this->accountId(self::FX_GAIN_ACCOUNT_CODE);
-        $loss = $this->accountId(self::FX_LOSS_ACCOUNT_CODE);
+        $ar = $this->accountId(self::AR_ACCOUNT_ROLE);
+        $ap = $this->accountId(self::AP_ACCOUNT_ROLE);
+        $gain = $this->accountId(self::FX_GAIN_ACCOUNT_ROLE);
+        $loss = $this->accountId(self::FX_LOSS_ACCOUNT_ROLE);
 
         $sales = SalesInvoice::where('currency_code', $currencyCode)->whereIn('status', ['posted', 'paid'])->get();
         $foreignAr = $sales->sum(fn (SalesInvoice $invoice) => $invoice->outstandingAmount());
@@ -204,13 +205,8 @@ class ExchangeRevaluationService
         });
     }
 
-    private function accountId(string $code): int
+    private function accountId(AccountRole $role): int
     {
-        $account = Account::where('company_id', $this->currentCompany->id())->where('code', $code)->first();
-        if (! $account) {
-            throw new RuntimeException("Chart of accounts is missing the expected account \"{$code}\".");
-        }
-
-        return $account->id;
+        return app(AccountRoleResolver::class)->id($role);
     }
 }

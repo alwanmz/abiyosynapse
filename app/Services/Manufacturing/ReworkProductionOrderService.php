@@ -2,7 +2,6 @@
 
 namespace App\Services\Manufacturing;
 
-use App\Models\Account;
 use App\Models\NonConformanceReport;
 use App\Models\ProductionOrder;
 use App\Models\User;
@@ -12,11 +11,13 @@ use App\Services\Inventory\InventoryValuationService;
 use App\Services\Inventory\StockQualityService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
+use App\Services\Accounting\AccountRoleResolver;
+use App\Support\AccountRole;
 
 class ReworkProductionOrderService
 {
-    private const FINISHED_GOODS_ACCOUNT_CODE = '1.1.6';
-    private const WIP_ACCOUNT_CODE = '1.1.5';
+    private const FINISHED_GOODS_ACCOUNT_ROLE = AccountRole::FinishedGoodsInventory;
+    private const WIP_ACCOUNT_ROLE = AccountRole::WipInventory;
 
     public function __construct(
         private readonly ProductionOrderService $production,
@@ -91,8 +92,8 @@ class ReworkProductionOrderService
                 $this->posting->post(
                     description: "Rework transfer from {$ncr->number}",
                     lines: [
-                        ['account_id' => $this->accountId(self::WIP_ACCOUNT_CODE), 'debit' => $result['total_cost']],
-                        ['account_id' => $this->accountId(self::FINISHED_GOODS_ACCOUNT_CODE), 'credit' => $result['total_cost']],
+                        ['account_id' => $this->accountId(self::WIP_ACCOUNT_ROLE), 'debit' => $result['total_cost']],
+                        ['account_id' => $this->accountId(self::FINISHED_GOODS_ACCOUNT_ROLE), 'credit' => $result['total_cost']],
                     ],
                     sourceable: $child,
                 );
@@ -124,14 +125,8 @@ class ReworkProductionOrderService
         return $prefix . str_pad((string) $sequence, 6, '0', STR_PAD_LEFT);
     }
 
-    private function accountId(string $code): int
+    private function accountId(AccountRole $role): int
     {
-        $account = Account::where('company_id', $this->currentCompany->id())->where('code', $code)->first();
-
-        if (! $account) {
-            throw new RuntimeException("Chart of accounts is missing the expected account \"{$code}\" for rework.");
-        }
-
-        return $account->id;
+        return app(AccountRoleResolver::class)->id($role);
     }
 }

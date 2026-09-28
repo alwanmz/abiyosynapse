@@ -13,7 +13,18 @@ class Company extends Model
 {
     use HasFactory;
 
+    public const TRIAL_GRACE_DAYS = 7;
+
+    public const BUSINESS_TYPES = ['jasa', 'dagang', 'manufaktur', 'campuran'];
+
     protected $fillable = [
+        'industry',
+        'business_type',
+        'business_scale',
+        'business_description',
+        'uses_inventory',
+        'is_pkp',
+        'onboarded_at',
         'name',
         'legal_name',
         'code',
@@ -42,18 +53,48 @@ class Company extends Model
             'trial_ends_at' => 'datetime',
             'comparative_period_enabled' => 'boolean',
             'suspended_at' => 'datetime',
+            'uses_inventory' => 'boolean',
+            'is_pkp' => 'boolean',
+            'onboarded_at' => 'datetime',
         ];
+    }
+
+    public function accountRoleMappings(): HasMany
+    {
+        return $this->hasMany(AccountRoleMapping::class);
+    }
+
+    public function subscriptionOrders(): HasMany
+    {
+        return $this->hasMany(SubscriptionOrder::class);
     }
 
     /**
      * Null trial_ends_at means "not on a trial" (never was, or trial
      * enforcement predates this company) — never expired in that case.
+     * A paid subscription is never considered trial-expired.
      */
     public function isTrialExpired(): bool
     {
+        if ($this->subscription?->isPaid()) {
+            return false;
+        }
+
         $trialEndsAt = $this->subscription?->trial_ends_at ?? $this->trial_ends_at;
 
         return $trialEndsAt !== null && $trialEndsAt->isPast();
+    }
+
+    public function trialPurgeDate(): ?\Carbon\CarbonInterface
+    {
+        $trialEndsAt = $this->subscription?->trial_ends_at ?? $this->trial_ends_at;
+
+        return $trialEndsAt?->copy()->addDays(self::TRIAL_GRACE_DAYS);
+    }
+
+    public function isOnboarded(): bool
+    {
+        return $this->onboarded_at !== null;
     }
 
     public function isOperational(): bool

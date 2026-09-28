@@ -17,6 +17,7 @@ class EnsureTrialNotExpired
 {
     private const EXEMPT_ROUTES = [
         'trial-expired',
+        'billing.*',
         'company.subscription',
         'company.subscription.suspend',
         'company.subscription.activate',

@@ -2,7 +2,6 @@
 
 namespace App\Services\AR;
 
-use App\Models\Account;
 use App\Models\ArReceipt;
 use App\Models\BankAccount;
 use App\Models\SalesInvoice;
@@ -13,6 +12,8 @@ use App\Services\CurrencyDocumentService;
 use App\Services\MoneyConversionService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
+use App\Services\Accounting\AccountRoleResolver;
+use App\Support\AccountRole;
 
 /**
  * Records an AR Receipt: money actually collected from a customer,
@@ -34,9 +35,9 @@ use RuntimeException;
  */
 class ArReceiptService
 {
-    private const AR_ACCOUNT_CODE = '1.1.3';
-    private const FX_GAIN_ACCOUNT_CODE = '4.2';
-    private const FX_LOSS_ACCOUNT_CODE = '5.6';
+    private const AR_ACCOUNT_ROLE = AccountRole::AccountsReceivable;
+    private const FX_GAIN_ACCOUNT_ROLE = AccountRole::FxGain;
+    private const FX_LOSS_ACCOUNT_ROLE = AccountRole::FxRealizedLoss;
     private const AMOUNT_TOLERANCE = 0.01;
 
     public function __construct(
@@ -126,12 +127,12 @@ class ArReceiptService
                 ['account_id' => $bankAccount->account_id, 'debit' => $receiptAmountBase, 'amount_currency' => $receiptAmount, 'currency_code' => $bankAccount->currency_code, 'exchange_rate' => $paymentConversion['rate']],
             ];
             foreach ($validatedLines as $line) {
-                $lines[] = ['account_id' => $this->accountId(self::AR_ACCOUNT_CODE), 'credit' => $line['amount_base'], 'amount_currency' => -$line['amount'], 'currency_code' => $line['invoice']->currency_code, 'exchange_rate' => $line['invoice']->exchange_rate];
+                $lines[] = ['account_id' => $this->accountId(self::AR_ACCOUNT_ROLE), 'credit' => $line['amount_base'], 'amount_currency' => -$line['amount'], 'currency_code' => $line['invoice']->currency_code, 'exchange_rate' => $line['invoice']->exchange_rate];
             }
             if (abs($difference) > self::AMOUNT_TOLERANCE) {
                 $lines[] = $difference > 0
-                    ? ['account_id' => $this->accountId(self::FX_GAIN_ACCOUNT_CODE), 'credit' => $difference, 'amount_currency' => -$difference, 'currency_code' => $this->money->baseCurrency()]
-                    : ['account_id' => $this->accountId(self::FX_LOSS_ACCOUNT_CODE), 'debit' => abs($difference), 'amount_currency' => abs($difference), 'currency_code' => $this->money->baseCurrency()];
+                    ? ['account_id' => $this->accountId(self::FX_GAIN_ACCOUNT_ROLE), 'credit' => $difference, 'amount_currency' => -$difference, 'currency_code' => $this->money->baseCurrency()]
+                    : ['account_id' => $this->accountId(self::FX_LOSS_ACCOUNT_ROLE), 'debit' => abs($difference), 'amount_currency' => abs($difference), 'currency_code' => $this->money->baseCurrency()];
             }
 
             $this->posting->post(
@@ -158,15 +159,8 @@ class ArReceiptService
         return $prefix . str_pad((string) $nextSequence, 6, '0', STR_PAD_LEFT);
     }
 
-    private function accountId(string $code): int
+    private function accountId(AccountRole $role): int
     {
-        $companyId = $this->currentCompany->id();
-        $account = Account::where('company_id', $companyId)->where('code', $code)->first();
-
-        if (! $account) {
-            throw new RuntimeException("Chart of accounts is missing the expected account \"{$code}\" for AR postings.");
-        }
-
-        return $account->id;
+        return app(AccountRoleResolver::class)->id($role);
     }
 }

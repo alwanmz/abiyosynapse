@@ -9,6 +9,14 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
+// Pengingat trial, kunci trial/langganan yang habis, hapus data trial yang
+// tidak dibayar setelah masa tenggang 7 hari. Jalan sebelum backup harian.
+Schedule::command('tenants:process-lifecycle')
+    ->dailyAt('01:00')
+    ->timezone('Asia/Jakarta')
+    ->withoutOverlapping()
+    ->onOneServer();
+
 // Backup database + lampiran ke Google Drive tiap tengah malam (jam 12 malam).
 Schedule::command('backup:run')
     ->dailyAt('03:00')

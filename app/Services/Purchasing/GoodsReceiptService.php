@@ -2,7 +2,6 @@
 
 namespace App\Services\Purchasing;
 
-use App\Models\Account;
 use App\Models\GoodsReceipt;
 use App\Models\GoodsReceiptLine;
 use App\Models\PurchaseOrder;
@@ -14,6 +13,8 @@ use App\Services\Inventory\InventoryValuationService;
 use App\Services\Quality\QualityInspectionService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
+use App\Services\Accounting\AccountRoleResolver;
+use App\Support\AccountRole;
 
 /**
  * Drives Goods Receipt -> Quality Incoming -> Put Away (blueprint §8, §12).
@@ -35,8 +36,8 @@ use RuntimeException;
  */
 class GoodsReceiptService
 {
-    private const RAW_MATERIAL_ACCOUNT_CODE = '1.1.4';
-    private const GRNI_ACCOUNT_CODE = '2.1.2';
+    private const RAW_MATERIAL_ACCOUNT_ROLE = AccountRole::RawMaterialInventory;
+    private const GRNI_ACCOUNT_ROLE = AccountRole::Grni;
 
     public function __construct(
         private readonly CurrentCompany $currentCompany,
@@ -156,8 +157,8 @@ class GoodsReceiptService
                 $this->posting->post(
                     description: "Goods receipt {$receipt->number} put away",
                     lines: [
-                        ['account_id' => $this->accountId(self::RAW_MATERIAL_ACCOUNT_CODE), 'debit' => $totalAcceptedCost],
-                        ['account_id' => $this->accountId(self::GRNI_ACCOUNT_CODE), 'credit' => $totalAcceptedCost],
+                        ['account_id' => $this->accountId(self::RAW_MATERIAL_ACCOUNT_ROLE), 'debit' => $totalAcceptedCost],
+                        ['account_id' => $this->accountId(self::GRNI_ACCOUNT_ROLE), 'credit' => $totalAcceptedCost],
                     ],
                     sourceable: $receipt,
                 );
@@ -182,15 +183,8 @@ class GoodsReceiptService
         return $prefix . str_pad((string) $nextSequence, 6, '0', STR_PAD_LEFT);
     }
 
-    private function accountId(string $code): int
+    private function accountId(AccountRole $role): int
     {
-        $companyId = $this->currentCompany->id();
-        $account = Account::where('company_id', $companyId)->where('code', $code)->first();
-
-        if (! $account) {
-            throw new RuntimeException("Chart of accounts is missing the expected account \"{$code}\" for purchasing postings.");
-        }
-
-        return $account->id;
+        return app(AccountRoleResolver::class)->id($role);
     }
 }

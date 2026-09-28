@@ -12,6 +12,8 @@ use App\Services\CurrencyDocumentService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
+use App\Services\Accounting\AccountRoleResolver;
+use App\Support\AccountRole;
 
 /**
  * Fixed asset lifecycle and accounting integration.
@@ -23,8 +25,6 @@ use RuntimeException;
  */
 class FixedAssetService
 {
-    private const DISPOSAL_GAIN_ACCOUNT_CODE = '4.1';
-
     public function __construct(
         private readonly CurrentCompany $currentCompany,
         private readonly JournalPostingService $posting,
@@ -246,13 +246,7 @@ class FixedAssetService
             $lines[] = ['account_id' => $asset->asset_account_id, 'credit_base' => (string) $asset->acquisition_cost_base, 'currency_code' => $asset->currency_code, 'exchange_rate' => $asset->exchange_rate];
 
             if ($gainLoss > 0) {
-                $gainAccount = Account::where('company_id', $asset->company_id)
-                    ->where('code', self::DISPOSAL_GAIN_ACCOUNT_CODE)
-                    ->first();
-
-                if (! $gainAccount) {
-                    throw new RuntimeException('The disposal gain account 4.1 is missing from the chart of accounts.');
-                }
+                $gainAccount = app(AccountRoleResolver::class)->account(AccountRole::AssetDisposalGain, $asset->company_id);
 
                 $lines[] = ['account_id' => $gainAccount->id, 'credit_base' => $gainLossBase, 'currency_code' => $asset->currency_code, 'exchange_rate' => $asset->exchange_rate];
             }

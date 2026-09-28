@@ -2,7 +2,6 @@
 
 namespace App\Services\Manufacturing;
 
-use App\Models\Account;
 use App\Models\Bom;
 use App\Models\Product;
 use App\Models\ProductionOrder;
@@ -15,6 +14,8 @@ use App\Services\CurrentCompany;
 use App\Services\Inventory\InventoryValuationService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
+use App\Services\Accounting\AccountRoleResolver;
+use App\Support\AccountRole;
 
 /**
  * Drives a Production/Manufacturing Order through its lifecycle
@@ -41,10 +42,10 @@ use RuntimeException;
  */
 class ProductionOrderService
 {
-    private const RAW_MATERIAL_ACCOUNT_CODE = '1.1.4';
-    private const WIP_ACCOUNT_CODE = '1.1.5';
-    private const FINISHED_GOODS_ACCOUNT_CODE = '1.1.6';
-    private const SCRAP_EXPENSE_ACCOUNT_CODE = '5.4';
+    private const RAW_MATERIAL_ACCOUNT_ROLE = AccountRole::RawMaterialInventory;
+    private const WIP_ACCOUNT_ROLE = AccountRole::WipInventory;
+    private const FINISHED_GOODS_ACCOUNT_ROLE = AccountRole::FinishedGoodsInventory;
+    private const SCRAP_EXPENSE_ACCOUNT_ROLE = AccountRole::ScrapExpense;
 
     public function __construct(
         private readonly CurrentCompany $currentCompany,
@@ -148,8 +149,8 @@ class ProductionOrderService
                 $this->posting->post(
                     description: "Material issue for {$order->number}",
                     lines: [
-                        ['account_id' => $this->accountId(self::WIP_ACCOUNT_CODE), 'debit' => $totalCost],
-                        ['account_id' => $this->accountId(self::RAW_MATERIAL_ACCOUNT_CODE), 'credit' => $totalCost],
+                        ['account_id' => $this->accountId(self::WIP_ACCOUNT_ROLE), 'debit' => $totalCost],
+                        ['account_id' => $this->accountId(self::RAW_MATERIAL_ACCOUNT_ROLE), 'credit' => $totalCost],
                     ],
                     sourceable: $order,
                 );
@@ -223,8 +224,8 @@ class ProductionOrderService
                 $this->posting->post(
                     description: "Production completion for {$order->number}",
                     lines: [
-                        ['account_id' => $this->accountId(self::FINISHED_GOODS_ACCOUNT_CODE), 'debit' => $totalCost],
-                        ['account_id' => $this->accountId(self::WIP_ACCOUNT_CODE), 'credit' => $totalCost],
+                        ['account_id' => $this->accountId(self::FINISHED_GOODS_ACCOUNT_ROLE), 'debit' => $totalCost],
+                        ['account_id' => $this->accountId(self::WIP_ACCOUNT_ROLE), 'credit' => $totalCost],
                     ],
                     sourceable: $order,
                 );
@@ -302,8 +303,8 @@ class ProductionOrderService
                 $this->posting->post(
                     description: "Production output held for Quality Release {$order->number}",
                     lines: [
-                        ['account_id' => $this->accountId(self::FINISHED_GOODS_ACCOUNT_CODE), 'debit' => $totalCost],
-                        ['account_id' => $this->accountId(self::WIP_ACCOUNT_CODE), 'credit' => $totalCost],
+                        ['account_id' => $this->accountId(self::FINISHED_GOODS_ACCOUNT_ROLE), 'debit' => $totalCost],
+                        ['account_id' => $this->accountId(self::WIP_ACCOUNT_ROLE), 'credit' => $totalCost],
                     ],
                     sourceable: $order,
                 );
@@ -319,15 +320,8 @@ class ProductionOrderService
         });
     }
 
-    private function accountId(string $code): int
+    private function accountId(AccountRole $role): int
     {
-        $companyId = $this->currentCompany->id();
-        $account = Account::where('company_id', $companyId)->where('code', $code)->first();
-
-        if (! $account) {
-            throw new RuntimeException("Chart of accounts is missing the expected account \"{$code}\" for manufacturing postings.");
-        }
-
-        return $account->id;
+        return app(AccountRoleResolver::class)->id($role);
     }
 }

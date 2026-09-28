@@ -10,6 +10,8 @@ use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Auth\EmailOtpController;
 use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\BankReconciliationController;
+use App\Http\Controllers\BillingController;
+use App\Http\Controllers\BillingWebhookController;
 use App\Http\Controllers\BomController;
 use App\Http\Controllers\CashTransactionController;
 use App\Http\Controllers\CompanyController;
@@ -30,6 +32,7 @@ use App\Http\Controllers\MrpController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\NonConformanceReportController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductionOrderController;
@@ -65,6 +68,11 @@ Route::get('/', function () {
 // Laravel's /up endpoint checks that the application boots; /ready also verifies
 // the database is accepting connections without exposing exception details.
 Route::get('/ready', ReadinessController::class)->name('health.ready');
+
+// Server-to-server payment notifications (CSRF-exempt in bootstrap/app.php).
+Route::post('/billing/webhook/{provider}', BillingWebhookController::class)
+    ->middleware('throttle:60,1')
+    ->name('billing.webhook');
 
 // Own OTP-code email verification flow, replacing Fortify's signed-link
 // click flow (see config/fortify.php — Features::emailVerification() is
@@ -129,6 +137,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/trial-expired', [TrialExpiredController::class, 'show'])->name('trial-expired');
 
+    Route::prefix('onboarding')->name('onboarding.')->controller(OnboardingController::class)->group(function () {
+        Route::get('/', 'show')->name('show');
+        Route::post('/profile', 'saveProfile')->name('profile');
+        Route::post('/generate', 'generate')->name('generate');
+        Route::get('/coa-template', 'template')->name('template');
+        Route::post('/coa-upload', 'upload')->name('upload');
+        Route::put('/draft', 'updateDraft')->name('draft.update');
+        Route::post('/draft/review', 'backToReview')->name('draft.review');
+        Route::post('/complete', 'complete')->name('complete');
+    });
+
+    Route::prefix('billing')->name('billing.')->middleware('permission:companies.manage')->controller(BillingController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/orders', 'store')->name('orders.store');
+        Route::get('/orders/{order}', 'show')->name('orders.show');
+        Route::get('/checkout/{order}', 'checkout')->name('checkout');
+        Route::post('/checkout/{order}/simulate', 'simulate')->name('checkout.simulate');
+    });
+
     Route::get('/roles', [RoleController::class, 'index'])->name('roles.index')->middleware('permission:roles.view');
     Route::post('/roles', [RoleController::class, 'store'])->name('roles.store')->middleware('permission:roles.create,roles.manage');
     Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update')->middleware('permission:roles.edit,roles.manage');
@@ -157,6 +184,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
     Route::middleware('permission:accounts.create,accounts.manage')->post('master/accounts', [AccountController::class, 'store'])->name('master.accounts.store');
     Route::middleware('permission:accounts.edit,accounts.manage')->put('master/accounts/{account}', [AccountController::class, 'update'])->name('master.accounts.update');
+    Route::middleware('permission:accounts.manage')->put('master/account-roles', [AccountController::class, 'updateRoles'])->name('master.account-roles.update');
     Route::middleware('permission:accounts.delete,accounts.manage')->delete('master/accounts/{account}', [AccountController::class, 'destroy'])->name('master.accounts.destroy');
 
     Route::middleware('permission:master-data.view,master-data.manage')->group(function () {
